@@ -1,0 +1,575 @@
+library(keras)
+library(survey)
+library(dplyr)
+
+set.seed(1)
+
+## Creating a population to sample from 
+N <- 10^6
+ep_sig_control <- 2
+
+
+p_1 <- rnorm(N, mean = 30, sd = 2.5)
+p_2 <- rnorm(N, mean = 15, sd = 2)
+p_3 <- rnorm(N, mean = 5, sd = 1.5)
+
+epsilon <- rnorm(N, mean = 0, sd = ep_sig_control)
+
+p_y <- (sqrt(p_1 * p_2) + p_3) + epsilon
+
+pi_noise <- rnorm(N, mean = 0, sd = 1.5)
+temp_pi <- sqrt(p_y) + pi_noise 
+
+rescale <- function(vec) { # rescale to 0,1
+  (vec - min(vec)) / (max(vec) - min(vec))
+}
+
+temp_pi <- rescale(temp_pi)
+
+p_pi <- temp_pi * (N / sum(temp_pi)) # scale so that sum is N
+sum(p_pi)
+
+p_df <- cbind(p_1, p_2, p_3, p_pi, p_y)
+p_tbl <- as_tibble(p_df)
+
+n <- 10000
+
+sample_population_by_pi <- sample_n(tbl = p_tbl, size = n, replace = FALSE, weight = p_pi)
+
+df <- sample_population_by_pi
+
+##############################################################
+# Make better fake data. The x's will be independent for now.
+
+# This isn't the data for now, this is just a stomping ground
+# to test ideas to make better fake data in the future
+
+x_1 <- rnorm(10000, mean = 30, sd = 2.5)
+x_2 <- rnorm(10000, mean = 15, sd = 2)
+x_3 <- rnorm(10000, mean = 5, sd = 1.5)
+
+
+middle_no_correlation <- function(vec) {
+  k <- vec
+  for (i in 1:length(vec)) {
+    if (vec[i] > .95*mean(vec)  &&  vec[i] < 1.05*mean(vec)) {
+      k[i] = mean(vec)
+    }
+  }
+  return(k)
+}
+
+t_2 <- middle_no_correlation(x_2)
+
+
+make_discontinuity <- function(vec) {
+  k <- vec
+  for (i in 1:length(vec)) {
+    
+    if (vec[i] < mean(vec)) {
+      k[i] <- vec[i] - 2
+    } else {
+      k[i] <- vec[i] + 2
+    }
+    
+  }
+  return(k)
+}
+
+t_1 <- make_discontinuity(x_1)
+
+spice_up <- function(vec) {
+  k <- vec
+  
+  for (i in 1:length(vec)) {
+    if (vec[i] < 5) {
+      k[i] <- vec[i]
+    } else {
+      k[i] <- 5 - vec[i]
+    }
+    
+    k[i] <- abs(k[i])
+  }
+  
+  return(k)
+}
+
+t_3 <- spice_up(x_3)
+
+y <- (sqrt(t_1 * t_2) + exp(t_3)) + epsilon
+# - 2*log(x_1+x_3)   # more complexity
+
+
+noise <- rnorm(10000, mean = 0, sd = 1.5)
+pi <- sqrt(y) + noise 
+
+rescale <- function(vec) { # rescale to 0,1
+  (vec - min(vec)) / (max(vec) - min(vec))
+}
+
+pi <- rescale(pi)
+
+df_pi <- cbind(x_1, x_2, x_3, pi)
+df_npi <- cbind(x_1, x_2, x_3)
+
+df <- df_pi
+df <- df_npi
+
+# Let's just normalize and validation right here right now
+
+create_split <- function(df) {
+  smp_size <- floor(.75*nrow(df))
+  train_ind <- sample(seq_len(nrow(df)), size = smp_size)
+  
+  x_train <<- df[train_ind, ]
+  x_test <<- df[-train_ind, ]
+  
+  y_train <<- y[train_ind]
+  y_test <<- y[-train_ind]
+}
+
+create_validation_split <- function(x_train, y_train) {
+  # Validation Set
+  val_indices <- 1:1000
+  
+  x_val <<- x_train[val_indices,]
+  partial_x_train <<- x_train[-val_indices,]
+  
+  y_val <<- y_train[val_indices]
+  partial_y_train <<- y_train[-val_indices]
+}
+
+# We might not want to normalize? it's making the numbers extremely small
+normalize_data <- function(df) {
+  mean <- apply(x_train, 2, mean)
+  std <- apply(x_train, 2, sd)
+  x_train <<- scale(x_train, center = mean, scale = std)
+  x_test <<- scale(x_test, center = mean, scale = std)
+}
+
+
+
+
+
+
+nonlinearize_y <- function(vector) {
+  new_y <- vector
+  
+  for (i in 1:length(vector)) {
+    
+    if(vector[i] < mean(vector)*.8) {
+      
+    } else if (vector[i] > mean(vector)*1.2) {
+      
+    } else {
+      
+    }
+    
+  }
+  
+  return(new_y)
+}
+
+
+
+############################################################
+############################################################
+
+# Making a survey-weighted resample using Sample_n
+# need to have Big df with y so that the scramble keeps them
+df <- cbind(x_1, x_2, x_3, pi, y)
+df <- as.data.frame(df)
+
+weight_vec <- as.numeric(df[,4])
+
+df <- as_tibble(df)
+new_data <- sample_n(tbl = df, size = nrow(df), replace = TRUE, weight = weight_vec)
+
+y <- new_data$y
+
+df <- select(new_data, -c(y))
+
+# Validating my bootstrapped data
+alpha <- sum(1/weight_vec)
+
+sum_ratio <- sum(y / new_data[,4])
+
+normal_mean <- (1/length(y)) * sum(y)
+
+# Using the survey-weighted dataset to train the model
+
+smp_size <- floor(.75*nrow(df))
+train_ind <- sample(seq_len(nrow(df)), size = smp_size)
+
+x_train <- df[train_ind, ]
+x_test <- df[-train_ind, ]
+
+y_train <- y[train_ind]
+y_test <- y[-train_ind]
+
+# Normalization
+mean <- apply(x_train, 2, mean)
+std <- apply(x_train, 2, sd)
+x_train <- scale(x_train, center = mean, scale = std)
+x_test <- scale(x_test, center = mean, scale = std)
+
+# Model Definition
+model <- keras_model_sequential() %>%
+  layer_dense(units = 32, activation = "relu", 
+              input_shape = dim(x_train)[[2]]) %>%
+  layer_dense(units = 32, activation = "relu") %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = "mse",
+  metrics = c("mae")
+)
+
+# Validation Set
+val_indices <- 1:1000
+
+x_val <- x_train[val_indices,]
+partial_x_train <- x_train[-val_indices,]
+
+y_val <- y_train[val_indices]
+partial_y_train <- y_train[-val_indices]
+
+# Training the Model
+history <- model %>% fit(
+  partial_x_train,
+  partial_y_train,
+  epochs = 100,
+  batch_size = 512,
+  validation_data = list(x_val, y_val)
+)
+
+BS_pi_results <- model %>% evaluate(x_test, y_test)
+BS_pi_results
+
+####################################
+
+# Can also do BS_npi_results
+
+####################################
+# Multiple Set Bootstrap
+
+df <- cbind(x_1, x_2, x_3, pi, y)
+#df <- as.data.frame(df)
+
+weight_vec <- as.numeric(unlist(df[,4]))
+
+df <- as_tibble(df)
+
+iterations <- 10
+
+loss_results_vec <- vector("double", iterations)
+mae_results_vec <- vector("double", iterations)
+
+
+y <- new_data[,5]
+
+# Do not edit df once we're in. First thing to 
+for (i in 1:iterations) {
+  new_data <- sample_n(tbl = df, size = nrow(df), 
+                       replace = TRUE, weight = weight_vec)
+  y <- new_data[,5]
+
+  y <- as.numeric(unlist(y))
+  
+  temp_df <- select(new_data, -c(y))
+  temp_df <- as.matrix(temp_df)
+  
+  create_split(temp_df)
+  
+  # Model Definition
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 16, activation = "relu", 
+                input_shape = dim(x_train)[[2]]) %>%
+    layer_dense(units = 16, activation = "relu") %>%
+    layer_dense(units = 1)
+  
+  model %>% compile(
+    optimizer = "rmsprop",
+    loss = "mse",
+    metrics = c("mae")
+  )
+  
+  # Create validation data, called x_val y_val, partial_x_train partial_y_train
+  create_validation_split(x_train, y_train)
+  
+  partial_x_train <- as.matrix(partial_x_train)
+  x_val <- as.matrix(x_val)
+  
+  # Training the Model
+  history <- model %>% fit(
+    partial_x_train,
+    partial_y_train,
+    epochs = 25,
+    batch_size = 512,
+    validation_data = list(x_val, y_val)
+  )
+  
+  x_test <- as.matrix(x_test)
+  
+  BS_pi_results <- model %>% evaluate(x_test, y_test)
+
+  loss_results_vec[i] <- BS_pi_results[1]
+  mae_results_vec[i] <- BS_pi_results[2]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#############################################################
+#############################################################
+
+# Making a New Loss Function
+# .libPaths()
+# https://keras.rstudio.com/reference/index.html
+# https://keras.rstudio.com/articles/backend.html
+# https://stackoverflow.com/questions/46858016/keras-custom-loss-function-to-pass-arguments-other-than-y-true-and-y-pred
+### https://stackoverflow.com/questions/50706160/how-to-define-custom-cost-function-that-depends-on-input-when-using-imagedatagen/50707473#50707473
+# https://datascience.stackexchange.com/questions/25029/custom-loss-function-with-additional-parameter-in-keras
+# https://github.com/keras-team/keras/issues/2121#issuecomment-214551349
+
+alex_mse <- function(y_true, y_pred){
+  K <- backend()
+  K$mean(obs_weight * (y_pred - y_true)^2, axis = -1)
+}
+
+
+
+customLoss <- function(obs_weights) {
+  
+  loss <- function(y_true, y_pred) {
+    
+    K <- backend()
+    K$mean(obs_weights * K$square(y_pred - y_true), axis = -1)
+    #K$mean(obs_weights * (y_pred - y_true)^2, axis = -1)
+    
+    #axis = 1, axis = 2?
+    
+  }
+  
+  return(loss)
+
+}
+
+my_loss <- customLoss(obs_weights = weights)
+
+
+lossFunction <- function(y_true, y_pred) {
+  
+  K <- backend()
+  K$mean((y_pred - y_true)^2)
+  
+  #K$mean(K$square(y_pred - y_true), axis = -1)
+  #K$mean(obs_weights * (y_pred - y_true)^2, axis = -1)
+  
+  #axis = 1, axis = 2?
+  
+}
+
+
+# Potential Solution: "Sneaking" the weights in
+new_custom_loss <- function(y_true, y_pred) {
+  weights <- y_true[,1]
+  y_true <- y_true[,1]
+  
+  K <- backend()
+  K$mean(obs_weight * (y_pred - y_true)^2, axis = -1)
+}
+# Note that the metric functions will need to be customized as well
+# by adding y_true = y_true[:,0] at the top.
+
+
+
+# now compile keras model with loss = customLoss(obs_weights = df$weights)
+model <- keras_model_sequential() %>%
+  layer_dense(units = 32, activation = "relu", 
+              input_shape = dim(x_train)[[2]]) %>%
+  layer_dense(units = 32, activation = "relu") %>%
+  layer_dense(units = 1)
+
+weights <- df_pi[4,]
+weights <- as.array(weights)
+weights <- as.vector(weights)
+#weights <- as.double(weights)
+weights <- vector("double", 10000)
+
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = customLoss(obs_weights = weights),
+  metrics = c("mae")
+)
+
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = my_loss,
+  metrics = c("mae")
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+counter <- 0
+
+for (i in 1:length(weights)) {
+  if (typeof(weights[i]) == "double") {
+    counter <- counter + 1
+  }
+}
+counter
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###############################################################
+###############################################################
+# First dataset: Fake data With inclusion Probability predictor
+df <- df_pi
+
+# Transpose to make fit keras network
+df <- t(df)
+
+smp_size <- floor(.75*nrow(df))
+train_ind <- sample(seq_len(nrow(df)), size = smp_size)
+
+x_train <- df[train_ind, ]
+x_test <- df[-train_ind, ]
+
+y_train <- y[train_ind]
+y_test <- y[-train_ind]
+
+# Normalization
+mean <- apply(x_train, 2, mean)
+std <- apply(x_train, 2, sd)
+x_train <- scale(x_train, center = mean, scale = std)
+x_test <- scale(x_test, center = mean, scale = std)
+
+# input shape should be number of predictors
+# Model Definition
+model <- keras_model_sequential() %>%
+  layer_dense(units = 32, activation = "relu", 
+              input_shape = dim(x_train)[[2]]) %>%
+  layer_dense(units = 32, activation = "relu") %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = "mse",
+  metrics = c("mae")
+)
+
+# Validation Set
+val_indices <- 1:1000
+
+x_val <- x_train[val_indices,]
+partial_x_train <- x_train[-val_indices,]
+
+y_val <- y_train[val_indices]
+partial_y_train <- y_train[-val_indices]
+
+# Training the Model
+history <- model %>% fit(
+  partial_x_train,
+  partial_y_train,
+  epochs = 100,
+  batch_size = 512,
+  validation_data = list(x_val, y_val)
+)
+
+pi_results <- model %>% evaluate(x_test, y_test)
+pi_results
+
+
+
+###############################################################
+###############################################################
+# Second dataset: Fake data Without inclusion Probability predictor
+df <- df_npi
+
+# Transpose to make fit keras network
+df <- t(df)
+
+smp_size <- floor(.75*nrow(df))
+train_ind <- sample(seq_len(nrow(df)), size = smp_size)
+
+x_train <- df[train_ind, ]
+x_test <- df[-train_ind, ]
+
+y_train <- y[train_ind]
+y_test <- y[-train_ind]
+
+# Normalization
+mean <- apply(x_train, 2, mean)
+std <- apply(x_train, 2, sd)
+x_train <- scale(x_train, center = mean, scale = std)
+x_test <- scale(x_test, center = mean, scale = std)
+
+# Model Definition
+model <- keras_model_sequential() %>%
+  layer_dense(units = 32, activation = "relu", 
+              input_shape = dim(x_train)[[2]]) %>%
+  layer_dense(units = 32, activation = "relu") %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = "mse",
+  metrics = c("mae")
+)
+
+# Validation Set
+val_indices <- 1:1000
+
+x_val <- x_train[val_indices,]
+partial_x_train <- x_train[-val_indices,]
+
+y_val <- y_train[val_indices]
+partial_y_train <- y_train[-val_indices]
+
+# Training the Model
+history <- model %>% fit(
+  partial_x_train,
+  partial_y_train,
+  epochs = 100,
+  batch_size = 512,
+  validation_data = list(x_val, y_val)
+)
+
+npi_results <- model %>% evaluate(x_test, y_test)
+npi_results
+

@@ -1,0 +1,145 @@
+---
+title: "Wrangle Public CE data"
+author: "Kelly and daniell"
+date: 
+header-includes:
+   - \usepackage{tikz-qtree}
+   - \usepackage{lscape}
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, tidy = TRUE, tidy.opts=list(blank=FALSE, width.cutoff = 50,size = 'tiny'))
+
+# Load the necessary packages
+library(data.table)
+library(dplyr)
+
+```
+
+
+
+```{r, cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE}
+
+
+
+
+
+################################## FMLI ########################################
+#                                                                              #
+# This file type contains consumer unit (CU) characteristics, weights, and     #
+# summary variables for expenditure, income, and tax variables.                #
+#                                                                              #
+################################################################################
+
+
+# Read in all FMLI files and stack them (these are quarterly files)
+
+#First get column names
+fmli154 <- read.csv("~/Documents/Research/BLS/CE/Data/fmli154.csv")
+fmli151x <- read.csv("~/Documents/Research/BLS/CE/Data/fmli151x.csv")
+
+fam <- suppressWarnings(
+    lapply(dir(pattern = "^fmli.*[.]csv$"), fread,
+           na.strings = c(".", "", "NA"), select=intersect(names(fmli154), names(fmli151x)), stringsAsFactors=TRUE, colClasses=list(factor=c("NEWID"))) %>%  #Convert troublesome columns to factors
+        bind_rows()
+)
+
+
+
+#Identify factors and numeric values
+fam$POPSIZE <- as.factor(fam$POPSIZE)
+fam$BUSCREEN <- as.factor(fam$BUSCREEN)
+fam$REF_RACE <- as.factor(fam$REF_RACE)
+fam$RACE2 <- as.factor(fam$RACE2)
+fam$SEX_REF <- as.factor(fam$SEX_REF)
+fam$HISP_REF <- as.factor(fam$HISP_REF)
+fam$CUTENURE <- as.factor(fam$CUTENURE)
+fam$BLS_URBN <- as.factor(fam$BLS_URBN)
+fam$MARITAL1 <- as.factor(fam$MARITAL1)
+fam$HIGH_EDU <- as.factor(fam$HIGH_EDU)
+fam$FAM_TYPE <- as.factor(fam$FAM_TYPE)
+fam$OCCUCOD1 <- as.factor(fam$OCCUCOD1)
+
+
+
+#write.csv(x = fam, file = "CE_public.csv")
+CE_public <- fam
+```
+
+```{r}
+#Member-level data
+#First get column names
+#memi131x <- read.csv("K:/CE/Public_Data/memi131x.csv")
+#memi154 <- read.csv("K:/CE/Public_Data/memi154.csv")
+memi154 <- read.csv("~/Documents/Research/BLS/CE/Data/memi154.csv")
+memi151x <- read.csv("~/Documents/Research/BLS/CE/Data/memi151x.csv")
+
+memi <- suppressWarnings(
+    lapply(dir(pattern = "^memi.*[.]csv$"), fread,
+           na.strings = c(".", "", "NA"), select=intersect(names(memi151x), names(memi154)), stringsAsFactors=TRUE, colClasses=list(factor=c("NEWID"))) %>%  #Convert troublesome columns to factors
+        bind_rows()
+)
+
+
+
+write.csv(x = memi, file = "CE_public_memi.csv")
+CE_public_memi <- memi
+```
+
+```{r}
+#Merge in prinearn info to family level dataset
+class(CE_public$PRINEARN)
+class(CE_public_memi$MEMBNO)
+CE_public$PRINEARN <- as.integer(CE_public$PRINEARN)
+
+
+
+#Add Info about Principal Earner
+CE_public_fm <- left_join(CE_public, CE_public_memi, by = c("NEWID"="NEWID", "PRINEARN"="MEMBNO"))
+
+
+
+#Identify factors and numerics
+CE_public_fm$NEWID <- as.factor(CE_public_fm$NEWID)
+CE_public_fm$CUTENURE <- as.factor(CE_public_fm$CUTENURE)
+CE_public_fm$BLS_URBN <- as.factor(CE_public_fm$BLS_URBN)
+CE_public_fm$EARNCOMP <- as.factor(CE_public_fm$EARNCOMP)
+CE_public_fm$EDUC_REF <- as.factor(CE_public_fm$EDUC_REF)
+CE_public_fm$EDUCA <- as.factor(CE_public_fm$EDUCA)
+CE_public_fm$FAM_TYPE <- as.factor(CE_public_fm$FAM_TYPE)
+CE_public_fm$HORIGIN <- as.factor(CE_public_fm$HORIGIN)
+CE_public_fm$OCCUCOD1 <- as.factor(CE_public_fm$OCCUCOD1)
+CE_public_fm$OCCUCOD2 <- as.factor(CE_public_fm$OCCUCOD2)
+CE_public_fm$MEMBRACE <- as.factor(CE_public_fm$MEMBRACE)
+CE_public_fm$REGION <- as.factor(CE_public_fm$REGION)
+CE_public_fm$SEX <- as.factor(CE_public_fm$SEX)
+CE_public_fm$STATE <- as.factor(CE_public_fm$STATE)
+CE_public_fm$RETSURV <- as.factor(CE_public_fm$RETSURV)
+CE_public_fm$INTERI   <- as.factor(CE_public_fm$INTERI)
+CE_public_fm$QINTRVMO <- as.factor(CE_public_fm$QINTRVMO)
+CE_public_fm$INCOMEY <- as.factor(CE_public_fm$INCOMEY)
+CE_public_fm$EARNER <- as.factor(CE_public_fm$EARNER)
+CE_public_fm$OCCUCODE <- as.factor(CE_public_fm$OCCUCODE)
+CE_public_fm$EARNTYPE <- as.factor(CE_public_fm$EARNTYPE)
+
+
+# Go through and find some better variables
+ce2015 <- select(CE_public_fm, EDUCA, CUTENURE, OCCUCODE,  IRAX, AGE, FAM_SIZE, FAM_TYPE, SALARYX, BLS_URBN, FINCBTAX, VEHQ, CUTENURE, NO_EARNR, POPSIZE, HORIGIN,MEMBRACE, INCOMEY, TOTEXPCQ, ROOMSQ, SEX, EARNER, EHOUSNGC, BUSCREEN, MARITAL1, INC_HRS1, EARNCOMP, PERSLT18, PERSOT64, STATE, REGION, POPSIZE, PSU, FINLWT21)
+
+
+
+write.csv(x = ce2015, file = "ce2015.csv", row.names = FALSE)
+
+
+
+
+
+
+
+```
+
