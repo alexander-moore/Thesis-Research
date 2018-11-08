@@ -36,7 +36,11 @@ n <- 10000
 
 sample_population_by_pi <- sample_n(tbl = p_tbl, size = n, replace = FALSE, weight = p_pi)
 
-df <- sample_population_by_pi
+df <- sample_population_by_pi %>% rename(x_1 = p_1, #Since we are not dealing with p_ anymore
+                                         x_2 = p_2,
+                                         x_3 = p_3,
+                                         pi = p_pi,
+                                         y = p_y)
 
 ##############################################################
 # Make better fake data. The x's will be independent for now.
@@ -67,9 +71,9 @@ make_discontinuity <- function(vec) {
   for (i in 1:length(vec)) {
     
     if (vec[i] < mean(vec)) {
-      k[i] <- vec[i] - 2
+      k[i] <- vec[i] - 1
     } else {
-      k[i] <- vec[i] + 2
+      k[i] <- vec[i] + 1
     }
     
   }
@@ -79,17 +83,7 @@ make_discontinuity <- function(vec) {
 t_1 <- make_discontinuity(x_1)
 
 spice_up <- function(vec) {
-  k <- vec
-  
-  for (i in 1:length(vec)) {
-    if (vec[i] < 5) {
-      k[i] <- vec[i]
-    } else {
-      k[i] <- 5 - vec[i]
-    }
-    
-    k[i] <- abs(k[i])
-  }
+  k <- log(vec+2)
   
   return(k)
 }
@@ -115,7 +109,7 @@ df_npi <- cbind(x_1, x_2, x_3)
 df <- df_pi
 df <- df_npi
 
-# Let's just normalize and validation right here right now
+# Let's just functionalize normalize and validation right here right now
 
 create_split <- function(df) {
   smp_size <- floor(.75*nrow(df))
@@ -139,35 +133,11 @@ create_validation_split <- function(x_train, y_train) {
   partial_y_train <<- y_train[-val_indices]
 }
 
-# We might not want to normalize? it's making the numbers extremely small
-normalize_data <- function(df) {
+normalize_data <- function(x_train, x_test) {
   mean <- apply(x_train, 2, mean)
   std <- apply(x_train, 2, sd)
   x_train <<- scale(x_train, center = mean, scale = std)
   x_test <<- scale(x_test, center = mean, scale = std)
-}
-
-
-
-
-
-
-nonlinearize_y <- function(vector) {
-  new_y <- vector
-  
-  for (i in 1:length(vector)) {
-    
-    if(vector[i] < mean(vector)*.8) {
-      
-    } else if (vector[i] > mean(vector)*1.2) {
-      
-    } else {
-      
-    }
-    
-  }
-  
-  return(new_y)
 }
 
 
@@ -177,10 +147,9 @@ nonlinearize_y <- function(vector) {
 
 # Making a survey-weighted resample using Sample_n
 # need to have Big df with y so that the scramble keeps them
-df <- cbind(x_1, x_2, x_3, pi, y)
-df <- as.data.frame(df)
 
-weight_vec <- as.numeric(df[,4])
+
+weight_vec <- 1 / as.numeric(df$pi)
 
 df <- as_tibble(df)
 new_data <- sample_n(tbl = df, size = nrow(df), replace = TRUE, weight = weight_vec)
@@ -448,7 +417,19 @@ counter
 
 
 
-
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+##############    Graveyard ###################################
 
 
 
@@ -572,4 +553,16 @@ history <- model %>% fit(
 
 npi_results <- model %>% evaluate(x_test, y_test)
 npi_results
+
+
+
+
+
+
+
+
+
+
+
+
 
