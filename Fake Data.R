@@ -6,18 +6,34 @@ set.seed(1)
 
 ## Creating a population to sample from 
 N <- 10^6
+n <- 10000
 ep_sig_control <- 2
 
 
 p_1 <- rnorm(N, mean = 30, sd = 2.5)
 p_2 <- rnorm(N, mean = 15, sd = 2)
-p_3 <- rnorm(N, mean = 5, sd = 1.5)
+p_3 <- rnorm(N, mean = 5, sd = 1)
 
+# create y as a piece-wise function with discontinuity
+ty <- rep(0, N)
+
+mp3 <- mean(p_3)
 epsilon <- rnorm(N, mean = 0, sd = ep_sig_control)
 
-p_y <- (sqrt(p_1 * p_2) + p_3) + epsilon
 
-pi_noise <- rnorm(N, mean = 0, sd = 1.5)
+for (i in 1:N) { #This should probably be done w [] subsetting
+  if (p_3[i] < mp3) {
+    ty[i] <- sqrt(p_1[i]*p_2[i]) + p_3[i] + epsilon[i]
+  } else {
+    ty[i] <- sqrt(p_1[i]*p_2[i]) + p_3[i] + 5 + epsilon[i]
+  }
+}
+p_y <- ty
+
+# old way, a polynomial could approximate probably?
+#p_y <- (sqrt(p_1 * p_2) + ty) + epsilon
+
+pi_noise <- rnorm(N, mean = 0, sd = 1)
 temp_pi <- sqrt(p_y) + pi_noise 
 
 rescale <- function(vec) { # rescale to 0,1
@@ -26,13 +42,18 @@ rescale <- function(vec) { # rescale to 0,1
 
 temp_pi <- rescale(temp_pi)
 
-p_pi <- temp_pi * (N / sum(temp_pi)) # scale so that sum is N
+p_pi <- temp_pi * (n / sum(temp_pi)) # scale so that sum is n
 sum(p_pi)
+
+# Report correlations
+cor(p_1, p_y) 
+cor(p_2, p_y) 
+cor(p_3, p_y) 
+cor(p_pi, p_y)
 
 p_df <- cbind(p_1, p_2, p_3, p_pi, p_y)
 p_tbl <- as_tibble(p_df)
 
-n <- 10000
 
 sample_population_by_pi <- sample_n(tbl = p_tbl, size = n, replace = FALSE, weight = p_pi)
 
@@ -41,6 +62,8 @@ df <- sample_population_by_pi %>% rename(x_1 = p_1, #Since we are not dealing wi
                                          x_3 = p_3,
                                          pi = p_pi,
                                          y = p_y)
+
+sum( (1 / df$pi) ) # approx = N
 
 ##############################################################
 # Make better fake data. The x's will be independent for now.
@@ -303,112 +326,53 @@ for (i in 1:iterations) {
 #############################################################
 
 # Making a New Loss Function
-# .libPaths()
-# https://keras.rstudio.com/reference/index.html
-# https://keras.rstudio.com/articles/backend.html
-# https://stackoverflow.com/questions/46858016/keras-custom-loss-function-to-pass-arguments-other-than-y-true-and-y-pred
-### https://stackoverflow.com/questions/50706160/how-to-define-custom-cost-function-that-depends-on-input-when-using-imagedatagen/50707473#50707473
-# https://datascience.stackexchange.com/questions/25029/custom-loss-function-with-additional-parameter-in-keras
-# https://github.com/keras-team/keras/issues/2121#issuecomment-214551349
 
-alex_mse <- function(y_true, y_pred){
-  K <- backend()
-  K$mean(obs_weight * (y_pred - y_true)^2, axis = -1)
-}
+#
+#
+# ARGGRHJGRHRGHHG THERE IS A SAMPLE WEIGHT PARAMETER IN KERAS _FIT_
+#https://keras.rstudio.com/reference/fit.html
+# yOU FOOL!
+# https://stackoverflow.com/questions/51316307/custom-loss-function-in-r-keras
+# for the future:  https://stackoverflow.com/questions/49862080/writing-a-loss-function-in-r-studio-using-keras
 
+new_df <- df
+y <- new_df$y
+#pi <- new_df$pi
+new_df <- select(new_df, -c(y))
 
+create_split(new_df)
+create_validation_split(x_train, y_train)
+normalize_data(x_train, x_test)
 
-customLoss <- function(obs_weights) {
-  
-  loss <- function(y_true, y_pred) {
-    
-    K <- backend()
-    K$mean(obs_weights * K$square(y_pred - y_true), axis = -1)
-    #K$mean(obs_weights * (y_pred - y_true)^2, axis = -1)
-    
-    #axis = 1, axis = 2?
-    
-  }
-  
-  return(loss)
+weights <- partial_x_train$pi
+partial_x_train <- select(partial_x_train, -c(pi))
+x_val <- select(x_val, -c(pi))
 
-}
+partial_x_train <- as.matrix(partial_x_train)
+x_val <- as.matrix(x_val)
 
-my_loss <- customLoss(obs_weights = weights)
-
-
-lossFunction <- function(y_true, y_pred) {
-  
-  K <- backend()
-  K$mean((y_pred - y_true)^2)
-  
-  #K$mean(K$square(y_pred - y_true), axis = -1)
-  #K$mean(obs_weights * (y_pred - y_true)^2, axis = -1)
-  
-  #axis = 1, axis = 2?
-  
-}
-
-
-# Potential Solution: "Sneaking" the weights in
-new_custom_loss <- function(y_true, y_pred) {
-  weights <- y_true[,1]
-  y_true <- y_true[,1]
-  
-  K <- backend()
-  K$mean(obs_weight * (y_pred - y_true)^2, axis = -1)
-}
-# Note that the metric functions will need to be customized as well
-# by adding y_true = y_true[:,0] at the top.
-
-
-
-# now compile keras model with loss = customLoss(obs_weights = df$weights)
 model <- keras_model_sequential() %>%
   layer_dense(units = 32, activation = "relu", 
-              input_shape = dim(x_train)[[2]]) %>%
+              input_shape = dim(partial_x_train)[[2]]) %>%
   layer_dense(units = 32, activation = "relu") %>%
   layer_dense(units = 1)
 
-weights <- df_pi[4,]
-weights <- as.array(weights)
-weights <- as.vector(weights)
-#weights <- as.double(weights)
-weights <- vector("double", 10000)
-
 model %>% compile(
   optimizer = "rmsprop",
-  loss = customLoss(obs_weights = weights),
+  loss = "mse",
   metrics = c("mae")
 )
-
-model %>% compile(
-  optimizer = "rmsprop",
-  loss = my_loss,
-  metrics = c("mae")
+# Training the Model
+history <- model %>% fit(
+  partial_x_train,
+  partial_y_train,
+  sample_weight = weights,
+  epochs = 25,
+  batch_size = 512,
+  validation_data = list(x_val, y_val)
 )
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-counter <- 0
-
-for (i in 1:length(weights)) {
-  if (typeof(weights[i]) == "double") {
-    counter <- counter + 1
-  }
-}
-counter
 
 
 
@@ -563,6 +527,133 @@ npi_results
 
 
 
+alex_mse <- function(y_true, y_pred){
+  K <- backend()
+  K$mean(obs_weight * (y_pred - y_true)^2, axis = -1)
+}
 
 
+
+customLoss <- function(obs_weights) {
+  
+  loss <- function(y_true, y_pred) {
+    
+    K <- backend()
+    K$mean(obs_weights * K$square(y_pred - y_true), axis = -1)
+    #K$mean(obs_weights * (y_pred - y_true)^2, axis = -1)
+    
+    #axis = 1, axis = 2?
+    
+  }
+  
+  return(loss)
+  
+}
+
+my_loss <- customLoss(obs_weights = weights)
+
+
+lossFunction <- function(y_true, y_pred) {
+  
+  K <- backend()
+  K$mean((y_pred - y_true)^2)
+  
+  #K$mean(K$square(y_pred - y_true), axis = -1)
+  #K$mean(obs_weights * (y_pred - y_true)^2, axis = -1)
+  
+  #axis = 1, axis = 2?
+  
+}
+
+
+
+
+
+# now compile keras model with loss = customLoss(obs_weights = df$weights)
+model <- keras_model_sequential() %>%
+  layer_dense(units = 32, activation = "relu", 
+              input_shape = dim(x_train)[[2]]) %>%
+  layer_dense(units = 32, activation = "relu") %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = lossFunction,
+  metrics = c("mae")
+)
+
+
+
+
+
+
+
+
+# Potential Solution: "Sneaking" the weights in
+new_custom_loss <- function(y_true, y_pred) {
+  weights <- y_true[,1]
+  y_true <- y_true[,1]
+  
+  K <- backend()
+  K$mean(obs_weight * (y_pred - y_true)^2, axis = -1)
+}
+# Note that the metric functions will need to be customized as well
+# by adding y_true = y_true[:,0] at the top.
+
+
+weighted_mse <- function(y_true, y_pred,weights){
+  # convert tensors to R objects
+  K        <- backend()
+  y_true   <- K$eval(y_true)
+  y_pred   <- K$eval(y_pred)
+  weights  <- K$eval(weights)
+  
+  # calculate the metric
+  loss <- sum(weights*((y_true - y_pred)^2)) 
+  
+  # convert to tensor
+  return(K$constant(loss))
+}
+
+
+weights <- df_pi[4,]
+weights <- as.array(weights)
+weights <- as.vector(weights)
+#weights <- as.double(weights)
+weights <- vector("double", 10000)
+weights <- rep(1, 10000)
+
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = customLoss(obs_weights = weights),
+  metrics = c("mae")
+)
+
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = my_loss,
+  metrics = c("mae")
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+counter <- 0
+
+for (i in 1:length(weights)) {
+  if (typeof(weights[i]) == "double") {
+    counter <- counter + 1
+  }
+}
+counter
 
