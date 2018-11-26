@@ -68,12 +68,13 @@ rescale <- function(vec) { # rescale to 0,1
 y_noise_list <- c(1, 2, 3, 4)
 var_y_noise_df_suitcase <- list()
 
+pi_noise <- rnorm(N, mean = 0, sd = ep_sig_control)
+
 for (i in 1:4) {
   ep <- y_noise_list[i]
   y_noise <- rnorm(N, mean = 0, sd = ep)
   p_y <- sqrt(p_1*p_2) + p_3 + y_noise
   
-  pi_noise <- rnorm(N, mean = 0, sd = ep_sig_control)
   temp_pi <- sqrt(p_y) + pi_noise
   
   temp_pi <- rescale(temp_pi)
@@ -558,6 +559,130 @@ for (i in 1:length(var_y_noise_df_suitcase)) {
     partial_y_train,
     epochs = 40,
     batch_size = 512,
+    validation_data = list(x_val, y_val)
+  )
+  
+  x_test <- as.matrix(x_test)
+  
+  BS_pi_results <- model %>% evaluate(x_test, y_test)
+  
+  loss_results_vec[i] <- BS_pi_results[1]
+  mae_results_vec[i] <- BS_pi_results[2]
+}
+
+loss_results_vec
+mae_results_vec
+
+
+
+
+
+
+
+
+
+
+
+########################################################################
+########################################################################
+# Using the sample_weight argument to weight the loss function by the inclusion probability
+# 
+# Starting with variable epsilon noise data frames
+
+loss_results_vec <- rep(NA, 4)
+mae_results_vec <- rep(NA, 4)
+
+for (i in 1:length(var_ep_noise_df_suitcase)) {
+  
+  df <- var_ep_noise_df_suitcase[[i]]
+  
+  y <- df$y
+  
+  pi_weights <- df$pi
+  
+  df <- select(df, -c(pi, y))
+  
+  df <- as.matrix(df)
+  
+  # df processing
+  create_split(df)
+  create_validation_split(x_train, y_train)
+  normalize_data(x_train, x_test)
+  
+  # model definition
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 6, activation = "relu", 
+                input_shape = dim(x_train)[[2]]) %>%
+    layer_dense(units = 6, activation = "relu") %>%
+    layer_dense(units = 1)
+  
+  model %>% compile(
+    optimizer = "rmsprop",
+    loss = "mse",
+    metrics = c("mae")
+  )
+  
+  history <- model %>% fit(
+    partial_x_train,
+    partial_y_train,
+    epochs = 40,
+    batch_size = 512,
+    sample_weight = pi_weights,
+    validation_data = list(x_val, y_val)
+  )
+  
+  x_test <- as.matrix(x_test)
+  
+  BS_pi_results <- model %>% evaluate(x_test, y_test)
+  
+  loss_results_vec[i] <- BS_pi_results[1]
+  mae_results_vec[i] <- BS_pi_results[2]
+}
+
+loss_results_vec
+mae_results_vec
+
+# here we do variable Y noise with sample_weight of pi
+# Here we do Variable Y Noise
+loss_results_vec <- rep(NA, 4)
+mae_results_vec <- rep(NA, 4)
+
+for (i in 1:length(var_y_noise_df_suitcase)) {
+  
+  df <- var_y_noise_df_suitcase[[i]]
+  
+  y <- df$y
+  
+  pi_weights <- df$pi
+  
+  df <- select(df, -c(pi, y))
+  
+  df <- as.matrix(df)
+  
+  # df processing
+  create_split(df)
+  create_validation_split(x_train, y_train)
+  normalize_data(x_train, x_test)
+  
+  # model definition
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 6, activation = "relu", 
+                input_shape = dim(x_train)[[2]]) %>%
+    layer_dense(units = 6, activation = "relu") %>%
+    layer_dense(units = 1)
+  
+  model %>% compile(
+    optimizer = "rmsprop",
+    loss = "mse",
+    metrics = c("mae")
+  )
+  
+  history <- model %>% fit(
+    partial_x_train,
+    partial_y_train,
+    epochs = 40,
+    batch_size = 512,
+    sample_weight = pi_weights,
     validation_data = list(x_val, y_val)
   )
   
