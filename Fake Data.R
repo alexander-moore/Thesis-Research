@@ -7,12 +7,12 @@ set.seed(1)
 ## Creating a population to sample from 
 N <- 10^6
 n <- 10000
-ep_sig_control <- 2
+ep_sig_control <- 2.5
 
 
 p_1 <- rnorm(N, mean = 30, sd = 2.5)
 p_2 <- rnorm(N, mean = 15, sd = 2)
-p_3 <- rnorm(N, mean = 5, sd = 1)
+p_3 <- rnorm(N, mean = 5, sd = 2)
 
 # create y as a piece-wise function with discontinuity
 ty <- rep(0, N)
@@ -20,21 +20,28 @@ ty <- rep(0, N)
 mp3 <- mean(p_3)
 epsilon <- rnorm(N, mean = 0, sd = ep_sig_control)
 
+t_3 <- (p_3 - 4)^3 + 4*(p_3-4)^2
 
 for (i in 1:N) { #This should probably be done w [] subsetting
-  if (p_3[i] < mp3) {
-    ty[i] <- sqrt(p_1[i]*p_2[i]) + p_3[i] + epsilon[i]
+  if (p_3[i] < mp3/2) {
+    ty[i] <- sqrt(max(0.01,p_1[i]*p_2[i])) + (p_3[i] - 4)^3 + 4*(p_3[i]-4)^2 + epsilon[i]
   } else {
-    ty[i] <- sqrt(p_1[i]*p_2[i]) + p_3[i] + 5 + epsilon[i]
+    ty[i] <- sqrt(max(0.01,p_1[i]*p_2[i])) + p_3[i] + 2*epsilon[i]
   }
 }
+
+for (i  in 1:N) {
+  ty[i] <- max(-20, ty[i])
+}
+
 p_y <- ty
+
 
 # old way, a polynomial could approximate probably?
 #p_y <- (sqrt(p_1 * p_2) + ty) + epsilon
 
-pi_noise <- rnorm(N, mean = 0, sd = 1)
-temp_pi <- sqrt(p_y) + pi_noise 
+pi_noise <- rnorm(N, mean = 0, sd = 5)
+temp_pi <- p_y + pi_noise 
 
 rescale <- function(vec) { # rescale to 0,1
   (vec - min(vec)) / (max(vec) - min(vec))
@@ -51,6 +58,12 @@ cor(p_2, p_y)
 cor(p_3, p_y) 
 cor(p_pi, p_y)
 
+plot(p_1[1:10000], p_y[1:10000])
+plot(p_2[1:10000], p_y[1:10000])
+plot(p_3[1:10000], p_y[1:10000])
+plot(p_pi[1:10000], p_y[1:10000])
+# none of the pairwise are super overpowering, either
+
 p_df <- cbind(p_1, p_2, p_3, p_pi, p_y)
 p_tbl <- as_tibble(p_df)
 
@@ -64,6 +77,8 @@ df <- sample_population_by_pi %>% rename(x_1 = p_1, #Since we are not dealing wi
                                          y = p_y)
 
 sum( (1 / df$pi) ) # approx = N
+
+hist(df$pi)
 
 ##############################################################
 # Make better fake data. The x's will be independent for now.
@@ -335,16 +350,28 @@ for (i in 1:iterations) {
 # https://stackoverflow.com/questions/51316307/custom-loss-function-in-r-keras
 # for the future:  https://stackoverflow.com/questions/49862080/writing-a-loss-function-in-r-studio-using-keras
 
+# for arguments: sample weight
+# https://stackoverflow.com/questions/43459317/keras-class-weight-vs-sample-weights-in-the-fit-generator
+
+
+# https://stackoverflow.com/questions/51316307/custom-loss-function-in-r-keras
+
+
 new_df <- df
+
 y <- new_df$y
-#pi <- new_df$pi
+pi <- new_df$pi
+
 new_df <- select(new_df, -c(y))
 
 create_split(new_df)
+
 create_validation_split(x_train, y_train)
-normalize_data(x_train, x_test)
+
+#normalize_data(x_train, x_test)
 
 weights <- partial_x_train$pi
+
 partial_x_train <- select(partial_x_train, -c(pi))
 x_val <- select(x_val, -c(pi))
 
@@ -356,6 +383,83 @@ model <- keras_model_sequential() %>%
               input_shape = dim(partial_x_train)[[2]]) %>%
   layer_dense(units = 32, activation = "relu") %>%
   layer_dense(units = 1)
+
+
+
+
+
+weighted_mse <- function(y_true, y_pred, weights){
+  K        <- backend()
+  weights  <- K$variable(weights)
+  # calculate the metric
+  loss <- K$sum(weights * (K$pow(y_true - y_pred, 2))) 
+  loss
+}
+
+mse_wrapper <- function(y_true, y_pred, weights){
+  K <- backend()
+  weights <- K$variable(weights)
+  
+  loss <- K$sum(weights * (K$pow(y_true - y_pred, 2)))
+  loss
+}
+
+metric_weighted_mse <- custom_metric("weighted_mse", function(y_true, y_pred) {
+  weighted_mse(y_true, y_pred, weights)
+})
+
+customLoss <- function(weights) {
+  
+  loss <- function(y_true, y_pred) {
+    
+    K <- backend()
+    weights <- K$variable(weights)
+    loss <- K$sum(weights * (K$pow(y_true - y_pred, 2))) 
+    loss
+  }
+  return(loss)
+}
+
+my_loss <- customLoss(weights)
+
+
+
+model <- model %>% compile(
+  loss = my_loss, 
+  optimizer = 'rmsprop',
+  metrics = 'mse')
+
+history <- model %>% fit(
+  partial_x_train,
+  partial_y_train,
+  epochs = 25,
+  batch_size = 512,
+  validation_data = list(x_val, y_val)
+)
+
+
+
+#customLoss <- function(obs_weights) {
+  
+  #loss <- function(y_true, y_pred) {
+    #
+    #K <- backend()
+   # K$mean(obs_weights * K$square(y_pred - y_true), axis = -1)
+    #K$mean(obs_weights * (y_pred - y_true)^2, axis = -1)
+    
+    #axis = 1, axis = 2?
+    
+  #}
+  
+ # return(loss)
+  
+#}
+
+
+
+
+
+
 
 model %>% compile(
   optimizer = "rmsprop",
@@ -464,10 +568,12 @@ pi_results
 ###############################################################
 ###############################################################
 # Second dataset: Fake data Without inclusion Probability predictor
-df <- df_npi
-
+df <- sample_population_by_pi
 # Transpose to make fit keras network
-df <- t(df)
+#df <- t(df)
+
+y <- df$p_y
+pi <- df$p_pi
 
 smp_size <- floor(.75*nrow(df))
 train_ind <- sample(seq_len(nrow(df)), size = smp_size)
@@ -510,7 +616,6 @@ partial_y_train <- y_train[-val_indices]
 history <- model %>% fit(
   partial_x_train,
   partial_y_train,
-  epochs = 100,
   batch_size = 512,
   validation_data = list(x_val, y_val)
 )
