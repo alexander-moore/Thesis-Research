@@ -12,6 +12,13 @@ The impacts of complex survey design in the training of machine learning algorit
 
 ## File Structure
 
+The repository is organized as follows:
+- **Developement**: These files are the corpus of research and experimentation with the most recent models and methods.
+
+- **Stomping Grounds**: These files are for experimentation and developement of an R package.
+
+- **Images**: A collection of images relevant to the hypotheses, design, and outputs of the research.
+
 ## Outline
 
-**Chapter 1: Introduction**
+**Chapter 1: Introduction** Introduces machine learning, neural networks, survey statistics, and the pairwise significances of these fields to the research topic.
