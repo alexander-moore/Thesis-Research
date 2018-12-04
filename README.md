@@ -19,6 +19,8 @@ The repository is organized as follows:
 
 - **Images**: A collection of images relevant to the hypotheses, design, and outputs of the research.
 
+- **Thesis Writing Rmd**: Contains the R MarkDown file with the body of writing forming the Thesis Book. **Outline** describes the chapters of this file.
+
 ## Outline
 
 **Chapter 1: Introduction** Introduces machine learning, neural networks, survey statistics, and the pairwise significances of these fields to the research topic.
