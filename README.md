@@ -8,6 +8,7 @@ The impacts of complex survey design in the training of machine learning algorit
 - **Weighted Loss Function**: Weight the loss function in the training of the network by the inclusion probability of the observation.
 - **Pi Feature**: Make available the inclusion probability of the observation as a feature in the training and testing of the network. 
 
+![](images/model_img.png)
 
 ## File Structure
 
