@@ -14,4 +14,4 @@ The impacts of complex survey design in the training of machine learning algorit
 
 ## Outline
 
-**Chapter 1: **
+**Chapter 1: Introduction**
