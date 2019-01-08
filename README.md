@@ -24,3 +24,9 @@ The repository is organized as follows:
 ## Outline
 
 **Chapter 1: Introduction** Introduces machine learning, neural networks, survey statistics, and the pairwise significances of these fields to the research topic.
+
+**Chapter 2: Methods** February 2019.
+
+**Chapter 3: Proof of Concept in Toy Data**: February 2019.
+
+**Chapter 4: Explorations in Real Data**:
