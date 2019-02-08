@@ -9,7 +9,7 @@ The impacts of complex survey design in the training of machine learning algorit
 - **Pi Feature**: Make available the inclusion probability of the observation as a feature in the training and testing of the network. 
 
 ![](images/model_img.png)
-![](images/overfit.png)
+![](images/both.png)
 ![](images/badfit.png)
 ![](images/stayGood.png)
 
