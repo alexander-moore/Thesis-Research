@@ -27,7 +27,7 @@ The impacts of complex survey design in the training of machine learning algorit
 ## File Structure
 
 The repository is organized as follows:
-- **Developement**: These files are the corpus of research and experimentation with the most recent models and methods.
+- **Development**: These files are the corpus of research and experimentation with the most recent models and methods.
 
 - **Stomping Grounds**: These files are for experimentation and developement of an R package.
 
