@@ -9,6 +9,8 @@ The impacts of complex survey design in the training of machine learning algorit
 - **Pi Feature**: Make available the inclusion probability of the observation as a feature in the training and testing of the network. 
 
 ![](images/model_img.png)
+![](images/overfit.png)
+![](images/badfit.png)
 
 ## File Structure
 
@@ -23,9 +25,9 @@ The repository is organized as follows:
 
 ## Outline
 
-**Chapter 1: Introduction** Introduces machine learning, neural networks, survey statistics, and the pairwise significances of these fields to the research topic.
+**Chapter 1: Survey Statistics and Imputation** Introduces machine learning, neural networks, survey statistics, and the pairwise significances of these fields to the research topic.
 
-**Chapter 2: Methods** February 2019.
+**Chapter 2: Machine Learning and Neural Networks** Introduces machine learning building blocks such as fitting, bias-variance, and supervised learning. Neural networks discussed at length including mathematic fundamentals and properties relevant to study.
 
 **Chapter 3: Proof of Concept in Toy Data**: February 2019.
 
