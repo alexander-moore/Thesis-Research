@@ -13,6 +13,17 @@ The impacts of complex survey design in the training of machine learning algorit
 ![](images/badfit.png)
 ![](images/stayGood.png)
 
+
+## Outline
+
+**Chapter 1: Survey Statistics and Imputation** Introduces machine learning, neural networks, survey statistics, and the pairwise significances of these fields to the research topic.
+
+**Chapter 2: Machine Learning and Neural Networks** Introduces machine learning building blocks such as fitting, bias-variance, and supervised learning. Neural networks discussed at length including mathematic fundamentals and properties relevant to study.
+
+**Chapter 3: Proof of Concept in Toy Data**: February 2019.
+
+**Chapter 4: Explorations in Real Data**: March 2019.
+
 ## File Structure
 
 The repository is organized as follows:
@@ -24,12 +35,3 @@ The repository is organized as follows:
 
 - **Thesis Writing Rmd**: Contains the R MarkDown file with the body of writing forming the Thesis Book. **Outline** describes the chapters of this file.
 
-## Outline
-
-**Chapter 1: Survey Statistics and Imputation** Introduces machine learning, neural networks, survey statistics, and the pairwise significances of these fields to the research topic.
-
-**Chapter 2: Machine Learning and Neural Networks** Introduces machine learning building blocks such as fitting, bias-variance, and supervised learning. Neural networks discussed at length including mathematic fundamentals and properties relevant to study.
-
-**Chapter 3: Proof of Concept in Toy Data**: February 2019.
-
-**Chapter 4: Explorations in Real Data**: March 2019.
