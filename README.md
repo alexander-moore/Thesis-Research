@@ -11,6 +11,7 @@ The impacts of complex survey design in the training of machine learning algorit
 ![](images/model_img.png)
 ![](images/overfit.png)
 ![](images/badfit.png)
+![](images/stayGood.png)
 
 ## File Structure
 
@@ -31,4 +32,4 @@ The repository is organized as follows:
 
 **Chapter 3: Proof of Concept in Toy Data**: February 2019.
 
-**Chapter 4: Explorations in Real Data**:
+**Chapter 4: Explorations in Real Data**: March 2019.
