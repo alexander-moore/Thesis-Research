@@ -2,6 +2,7 @@
 
 library(keras)
 library(dplyr)
+library(ggplot2)
 
 N = 10^6
 n = 10^4
@@ -55,7 +56,10 @@ statistic_tracker <- data.frame(true_mean = numeric(it),
                                 naive_mean  = numeric(it),
                                 pi_naive_mean = numeric(it),
                                 lin_imp_mean = numeric(it),
-                                nn_imp_mean = numeric(it))
+                                nn_imp_mean = numeric(it),
+                                nn_pi_imp_mean = numeric(it),
+                                nn_resamp_imp_mean = numeric(it),
+                                nn_wmse_imp_mean = numeric(it))
 # Want to estimate:
 mu_y <- (1 / N) * sum(p_tbl$p_y)
 
@@ -147,8 +151,59 @@ for (i in 1:it) {
   statistic_tracker$nn_imp_mean[i] <- (1 / N)*(sum(reduced_df$y / reduced_df$pi) 
                                                + sum(nn_y_hat / dropped_obs$pi))
   
+  # Mean according to imputed data via neural network w pi feature
+  y_train <- reduced_df$y
+  reduced_df_nolab <- select(reduced_df, -c(y))
+  
+  y_test <- dropped_obs$y
+  dropped_obs_nolab <- select(dropped_obs, -c(y))
+  
+  reduced_df_nolab <- as.matrix(reduced_df_nolab)
+  dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
+  
+  x_train <- reduced_df_nolab
+  x_test <- dropped_obs_nolab
+  
+  create_validation_split(x_train, y_train)
+  
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 6, activation = "relu", 
+                input_shape = dim(x_train)[[2]]) %>%
+    layer_dense(units = 6, activation = "relu") %>%
+    layer_dense(units = 1)
+  
+  model %>% compile(
+    optimizer = "rmsprop",
+    loss = "mse",
+    metrics = c("mae")
+  )
+  
+  #plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+  
+  history <- model %>% fit(
+    partial_x_train,
+    partial_y_train,
+    epochs = 15,
+    batch_size = 512,
+    validation_data = list(x_val, y_val)
+  )
+  
+  x_test <- as.matrix(x_test)
+  nn_pi_y_hat <- predict(model, x_test)
+  
+  mean(nn_pi_y_hat)
+  
+  statistic_tracker$nn_pi_imp_mean[i] <- (1 / N)*(sum(reduced_df$y / reduced_df$pi) 
+                                               + sum(nn_pi_y_hat / dropped_obs$pi))
+  
+  # Mean according to imputed dataset via neural network with weighted resample
+  # (without pi feature)
+  
   print(i)
 }
+
+# Save the mean table so that we don't have to always re-run it
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\Stat50.csv")
 
 # MSE of these distributions of means compared to true
 
@@ -159,3 +214,19 @@ for (i in 1:it) {
 (1 / it) * sum(bar_y - mu_y) # where bar_y is the vector of predicted mean
 
 # Plot distributions of means  
+
+plot(statistic_tracker$nn_pi_imp_mean)
+
+
+library(lattice)
+dat <- data.frame(dens = c(statistic_tracker$nn_pi_imp_mean,
+                           statistic_tracker$lin_imp_mean, 
+                           statistic_tracker$nn_imp_mean,
+                           statistic_tracker$oracle_mean)
+                  , lines = rep(c("a", "b", "c", "d"), each = 10))
+
+densityplot(~dens,data=dat,groups = lines,
+            plot.points = FALSE, ref = TRUE, 
+            auto.key = list(space = "right"))
+
+densityplot(~nn_pi_imp_mean+oracle_mean+nn_imp_mean+lin_imp_mean, data = statistic_tracker)
