@@ -6,7 +6,7 @@ library(ggplot2)
 
 N = 10^6
 n = 10^4
-it <- 50
+it <- 1000
 
 p_y_ep_control <- 2
 
@@ -184,6 +184,7 @@ for (i in 1:it) {
     partial_x_train,
     partial_y_train,
     epochs = 15,
+    verbose = 0,
     batch_size = 512,
     validation_data = list(x_val, y_val)
   )
@@ -198,12 +199,112 @@ for (i in 1:it) {
   
   # Mean according to imputed dataset via neural network with weighted resample
   # (without pi feature)
+  ### NEEDS VERIFICATION - CAN RUN SEPERATE EXECUTION
+  
+  weight_vec <- 1 / as.numeric(reduced_df$pi)
+  
+  reduced_df <- as_tibble(reduced_df)
+  
+  resamp_reduced_df <- sample_n(tbl = reduced_df, size = nrow(reduced_df), replace = TRUE, weight = weight_vec)
+  
+  y_train <- resamp_reduced_df$y
+  resamp_reduced_df_nolab <- select(resamp_reduced_df, -c(y))
+  
+  y_test <- dropped_obs$y
+  dropped_obs_nolab <- select(dropped_obs, -c(y))
+  
+  resamp_reduced_df_nolab <- as.matrix(resamp_reduced_df_nolab)
+  dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
+  
+  x_train <- resamp_reduced_df_nolab
+  x_test <- dropped_obs_nolab
+  
+  create_validation_split(x_train, y_train)
+  
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 6, activation = "relu", 
+                input_shape = dim(x_train)[[2]]) %>%
+    layer_dense(units = 6, activation = "relu") %>%
+    layer_dense(units = 1)
+  
+  model %>% compile(
+    optimizer = "rmsprop",
+    loss = "mse",
+    metrics = c("mae")
+  )
+  
+  #plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+  
+  history <- model %>% fit(
+    partial_x_train,
+    partial_y_train,
+    epochs = 15,
+    verbose = 0,
+    batch_size = 512,
+    validation_data = list(x_val, y_val)
+  )
+  
+  x_test <- as.matrix(x_test)
+  nn_resamp_y_hat <- predict(model, x_test)
+  
+  mean(nn_resamp_y_hat)
+  
+  statistic_tracker$nn_resamp_imp_mean[i] <- (1 / N)*(sum(reduced_df$y / reduced_df$pi) 
+                                                  + sum(nn_resamp_y_hat / dropped_obs$pi))
+  
+  ## Mean according to dataset imputed via neural network with custom weighted loss
+  # NEED VERIFICATION - can move to seperate loop
+  obs_weights <- reduced_df$pi
+  
+  y_train <- reduced_df$y
+  reduced_df_nolab <- select(reduced_df, -c(pi, y))
+  
+  y_test <- dropped_obs$y
+  dropped_obs_nolab <- select(dropped_obs, -c(pi,y))
+  
+  reduced_df_nolab <- as.matrix(reduced_df_nolab)
+  dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
+  
+  x_train <- reduced_df_nolab
+  x_test <- dropped_obs_nolab
+  
+  create_validation_split(x_train, y_train)
+  
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 6, activation = "relu", 
+                input_shape = dim(x_train)[[2]]) %>%
+    layer_dense(units = 6, activation = "relu") %>%
+    layer_dense(units = 1)
+  
+  model %>% compile(
+    optimizer = "rmsprop",
+    loss = "mse",
+    metrics = c("mae")
+  )
+  
+  history <- model %>% fit(
+    partial_x_train,
+    partial_y_train,
+    sample_weight = obs_weights,
+    epochs = 15,
+    batch_size = 512,
+    validation_data = list(x_val, y_val)
+  )
+  
+  x_test <- as.matrix(x_test)
+  nn_y_hat <- predict(model, x_test)
+  
+  mean(nn_y_hat)
+  
+  statistic_tracker$nn_imp_mean[i] <- (1 / N)*(sum(reduced_df$y / reduced_df$pi) 
+                                               + sum(nn_y_hat / dropped_obs$pi))
+  
   
   print(i)
 }
 
 # Save the mean table so that we don't have to always re-run it
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\Stat50.csv")
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\Stat459.csv")
 
 # MSE of these distributions of means compared to true
 
@@ -230,3 +331,10 @@ densityplot(~dens,data=dat,groups = lines,
             auto.key = list(space = "right"))
 
 densityplot(~nn_pi_imp_mean+oracle_mean+nn_imp_mean+lin_imp_mean, data = statistic_tracker)
+
+
+###### HOLD UP
+## Would it be OK if instead of having everything in the same loop,
+## to seperate loops so that I can run each method seperately?
+# If we're doing it so many times anyway, I don't think it should
+# Matter that they are not done on EXACTLY the same data every time
