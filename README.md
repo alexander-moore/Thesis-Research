@@ -25,7 +25,7 @@ model = Sequential()
 ![](images/stayGood.png)
 
 ------------------
-~[](images/table.jpg)
+~[](images/table.png)
 ------------------
 
 ## Outline
