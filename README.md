@@ -25,6 +25,26 @@ model = Sequential()
 ![](images/stayGood.png)
 
 ------------------
+Results for data gathered under the following generative function:
+```R
+N = 10^6
+n = 10^4
+it <- 200
+
+p_1 <- rnorm(N, mean = 10, sd = 4)
+p_2 <- rnorm(N, mean = 2, sd = 4)
+p_3 <- rnorm(N, mean = 5, sd = 1)
+
+p_y_ep <- rnorm(N, mean = 0, sd = 5)
+p_y <- p_1*p_2 + p_3 + p_y_ep
+
+p_pi_ep <- rnorm(N, mean = 0, sd = 2)
+temp_pi <- sqrt(p_y) + p_pi_ep
+temp_pi <- rescale(temp_pi)
+p_pi <- temp_pi * (n / sum(temp_pi))
+
+p_df <- cbind(p_1, p_2, p_3, p_y, p_pi)
+```
 ![](images/trimmed.png)
 
 ## Outline
