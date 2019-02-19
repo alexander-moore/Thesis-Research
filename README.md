@@ -32,9 +32,11 @@ model = Sequential()
 
 **Chapter 2: Machine Learning and Neural Networks** Introduces machine learning building blocks such as fitting, bias-variance, and supervised learning. Neural networks discussed at length including mathematic fundamentals and properties relevant to study.
 
-**Chapter 3: Proof of Concept in Toy Data**: February 2019.
+**Chapter 3: Methods and Algorithms**: February 2019.
 
-**Chapter 4: Explorations in Real Data**: March 2019.
+**Chapter 4: Simulation Experiments**: March 2019.
+
+**Chapter 5: Explorations in Real Data**: March 2019.
 
 ------------------
 
