@@ -17,7 +17,7 @@ The impacts of complex survey design in the training of machine learning algorit
 
 ------------------
 
-Results for data gathered under the following generative function for label `p_y`:
+Results for monte carlo mean statistic distribution data gathered under the following generative function for population label `p_y`:
 ```R
 N = 10^6
 n = 10^4
