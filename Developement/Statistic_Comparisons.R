@@ -6,7 +6,7 @@ library(ggplot2)
 
 N = 10^6
 n = 10^4
-it <- 10
+it <- 100
 
 p_y_ep_control <- 5
 
@@ -159,7 +159,7 @@ for (i in 1:it) {
   history <- model %>% fit(
     partial_x_train,
     partial_y_train,
-    epochs = 70, #high variance; study further
+    epochs = 300, #high variance; study further
     verbose = 0,
     batch_size = 512,  #512
     validation_data = list(x_val, y_val)
@@ -172,7 +172,7 @@ for (i in 1:it) {
   
   hat_N_sample <- sum(1/df$pi)
   statistic_tracker$nn_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                               + sum(nn_y_hat / dropped_obs$pi))
+                                                          + sum(nn_y_hat / dropped_obs$pi))
   
   # Mean according to imputed data via neural network w pi feature
   y_train <- reduced_df$y
@@ -206,7 +206,7 @@ for (i in 1:it) {
   history <- model %>% fit(
     partial_x_train,
     partial_y_train,
-    epochs = 650,
+    epochs = 300,
     verbose = 0,
     batch_size = 512,
     validation_data = list(x_val, y_val)
@@ -219,7 +219,7 @@ for (i in 1:it) {
   
   hat_N_sample <- sum(1/df$pi)
   statistic_tracker$nn_pi_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                                  + sum(nn_pi_y_hat / dropped_obs$pi))
+                                                             + sum(nn_pi_y_hat / dropped_obs$pi))
   
   # Mean according to imputed dataset via neural network with weighted resample
   # on the full sample. the missing values in the resample are then imputed and 
@@ -245,7 +245,7 @@ for (i in 1:it) {
   # re-partition into complete cases, and cases to be imputed
   resamp_reduced_df <- resamp_df[-which(is.na(resamp_df$y)),]
   resamp_dropped_obs <- resamp_df[which(is.na(resamp_df$y)),]
-
+  
   y_train <- resamp_reduced_df$y
   resamp_reduced_df_nolab <- select(resamp_reduced_df, -c(y))
   
@@ -288,13 +288,13 @@ for (i in 1:it) {
   
   hat_N_sample <- sum(1/df$pi)
   statistic_tracker$nn_resamp_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                                               + sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
-
+                                                                 + sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
+  
   
   ## Mean according to dataset imputed via neural network with custom weighted MSE loss
   # CAUTION: had to do some tricks to extract obs_weights for training (and not validition). uses column 4 for pi, 
   # which might change if features change
-
+  
   # need to pull weights off of training data: this is getting split into validation.
   obs_weights <- reduced_df$pi
   
@@ -333,7 +333,7 @@ for (i in 1:it) {
     partial_x_train,
     partial_y_train,
     sample_weight = obs_weights,
-    epochs = 250,
+    epochs = 300,
     verbose = 0,
     batch_size = 512,
     validation_data = list(x_val, y_val)
@@ -344,71 +344,60 @@ for (i in 1:it) {
   
   hat_N_sample <- sum(1/df$pi)
   statistic_tracker$nn_wmse_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                               + sum(nn_y_hat / dropped_obs$pi))
+                                                               + sum(nn_y_hat / dropped_obs$pi))
   
   
   print(i)
 }
 
 # Save the mean table so that we don't have to always re-run it
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\Stat459.csv")
+#write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\100_1.csv")
 
-# MSE of these distributions of means compared to true
-
-(1 / it) * sum((bar_y - mu_y)^2) # where bar_y is the vector of predicted mean
-
-# MAE of these distributions of means compared to true
-
-(1 / it) * sum(bar_y - mu_y) # where bar_y is the vector of predicted mean
-
-# Plot distributions of means  
-
-plot(statistic_tracker$nn_pi_imp_mean)
-
-
-library(lattice)
-dat <- data.frame(dens = c(statistic_tracker$nn_pi_imp_mean,
-                           statistic_tracker$lin_imp_mean, 
-                           statistic_tracker$nn_imp_mean,
-                           statistic_tracker$oracle_mean)
-                  , lines = rep(c("a", "b", "c", "d"), each = 10))
-
-densityplot(~dens,data=dat,groups = lines,
-            plot.points = FALSE, ref = TRUE, 
-            auto.key = list(space = "right"))
-
-densityplot(~nn_pi_imp_mean+oracle_mean+nn_imp_mean+lin_imp_mean, data = statistic_tracker)
-
-dat <- read.csv("c:/Users/Alexander/Documents/Stat759.csv")
-sapply(dat, mean)
-sapply(dat, sd)
-
-hist(oracle_mean)
-hist(naive_mean)
-hist(pi_naive_mean)
-
-
-# Do visualizations here. code above not really working right. idk ask around
-
-
-###### HOLD UP
-## Would it be OK if instead of having everything in the same loop,
-## to seperate loops so that I can run each method seperately?
-# If we're doing it so many times anyway, I don't think it should
-# Matter that they are not done on EXACTLY the same data every time
-
-# ask "kristen bott" about computation. might have answers to cloud computing or server computing
-# andrew might have some ideas too
-
+dat <- read.csv("c:/Users/Alexander/Documents/thesis stat tracker/176_full.csv")
+dat <- dat[,-1]
 
 #### COMPUTING MSE (and making table)
 # MSE against TRUE mean for each method:
 # take dif of each with true. square each. sum all. divide by iterations
 
+mse_table <- dat[1,]
+for (i in 1:dim(dat)[2]) {
+  
+  matdat <- as.matrix(dat)
+  
+  mse_table[i] <- mean( (matdat[,i] - matdat[,1])^2 )
+}
+
+mse_table
+
 # then do MSE of method divided by MSE of oracle to get measure of goodness
 # (closer to 1 means closer to oracle means good)
+
+oracle_ratio_table <- dat[1,]
+
+for (i in 1:dim(dat)[2]) {
+  
+  oracle_ratio_table[i] <- mse_table[i] / mse_table[2]
+}
+
+oracle_ratio_table
 
 # compute bias:
 # mean of statistic vector - true mean
 # divide this differnce by true mean
-# multiple by 100 to get "percent relative bais"
+# multiple by 100 to get "percent relative bais", a normalized bias measure
+
+prb_table <- dat[1,]
+mu_y <- mean(dat[,1])
+
+for (i in 1:dim(dat)[2]) {
+  
+  prb_table[i] <- 100 * ((mean(dat[,i]) - mu_y) / mu_y)
+}
+
+prb_table
+
+# ask "kristen bott" about computation. might have answers to cloud computing or server computing
+# andrew might have some ideas too
+
+
