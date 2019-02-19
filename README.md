@@ -37,7 +37,7 @@ p_pi <- temp_pi * (n / sum(temp_pi))
 
 p_df <- cbind(p_1, p_2, p_3, p_y, p_pi)
 ```
-![](images/trimmed.png)
+![](images/trim trimmed.png)
 
 ## Outline
 
