@@ -8,15 +8,6 @@ The impacts of complex survey design in the training of machine learning algorit
 - **Weighted Loss Function**: Weight the loss function in the training of the network by the inclusion probability of the observations.
 - **Pi Feature**: Make available the inclusion probability of the observation as a feature in the training and testing of the network. 
 
-Code chunk sample from https://github.com/keras-team/keras/edit/master/README.md
-Here is the `Sequential` model:
-
-```python
-from keras.models import Sequential
-
-model = Sequential()
-```
-
 ------------------
 
 ![](images/model_img.png)
@@ -25,7 +16,8 @@ model = Sequential()
 ![](images/stayGood.png)
 
 ------------------
-Results for data gathered under the following generative function:
+
+Results for data gathered under the following generative function for label `p_y`:
 ```R
 N = 10^6
 n = 10^4
