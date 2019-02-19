@@ -37,7 +37,8 @@ p_pi <- temp_pi * (n / sum(temp_pi))
 
 p_df <- cbind(p_1, p_2, p_3, p_y, p_pi)
 ```
-![](images/trim trimmed.png)
+![](images/table_trimmed.png)
+
 ## Outline
 
 **Chapter 1: Survey Statistics and Imputation** Introduces machine learning, neural networks, survey statistics, and the pairwise significances of these fields to the research topic.
