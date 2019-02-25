@@ -37,7 +37,7 @@ p_pi <- temp_pi * (n / sum(temp_pi))
 
 p_df <- cbind(p_1, p_2, p_3, p_y, p_pi)
 ```
-![](images/Table%20with%20deeper%20networks%2.png)
+![](https://github.com/moorea1/Thesis-Research/blob/master/images/Table%20with%20deeper%20networks%202.png)
 
 ## Outline
 
