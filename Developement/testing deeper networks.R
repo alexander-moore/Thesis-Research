@@ -289,17 +289,21 @@ library(kableExtra)
 library(knitr)
 library(purrr)
 
-mse_t <- transpose(mse_table)
-oracle_t <- transpose(oracle_ratio_table)
-prb_t <- transpose(prb_table)
+mse_t <- unlist(transpose(mse_table))
+oracle_t <- unlist(transpose(oracle_ratio_table))
+prb_t <- unlist(transpose(prb_table))
 
 binded <- cbind(mse_t, oracle_t, prb_t)
 colnames(binded) <- c("MSE", "Oracle Ratio", "Relative Bias")
-rownames(binded) <- colnames(stat_track)
+#rownames(binded) <- colnames(dat)
 
 test <- binded
 test <- signif(test, digits = 3)
 
+test <- test[-6,]
+
 test %>%
   kable() %>%
   kable_styling()
+
+
