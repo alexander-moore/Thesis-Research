@@ -1,0 +1,60 @@
+<!--
+This is for including Chapter 1.  Notice that it's also good practice to name your chunk.  This will help you debug potential issues as you knit.  The chunk above is called intro and the one below is called chapter1.  Feel free to change the name of the Rmd file as you wish, but don't forget to change it here from chap1.Rmd.
+-->
+
+<!--
+The {#rmd-basics} text after the chapter declaration will allow us to link throughout the document back to the beginning of Chapter 1.  These labels will automatically be generated (if not specified) by changing the spaces to hyphens and capital letters to lowercase.  Look for the reference to this label at the beginning of Chapter 2.
+-->
+
+# Complex Surveys
+
+## Survey Statistics
+
+> Researchers in the social science and health sciences are increasingly interested in using data from complex surveys to conduct the same sorts of analyses that they traditionally conduct with more straightforward data. Medical researchers are also increasingly aware of the advantages of well-designed subsamples when measuring novel, expensive variables on an existing cohort. - Lumley 1969
+
+The implicit pervasiveness of survey statistics in all data motivates our exploration into its significance in imputation.
+
+Survey statistics differ from statistics modelling in the specification of the random process that generates the data. In model-based statistics, some underlying generative model from which observations are drawn is assumed to exist. By understanding or approximating this model from data, one may draw conclusions on the nature of the generative function provided no meaningful changes to the data are made.
+
+Contrary to model-based statistics, the analysis of complex survey samples are design based. The observations from a researcher-specified population have fixed features, and randomness is introduced when these observations are drawn from the population according to some stochastic design. This random process is under the control of the researcher, and can be known precisely. The significance of design-based methods is that the probability sample is the procedure for taking samples from a population, not just the resulting data. Using this method, the features of the population from which the observations are drawn may be estimated, but these conclusions may not generalize to other populations. With understanding of the survey design from which data observations arise, the researcher may make improved estimates of the population of study (Lumley 1969).
+
+The probability sample is the fundamental concept of design-based inference. Taking a random sample of 36,000 people from Oregon is an example of a survey design which implies independent and equal probability sampling of all humans in the state. The Law of Large Numbers is invoked to assume the distribution of sampled observations represent the population from which they are drawn according to any features of interest to the researcher, such as height, weight, or age.
+
+This type of surveying can be complicated by adding a stratifying element, such as randomly sampling 1,000 people from each of the 36 counties of Oregon. The data created by such a design would likely not be representative of the state, since people from lower-population counties would be more likely to be sampled. However, since the probability of each person in the sample being randomly selected is known (since the population of each county is known), this is still a probability sample. The key point of this process is that a probability sample is the procedure for taking samples from a population, not "just the data we happen to end up with" (Lumley 1969).
+
+There are four requirements for a data set to be a probability sample:
+
+1. Every individual in the population must have a non-zero probability of ending up in the sample.
+
+2. The probability of inclusion must be known for every individual who does end up in the sample.
+
+3. Every pair of individuals in the sample must have a non-zero probability of both ending up in the sample.
+
+4. The probability of every pair of individuals being included in the sample must be known for every pair of individuals in the sample.
+
+The fundamental statistical idea behind all of design-based inference is that an individual sampled with a sampling probability $pi_i$ represents $\frac{1}{pi_i}$ individuals in the population. The value $\frac{1}{pi_i}$ is called the sampling weight (Lumley 1969).
+
+1 and 2 are necessary in order to get valid population estimates, 3 and 4 are necessary to work out the accuracy of the estimates. If individuals were sampled independently of each other the first two properties would guarantee the last two (Lumley 1969). Though 3 and 4 are requirements of a probability sample, they are often not included in datasets as they require an nxn matrix of probabilities, where n is the number of observations in the data set.
+
+Data collected under a complex survey design have an additional layer of complexity and are not to be treated as typical independent and identically distributed (*i.i.d.*) data. Ignoring this complex survey design is found to create significant error in data analyses (Toth and Eltinge 2012). This concern motivates our exploration of accounting for survey design in neural network imputation.
+
+## Imputation
+
+Often in real-world data, there is some degree of missingness. This can be for any number of reasons, illustrated in Table 1 below.
+
+```{r missingness, echo=FALSE, cache=TRUE}
+## Make table
+library(kableExtra)
+library(dplyr)
+
+df<- cbind(1:5, 1:5)
+
+colnames(df) <- c("Symbol", "Description")
+rownames(df) <- c("Features", "Label", "Label Estimate", "Inclusion Probability", "Population Mean")
+
+df[,1] <- c("x_i", "y_i", "y_i hat", "pi_i", "mu_y")
+df[,2] <- c("The set of observations feature responses", "Response label", 
+            "Missing label estimate", "Survey-design inclusion probability", "True population mean")
+
+print <- kable(df)
+```
