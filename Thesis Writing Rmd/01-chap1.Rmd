@@ -58,3 +58,51 @@ df[,2] <- c("The set of observations feature responses", "Response label",
 
 print <- kable(df)
 ```
+
+```{r missingness, echo=FALSE, cache=TRUE}
+## Make table
+library(kableExtra)
+library(dplyr)
+
+df<- cbind(1:3)
+
+colnames(df) <- c("Description")
+rownames(df) <- c("Noncoverage", "Total Nonresponse", "Item Nonresponse")
+
+df[,1] <- c("An element in the target population is not included in the survey sampling frame", "A sampled element does not participate in the survey", "A responding sampled element fails to provide acceptable responses to one or more of the survey items")
+
+knitr::kable(df, caption = "Types of missingess")
+```
+Table: Types of missingness
+"Item nonresponse, which occurs when a sampled element participates in a survey but fails to provide acceptable responses to one or more of the survey items. Item nonresponse may arise because a respondent refuses to answer an item on the grounds that it is too sensitive, does not know the answer to the item, gives an answer that is inconsistent with answers to other items and hence is deleted in editing, or because the interviewer fails to ask the question or record the answer. The usual form of item nonresponse is imputation, which involves assigning a value for the missing response." 216 (Brick and Kalton 1996)
+
+In many statistical analyses, observations with any degree of missingness cannot be present. For example, how would one perform a linear regression with observations that have features but no label? Dropping these terms would remove potentially huge swathes of the data set, particularly in multivariate data sets, and would create systematic bias. Suppose for example a data set with information on roses had a feature with stem length and a label on flower size. NA (not available) values for flower size might not be randomly distributed: there could, for example, be a systematic picking of large-flowered roses by passersby. To ignore these observations would lead the analyst to draw false conclusions on the relationship of stem length to flower size, and the distribution of flower sizes in the population. Consider Example 1:
+```{r systematic}
+# Example 1: what happens when systematic bias is ignored, and missing values are dropped
+library(ggplot2)
+library(dplyr)
+
+tx <- seq(0, 8)
+ty <- exp(tx)
+plot(tx,ty)
+
+df <- as_data_frame(cbind(tx, ty))
+
+x <- tx[1:6]
+y <- ty[1:6]
+lin <- lm(y~x, data = df)
+
+ggplot(data = df[1:6,], aes(x=tx, y=ty)) + 
+  geom_point(color = 'blue') + 
+  geom_abline(slope = lin$coefficients[2], intercept = lin$coefficients[1])
+
+ggplot(data = df, aes(x=tx, y=ty)) + 
+  geom_point(color = 'blue') + 
+  geom_abline(slope = lin$coefficients[2], intercept = lin$coefficients[1])
+```
+
+Imputation attempts to address this common dilemma in real-world data. Imputation is the process of replacing missingness in data sets with some value that redeems the observation for some degree of analysis. "The aim of these methods is to compensate for the missing data in such a manner that the analysis file may be subjected to any form of analysis without the need for further consideration of the missing data" (Brick and Kalton 1996). Imputation assigns values to missing responses, which allows records with missingness to be retained during analysis. Ideally, imputation would eliminate bias in survey estimates caused by ignoring records with missing data. The catch is that imputation can destroy intervariable relationships, and by nature data is fabricated in the process which leads to overestimation of the precision of survey estimates.
+
+There are stochastic and deterministic methods for imputation. Deterministic regression imputation is the predicted value from a regression trained on complete-case data. Stochastic imputation differs due to an additional residual added term to the predicted value, taken either from a random respondent or comparable observation, and is usually preferred due to the importance of shape parameters in many analyses (Brick and Kalton 1996).
+
+One traditional method of imputation is the "Hot-Deck Method". This method was generally favorable when computation was at an expense, and required extensive knowledge of the survey variables in order to optimize, as explicit model-based imputation needs a valid model for every survey variable (Mairi and Miller, 2008). This thesis proposes naive artificial neural networks as a solution which requires minimal domain knowledge and resists the curse of dimensionality which other nonparametric methods are susceptible to, such as local polynomial regression (Maiti and Miller, 2008).
