@@ -764,3 +764,82 @@ for (i in 1:length(weights)) {
 }
 counter
 
+
+
+
+
+
+
+
+
+
+# Better pop rolls with controlled selection
+N <- 10^6
+n <- 10000
+ep_sig_control <- 2
+
+p_1 <- rnorm(N, mean = 30, sd = 2.5)
+p_2 <- rnorm(N, mean = 15, sd = 2)
+p_3 <- rnorm(N, mean = 5, sd = 1)
+
+
+
+p_y_noise <- rnorm(N, mean = 0, sd = ep_sig_control)
+p_y <- sqrt(p_1*p_2) + p_3 + p_y_noise
+
+
+# Make 4 columns, p_pi_x which we can then concatenate and sample without variance
+rescale <- function(vec) { # rescale to 0,1
+  (vec - min(vec)) / (max(vec) - min(vec))
+}
+
+temp_pi_0 <- sqrt(p_y) + rnorm(N, mean = 0, sd = 0)
+temp_pi_0 <- rescale(temp_pi_0)
+p_pi_0 <- temp_pi_0 * (n / sum(temp_pi_0))
+
+temp_pi_1 <- sqrt(p_y) + rnorm(N, mean = 0, sd = 1)
+temp_pi_1 <- rescale(temp_pi_1)
+p_pi_1 <- temp_pi_1 * (n / sum(temp_pi_1))
+
+temp_pi_2 <- sqrt(p_y) + rnorm(N, mean = 0, sd = 2)
+temp_pi_2 <- rescale(temp_pi_2)
+p_pi_2 <- temp_pi_2 * (n / sum(temp_pi_2))
+
+temp_pi_3 <- sqrt(p_y) + rnorm(N, mean = 0, sd = 3)
+temp_pi_3 <- rescale(temp_pi_3)
+p_pi_3 <- temp_pi_3 * (n / sum(temp_pi_3))
+
+
+var_pi_noise_df_suitcase <- list()
+
+# Combine into df and sample a single time
+
+p_mega_df <- cbind(p_1, p_2, p_3, p_pi_0, p_pi_1, p_pi_2, p_pi_3, p_y)
+p_mega_tbl <- as_tibble(p_mega_df)
+
+sample_population_by_pi <- sample_n(tbl = p_tbl, size = n, replace = FALSE, weight = p_pi)
+
+# Make 4 dataframes
+df_pi_0 <- 
+  
+  df_pi_1 <-
+  
+  df_pi_2 <-
+  
+  df_pi_3 <- 
+  
+  for (i in 1:4) {
+    
+    p_df <- cbind(p_1, p_2, p_3, p_pi, p_y)
+    p_tbl <- as_tibble(p_df)
+    
+    sample_population_by_pi <- sample_n(tbl = p_tbl, size = n, replace = FALSE, weight = p_pi)
+    
+    var_ep_noise_df_suitcase[[i]] <- sample_population_by_pi %>% rename(x_1 = p_1, #Since we are not dealing with p_ anymore
+                                                                        x_2 = p_2,
+                                                                        x_3 = p_3,
+                                                                        pi = p_pi,
+                                                                        y = p_y)
+  }
+
+
