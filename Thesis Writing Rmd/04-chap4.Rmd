@@ -1,3 +1,119 @@
 # Chapter 4: Simulation
 
-### Monte Carlo Simulation
+## Exploration of Methods in Simulation
+
+Simulated data is used to evaluate the methods in order to get an understanding of their performance on a data set with known characteristics.
+
+Full insight into the feature distributions, generative function, random noise, and systematic missingness allow for controlled experimentation on when certain methods thrive.
+
+## Monte Carlo Simulation
+Monte Carlo (MC) simulation attempts to overcome the inherent randomness of sampling and neural network training by repeated iterations of the sampling, training, and evaluation steps. A distribution of evaluations is made over many possible samples from the population to get a more complete interpretation of the results.
+
+It should be noted that neural networks can be more optimized than their performance in MC simulation. This is because a network can be intentionally over-trained on the training data, then re-trained from scratch to the number of epohcs which minimized the validation loss. This poses a challenge in MC simulation, however, where many iterations without user input are needed. Additionally, runtime becomes a vastly greater concern when networks must be over-trained through many epochs.
+
+## Creating a Simulated Population
+
+```{r sim_population, echo = TRUE, warning = FALSE, cache = TRUE}
+N = 10^5
+n = 10^3
+it <- 100
+p_y_ep_control <- 1
+
+p_1 <- runif(N, -30, 30)
+p_2 <- runif(N, -30, 30)
+nulls <- matrix(rnorm(20*N, 0, 8), ncol = 20)
+
+p_y_ep <- rnorm(N, mean = 0, sd = p_y_ep_control)
+
+p_y <- p_1^2 + p_2^2 
+
+p_y[p_y > mean(p_y)] <- mean(p_y)
+
+p_y <- p_y + p_y_ep
+p_y <- abs(p_y)
+
+p_pi_ep <- rnorm(N, mean = 0, sd = 1)
+temp_pi <- sqrt(p_y) + p_pi_ep
+temp_pi <- rescale(temp_pi)
+p_pi <- temp_pi * (n / sum(temp_pi))
+
+p_df <- cbind(p_1, p_2, p_y, p_pi, nulls)
+
+# Statistic_tracker stores the mean estimates of the sample for each method
+statistic_tracker <- data.frame(true_mean = numeric(it), 
+                                oracle_mean = numeric(it),
+                                pi_naive_mean = numeric(it),
+                                median_imp_mean = numeric(it),
+                                lin_imp_mean = numeric(it),
+                                lin_oracle = numeric(it),
+                                nn_imp_mean = numeric(it),
+                                nn_oracle = numeric(it),
+                                nn_pi_imp_mean = numeric(it),
+                                nn_pi_oracle = numeric(it),
+                                nn_resamp_imp_mean = numeric(it),
+                                nn_resamp_oracle = numeric(it),
+                                nn_wmse_imp_mean = numeric(it),
+                                nn_wmse_oracle = numeric(it),
+                                nn_deriv_imp_mean = numeric(it),
+                                nn_deriv_oracle = numeric(it))
+```
+
+## Monte Carlo Method
+
+I'm thinking that the code for all the methods can be in the back of the thesis in some kind of index.
+```{r monte_carlo, echo = TRUE, warning = FALSE, cache=TRUE}
+for (i in 1:it) {
+  sample_population_by_pi <- sample_n(tbl = p_tbl, size = n, replace = FALSE, weight = p_pi)
+  
+  df <- sample_population_by_pi %>% rename(x_1 = p_1, #Since we are not dealing with population p_ anymore
+                                           x_2 = p_2,
+                                           pi = p_pi,
+                                           y = p_y)
+  # True mean
+  statistic_tracker$true_mean <- true_mean(df)
+  
+  # Oracle mean estimate method is saved
+  statistic_tracker$oracle_mean <- oracle_mean(df)
+
+  # Systematic bias is introduced
+  indices <- sample(1:nrow(df), .2*nrow(df), prob = df$y)
+  dropped_obs <- df[indices,]
+  reduced_df <- df[-indices,]
+  
+  # Oracle data set is made by removing uncorrelated features
+  odf <- df[,1:4]
+  o_dropped_obs <- odf[indices,]
+  o_reduced_df <- odf[-indices,]
+  
+  # Pi-naive mean is applied and saved
+  statistic_tracker$pi_naive_mean <- pi_naive_mean(dropped_obs, reduced_df)
+  
+  # Median imputation is performed and saved
+  statistic_tracker$median_imp_mean <- median_imp_mean(dropped_obs, reduced_df)
+  
+  # Weighted linear regression
+  statistic_tracker$lin_imp_mean <- pi_naive_mean(dropped_obs, reduced_df)
+  # Oracle weighted linear regression
+  statistic_tracker$lin_oracle <- lin_oracle(dropped_obs, reduced_df)
+  
+  # Naive neural network
+  statistic_tracker$nn_imp_mean <- nn_imp_mean(dropped_obs, reduced_df)
+  # Oracle naive neural network
+  statistic_tracker$nn_oracle <- nn_oracle(dropped_obs, reduced_df)
+  
+  # Pi-feature neural network
+  statistic_tracker$nn_pi_imp_mean <- nn_pi_imp_mean(dropped_obs, reduced_df)
+  # Oracle pi-feature neural network
+  
+  # resample?
+  # resample oracle
+  
+  # Weighted MSE NN
+  # Oracle weighted MSE
+  
+  # Derived Parameters
+  # Oracle derived parameters
+}
+```
+
+## 
