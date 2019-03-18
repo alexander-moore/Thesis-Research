@@ -250,176 +250,13 @@ for (i in 1:it) {
   statistic_tracker$nn_oracle[i] <- (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) 
                                                         + sum(nn_y_hat / o_dropped_obs$pi))
   
-  # Mean according to imputed data via neural network w pi feature
-  y_train <- reduced_df$y
-  reduced_df_nolab <- select(reduced_df, -c(y))
-  reduced_df_nolab$pi <- 1 / reduced_df_nolab$pi
-  
-  y_test <- dropped_obs$y
-  dropped_obs_nolab <- select(dropped_obs, -c(y))
-  dropped_obs_nolab$pi <- 1 / dropped_obs_nolab$pi
-  
-  reduced_df_nolab <- as.matrix(reduced_df_nolab)
-  dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
-  
-  x_train <- reduced_df_nolab
-  x_test <- dropped_obs_nolab
-  
-  normalize_data(x_train, x_test)
-  create_validation_split(x_train, y_train)
-  
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 32, activation = "relu", 
-                input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 32, activation = "relu") %>%
-    layer_dense(units = 1)
-  
-  model %>% compile(
-    optimizer = "adam",
-    loss = "mse",
-    metrics = c("mae")
-  )
-  
-  history <- model %>% fit(
-    partial_x_train,
-    partial_y_train,
-    epochs = 250,
-    verbose = 0,
-    batch_size = 32,
-    validation_data = list(x_val, y_val)
-  )
-  
-  x_test <- as.matrix(x_test)
-  nn_pi_y_hat <- predict(model, x_test)
-  
-  hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_pi_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                                             + sum(nn_pi_y_hat / dropped_obs$pi))
-  
-  #oracle nn pi feature
-  y_train <- o_reduced_df$y
-  reduced_df_nolab <- select(o_reduced_df, -c(y))
-  reduced_df_nolab$pi <- 1 / reduced_df_nolab$pi
-  
-  y_test <- o_dropped_obs$y
-  dropped_obs_nolab <- select(o_dropped_obs, -c(y))
-  dropped_obs_nolab$pi <- 1 / dropped_obs_nolab$pi
-  
-  reduced_df_nolab <- as.matrix(reduced_df_nolab)
-  dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
-  
-  x_train <- reduced_df_nolab
-  x_test <- dropped_obs_nolab
-  
-  normalize_data(x_train, x_test)
-  create_validation_split(x_train, y_train)
-  
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 32, activation = "relu", 
-                input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 32, activation = "relu") %>%
-    layer_dense(units = 1)
-  
-  model %>% compile(
-    optimizer = "adam",
-    loss = "mse",
-    metrics = c("mae")
-  )
-  
-  history <- model %>% fit(
-    partial_x_train,
-    partial_y_train,
-    epochs = 300,
-    verbose = 0,
-    batch_size = 32,
-    validation_data = list(x_val, y_val)
-  )
-  
-  x_test <- as.matrix(x_test)
-  nn_pi_y_hat <- predict(model, x_test)
-  
-  hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_pi_oracle[i] <- (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) 
-                                                           + sum(nn_pi_y_hat / o_dropped_obs$pi))
-  
-  
-  # Mean according to imputed dataset via neural network with weighted resample
-  # on the full sample. the missing values in the resample are then imputed and 
-  # the imputation mean is taken on the new data set
-  # (without pi feature)
-  ###################
-  # in the future, instead of making another n-size df, what if we scaled back up to N
-  # with the same method. so re-creating the population by sampling w replacement
-  ###################
-  
-  if (FALSE) {
-  dropped_obs_NA_lab <- dropped_obs
-  dropped_obs_NA_lab$y <- NA
-  
-  orig_df <- rbind(reduced_df, dropped_obs_NA_lab)
-  
-  # sample by inclusion probability or pi ?????
-  weight_vec <- 1 / as.numeric(orig_df$pi)  
-  
-  orig_tbl <- as_tibble(orig_df)
-  
-  # RESAMPLE ON DF NOT REDUCED_DF
-  resamp_df <- sample_n(tbl = orig_tbl, size = nrow(orig_tbl), replace = TRUE, weight = weight_vec)
-  
-  # re-partition into complete cases, and cases to be imputed
-  resamp_reduced_df <- resamp_df[-which(is.na(resamp_df$y)),]
-  resamp_dropped_obs <- resamp_df[which(is.na(resamp_df$y)),]
-  
-  y_train <- resamp_reduced_df$y
-  resamp_reduced_df_nolab <- select(resamp_reduced_df, -c(y))
-  
-  y_test <- resamp_dropped_obs$y
-  resamp_dropped_obs_nolab <- select(resamp_dropped_obs, -c(y))
-  
-  resamp_reduced_df_nolab <- as.matrix(resamp_reduced_df_nolab)
-  resamp_dropped_obs_nolab <- as.matrix(resamp_dropped_obs_nolab)
-  
-  x_train <- resamp_reduced_df_nolab
-  x_test <- resamp_dropped_obs_nolab
-  
-  normalize_data(x_train, x_test)
-  create_validation_split(x_train, y_train)
-  
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 32, activation = "relu", 
-                input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 32, activation = "relu") %>%
-    layer_dense(units = 1)
-  
-  model %>% compile(
-    optimizer = "adam",
-    loss = "mse",
-    metrics = c("mae")
-  )
-  
-  history <- model %>% fit(
-    partial_x_train,
-    partial_y_train,
-    epochs = 200,
-    verbose = 0,
-    batch_size = 32,
-    validation_data = list(x_val, y_val)
-  )
-  
-  x_test <- as.matrix(x_test)
-  nn_resamp_y_hat <- predict(model, x_test)
-  
-  hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_resamp_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                                                 + sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
-  }
   
   ## Mean according to dataset imputed via neural network with custom weighted MSE loss
   # CAUTION: had to do some tricks to extract obs_weights for training (and not validition). uses column 4 for pi, 
   # which might change if features change
   
   # need to pull weights off of training data: this is getting split into validation.
-
+  
   y_train <- reduced_df$y
   reduced_df_nolab <- select(reduced_df, -c(y))  # NEED TO DROP PI LATER. CANT DROP NOW SINCE NEED TO EXTRACT PI FROM TRAINING DATA
   
@@ -435,7 +272,7 @@ for (i in 1:it) {
   normalize_data(x_train, x_test)
   create_validation_split(x_train, y_train)
   
-  obs_weights <- 1 / partial_x_train[,3]  # this is non-generalizable and will be a problem if we change the number of features. 
+  obs_weights <- partial_x_train[,3]  # this is non-generalizable and will be a problem if we change the number of features. 
   
   partial_x_train <- partial_x_train[,-3]
   x_val <- x_val[,-3]
@@ -488,7 +325,7 @@ for (i in 1:it) {
   normalize_data(x_train, x_test)
   create_validation_split(x_train, y_train)
   
-  obs_weights <- 1 / partial_x_train[,3]
+  obs_weights <- partial_x_train[,3]
   partial_x_train <- partial_x_train[,-3]
   x_train <- x_train[,-3]
   x_val <- x_val[,-3]
@@ -523,67 +360,13 @@ for (i in 1:it) {
   statistic_tracker$nn_wmse_oracle[i] <- (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) 
                                                              + sum(nn_y_hat / o_dropped_obs$pi))
   
-  # Mean accoridng to imputed data via neural network
-  # With access to derived parameters which are x_i * pi
   
-  if(FALSE) {
-  y_train <- reduced_df$y
-  reduced_df_nolab <- select(reduced_df, -c(y))
-  
-  y_test <- dropped_obs$y
-  dropped_obs_nolab <- select(dropped_obs, -c(y))
-  
-  x1pi <- (reduced_df_nolab$x_1)*(reduced_df_nolab$pi)
-  x2pi <- (reduced_df_nolab$x_2)*(reduced_df_nolab$pi)
-  
-  dx1pi <- (dropped_obs_nolab$x_1)*(dropped_obs_nolab$pi)
-  dx2pi <- (dropped_obs_nolab$x_2)*(dropped_obs_nolab$pi)
-  
-  reduced_df_nolab <- cbind(reduced_df_nolab, x1pi, x2pi)
-  dropped_obs_nolab <- cbind(dropped_obs_nolab, dx1pi, dx2pi)
-  
-  reduced_df_nolab <- as.matrix(reduced_df_nolab)
-  dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
-  
-  x_train <- reduced_df_nolab
-  x_test <- dropped_obs_nolab
-  
-  normalize_data(x_train, x_test)
-  create_validation_split(x_train, y_train)
-  
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 64, activation = "sigmoid", 
-                input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 64, activation = "sigmoid") %>%
-    layer_dense(units = 1)
-  
-  model %>% compile(
-    optimizer = "adam",
-    loss = "mse",
-    metrics = c("mae"))
-  
-  history <- model %>% fit(
-    partial_x_train,
-    partial_y_train,
-    epochs = 2000, #high variance; study further
-    verbose = 0,
-    batch_size = 32,  #what should this be
-    validation_data = list(x_val, y_val)
-  )
-  
-  x_test <- as.matrix(x_test)
-  nn_y_hat <- predict(model, x_test)
-  
-  hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_deriv_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                                                + sum(nn_y_hat / dropped_obs$pi))
-  }
   
   print(i)
 }
 
 # Save the mean table so that we don't have to always re-run it
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\model_selection2_5.csv")
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\model_selection_experiment.csv")
 dat <- statistic_tracker
 
 #dat <- read.csv("c:/Users/Alexander/Documents/thesis stat tracker/10_full.csv")
