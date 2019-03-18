@@ -40,7 +40,7 @@ Data collected under a complex survey design have an additional layer of complex
 
 ## Imputation
 
-Often in real-world data, there is some degree of missingness. This can be for any number of reasons, illustrated in @missingness :
+Often in real-world data, there is some degree of missingness. This can be for any number of reasons, illustrated in \@ref(fig:missingness):
 
 ```{r tabel, echo=FALSE, cache=TRUE}
 ## Make table
@@ -76,7 +76,7 @@ knitr::kable(df, caption = "Types of missingess")
 Table: Types of missingness
 "The usual form of item nonresponse is imputation, which involves assigning a value for the missing response." 216 (Brick and Kalton 1996)
 
-In many statistical analyses, observations with any degree of missingness cannot be present. For example, how would one perform a linear regression with observations that have features but no label? Dropping these terms would remove potentially huge swathes of the data set, particularly in multivariate data sets, and would create systematic bias. Suppose for example a data set with information on roses had a feature with stem length and a label on flower size. Missing values for flower size might not be randomly distributed: there could, for example, be a systematic picking of the large-flowered roses by passersby. To ignore these observations would lead the analyst to draw false conclusions on the relationship of stem length to flower size, and the distribution of flower sizes in the population. Consider @systematic:
+In many statistical analyses, observations with any degree of missingness cannot be present. For example, how would one perform a linear regression with observations that have features but no label? Dropping these terms would remove potentially huge swathes of the data set, particularly in multivariate data sets, and would create systematic bias. Suppose for example a data set with information on roses had a feature with stem length and a label on flower size. Missing values for flower size might not be randomly distributed: there could, for example, be a systematic picking of the large-flowered roses by passersby. To ignore these observations would lead the analyst to draw false conclusions on the relationship of stem length to flower size, and the distribution of flower sizes in the population. Consider \@ref(fig:systematic):
 ```{r systematic, echo = FALSE, warning = FALSE}
 # Example 1: what happens when systematic bias is ignored, and missing values are dropped
 library(ggplot2)
