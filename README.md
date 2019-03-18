@@ -9,12 +9,9 @@ The impacts of complex survey design in the training of machine learning algorit
 - **Pi Feature**: Make available the inclusion probability of the observation as a feature in the training and testing of the network. 
 
 ------------------
-
-![](images/model_img.png)
 ![](images/both.png)
 ![](images/badfit.png)
 ![](images/stayGood.png)
-
 ------------------
 
 Results for monte carlo mean statistic distribution data gathered under the following generative function for population label `p_y`:
@@ -45,9 +42,9 @@ p_df <- cbind(p_1, p_2, p_3, p_y, p_pi)
 
 **Chapter 2: Machine Learning and Neural Networks** Introduces machine learning building blocks such as fitting, bias-variance, and supervised learning. Neural networks discussed at length including mathematic fundamentals and properties relevant to study.
 
-**Chapter 3: Methods and Algorithms**: February 2019.
+**Chapter 3: Methods**: Weighted linear regression and multiple neural network techniques are compared on simulated data. Monte Carlo simulation is used to generate distributions of population mean estimates. Weighted-MSE and Pi-Feature neural networks show promising results.
 
-**Chapter 4: Simulation Experiments**: March 2019.
+**Chapter 4: Simulation**: March 2019.
 
 **Chapter 5: Explorations in Real Data**: March 2019.
 
