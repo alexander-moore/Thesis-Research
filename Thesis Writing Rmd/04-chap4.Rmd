@@ -6,6 +6,16 @@ Simulated data is used to evaluate the methods in order to get an understanding 
 
 Full insight into the feature distributions, generative function, random noise, and systematic missingness allow for controlled experimentation on when certain methods thrive.
 
+## High-Dimension Simulation
+- noisy parameters
+- higher dimension (for size of data)
+
+@hastie2017extended
+
+Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data age, gender, ethnicity, and education might have a predictive relationship with income, while a number of others such as XXXXXXX do not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. {@hastie2017extended} 
+ 
+These additional "noisy" parameters are approximated in simulated data by making the generative function of the labels $y$ not a function of a number of the features. All methods used in the simulation are accompanied by their "oracle" counterparts, meaning the same method is run two times: one with access to all features, the oracle restricted only to the relevant features which are inputs to the generative function.
+
 ## Monte Carlo Simulation
 Monte Carlo (MC) simulation attempts to overcome the inherent randomness of sampling and neural network training by repeated iterations of the sampling, training, and evaluation steps. A distribution of evaluations is made over many possible samples from the population to get a more complete interpretation of the results.
 
@@ -72,7 +82,7 @@ for (i in 1:it) {
   # True mean
   statistic_tracker$true_mean <- true_mean(df)
   
-  # Oracle mean estimate method is saved
+  # Oracle mean estimate
   statistic_tracker$oracle_mean <- oracle_mean(df)
 
   # Systematic bias is introduced
@@ -85,34 +95,6 @@ for (i in 1:it) {
   o_dropped_obs <- odf[indices,]
   o_reduced_df <- odf[-indices,]
   
-  # Pi-naive mean is applied and saved
-  statistic_tracker$pi_naive_mean <- pi_naive_mean(dropped_obs, reduced_df)
-  
-  # Median imputation is performed and saved
-  statistic_tracker$median_imp_mean <- median_imp_mean(dropped_obs, reduced_df)
-  
-  # Weighted linear regression
-  statistic_tracker$lin_imp_mean <- pi_naive_mean(dropped_obs, reduced_df)
-  # Oracle weighted linear regression
-  statistic_tracker$lin_oracle <- lin_oracle(dropped_obs, reduced_df)
-  
-  # Naive neural network
-  statistic_tracker$nn_imp_mean <- nn_imp_mean(dropped_obs, reduced_df)
-  # Oracle naive neural network
-  statistic_tracker$nn_oracle <- nn_oracle(dropped_obs, reduced_df)
-  
-  # Pi-feature neural network
-  statistic_tracker$nn_pi_imp_mean <- nn_pi_imp_mean(dropped_obs, reduced_df)
-  # Oracle pi-feature neural network
-  
-  # resample?
-  # resample oracle
-  
-  # Weighted MSE NN
-  # Oracle weighted MSE
-  
-  # Derived Parameters
-  # Oracle derived parameters
 }
 ```
 
