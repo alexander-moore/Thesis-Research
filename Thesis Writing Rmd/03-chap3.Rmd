@@ -37,7 +37,7 @@ Let $\hat \mu_y$ be the sample estimate of the population mean $\mu_y$. The orac
 
 Oracle Mean:
 $$
-\hat \mu_y = \frac{1}{n} \sum_{i=1}^n y_i \frac{1}{\pi_i}
+\hat \mu_{\text{oracle}} = \frac{1}{n} \sum_{i=1}^n y_i \frac{1}{\pi_i}
 $$
 The oracle mean will be used as a benchmark against which the other methods will be compared.
 
@@ -47,10 +47,6 @@ Works for both:
 For model-imputation methods, they each use this special mean-predictor function. (the  N_hat one)
 
 The following methods utilize different imputation techniques to create a complete-case dataset by estimating missing values based on information from the complete cases. Once the missing values are imputed, the population mean is estimated
-
-hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_deriv_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                                                + sum(nn_y_hat / dropped_obs$pi))
 
 Imputation Mean Estimator:
 $$
@@ -76,10 +72,10 @@ Loss-Weighted Neural Network Imputation takes inspiration from the weighted line
 ### $\pi$-Feature Neural Network Imputation
 A $\pi$-feature neural network has access to $\pi$ as a predictor during training and testing. This is a realistic assumption to make as data collected under a complex survey design must have a $\pi$ probability regardless of whether the label is missing. This method has the benefit of adapting to whether $\pi$ is truly correlated to $y$, which the loss-weighted method assumes. A neural network optimist could claim that if there is a significant relationship of $\pi$ to $y$, it will be reflected in the loss during training and the network will adapt accordingly to the information provided by the feature. However if $\pi$ and $y$ are uncorrelated and the missingess is random, the network will not still weight the observations and will correctly ignore the feature to create more accurate predictions with no need for domain knowledge on the relationship of the missingness.
 
-include_graphics()
-#"C:\Users\Alexander\Documents\Thesis Data\Thesis Writing Rmd\AMMthesis\figure\network.png"
+```{r feature, echo = FALSE}
+knittr::include_graphics("C:/Users/Alexander/Documents/Thesis Data/Thesis Writing Rmd/AMMthesis/figure/network.png")
 # but one of the inputs is also pi
-
+```
 
 ### Weighted Resample Neural Network Imputation
 The weighted resample method uses the same model as the naive neural network imputation but uses a data preprocessing step to incorporate the survey design information. A weighted resample of size $n$ is taken from the sample with replacement with observation selected by probability $\frac{1}{\pi}$. The inference of this method is an attempt to "undo" the effects of survey design in gathering the data. A weighted resample in which observations are selected by the inverse inclusion probability uses the insight that an observation with inclusion probability $\pi$ represents $\frac{1}{\pi}$ members of the population. By sampling on this probability, the resampled data set should be an estimate of an *i.i.d.* sample from the population, making it viable for supervised learning ignoring the survey design elements. From this point the naive neural network method is applied (and directly compared to naive neural network estimates), since ideally this is *i.i.d* data without need for survey design information tweaks on the algorithm.
@@ -92,29 +88,6 @@ This method pre-processes the data by deriving additional features, such as the 
 
 
 
-
-
-
-
-# Tables, Graphics, References, and Labels {#ref-labels}
-
-## Tables
-
-## Bibliographies
-
-Of course you will need to cite things, and you will probably accumulate an armful of sources. There are a variety of tools available for creating a bibliography database (stored with the .bib extension).  In addition to BibTeX suggested below, you may want to consider using the free and easy-to-use tool called Zotero.  The Reed librarians have created Zotero documentation at <http://libguides.reed.edu/citation/zotero>.  In addition, a tutorial is available from Middlebury College at <http://sites.middlebury.edu/zoteromiddlebury/>.
-
-_R Markdown_ uses _pandoc_ (<http://pandoc.org/>) to build its bibliographies.  One nice caveat of this is that you won't have to do a second compile to load in references as standard LaTeX requires. To cite references in your thesis (after creating your bibliography database), place the reference name inside square brackets and precede it by the "at" symbol.  For example, here's a reference to a book about worrying:  [@Molina1994].  This `Molina1994` entry appears in a file called `thesis.bib` in the `bib` folder.  This bibliography database file was created by a program called BibTeX.  You can call this file something else if you like (look at the YAML header in the main .Rmd file) and, by default, is to placed in the `bib` folder.  
-
-
-If you look at the YAML header at the top of the main .Rmd file you can see that we can specify the style of the bibliography by referencing the appropriate csl file.  You can download a variety of different style files at <https://www.zotero.org/styles>.  Make sure to download the file into the csl folder.
-
-**Tips for Bibliographies**
-
-- Like with thesis formatting, the sooner you start compiling your bibliography for something as large as thesis, the better. Typing in source after source is mind-numbing enough; do you really want to do it for hours on end in late April? Think of it as procrastination.
-- The cite key (a citation's label) needs to be unique from the other entries.
-- When you have more than one author or editor, you need to separate each author's name by the word "and" e.g. `Author = {Noble, Sam and Youngberg, Jessica},`.
-- Bibliographies made using BibTeX (whether manually or using a manager) accept LaTeX markup, so you can italicize and add symbols as necessary.
-- To force capitalization in an article title or where all lowercase is generally used, bracket the capital letter in curly braces.
+## Note
 - You can add a Reed Thesis citation^[@noble2002] option. The best way to do this is to use the phdthesis type of citation, and use the optional "type" field to enter "Reed thesis" or "Undergraduate thesis." 
 

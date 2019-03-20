@@ -1,101 +1,96 @@
-# Chapter 4: Simulation
+# Simulation
+
+Just 4 needs more work - ask kelly what it should say?
+Currently has mention of high-dimension, monte carlo, and methods (needs expansion)
+
+Discussion of outcomes
+Discussion of setups: generative function, number noisy variables, noise, results, all the parameters that i've chosen thus far
+Could someone re-create this simulation with the descriptions I gave them? 
+Do everything in Latex, not code
+
+()
 
 ## Exploration of Methods in Simulation
 
 Simulated data is used to evaluate the methods in order to get an understanding of their performance on a data set with known characteristics.
 
-Full insight into the feature distributions, generative function, random noise, and systematic missingness allow for controlled experimentation on when certain methods thrive.
+Full insight into the feature distributions, generative function, random noise, and systematic missingness allow for controlled experimentation on when certain methods thrive. Simulation allows for parameters such as label noise and feature informativity to be changed and measure the response of the methods across any domain.
 
 ## High-Dimension Simulation
-- noisy parameters
-- higher dimension (for size of data)
 
-@hastie2017extended
-
-Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data age, gender, ethnicity, and education might have a predictive relationship with income, while a number of others such as XXXXXXX do not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. {@hastie2017extended} 
+Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data age, gender, ethnicity, and education might have a predictive relationship with income, while a number of others such as XXXXXXX do not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. Inspired by research in best feature selection methods, non-correlated features are used in the model evaluation step in an attempt to more realistically simulate complex data [@hastie2017extended]. The addition of these features contributes to the curse of dimensionality and variability of estimates.
  
-These additional "noisy" parameters are approximated in simulated data by making the generative function of the labels $y$ not a function of a number of the features. All methods used in the simulation are accompanied by their "oracle" counterparts, meaning the same method is run two times: one with access to all features, the oracle restricted only to the relevant features which are inputs to the generative function.
+These additional "noisy" parameters are simulated by making the generative function of the labels $y$ not a function of some of the features. All methods used in the simulation are accompanied by their oracle counterparts, meaning the same method is run two times: one with access to all features, the oracle restricted only to the relevant features which are inputs to the generative function.
 
 ## Monte Carlo Simulation
-Monte Carlo (MC) simulation attempts to overcome the inherent randomness of sampling and neural network training by repeated iterations of the sampling, training, and evaluation steps. A distribution of evaluations is made over many possible samples from the population to get a more complete interpretation of the results.
+Monte Carlo (MC) simulation attempts to overcome the inherent randomness of sampling and model training by repeated iterations of the sampling, training, and evaluation steps. A distribution of output estimates is made over many potential samples from the population to get a more complete interpretation of the results.
 
-It should be noted that neural networks can be more optimized than their performance in MC simulation. This is because a network can be intentionally over-trained on the training data, then re-trained from scratch to the number of epohcs which minimized the validation loss. This poses a challenge in MC simulation, however, where many iterations without user input are needed. Additionally, runtime becomes a vastly greater concern when networks must be over-trained through many epochs.
+It should be noted that neural networks can be more optimized than their performance in the following simulation study. This is because a network can be intentionally over-trained on the training data, then re-trained from scratch to the number of epochs which minimized the validation loss. This poses a challenge in MC simulation, however, where many iterations without user input are needed. Additionally, runtime becomes a vastly greater concern when networks must be over-trained through many epochs, more than doubling the execution time. If computation were no expense, the neural network methods could be expected to be more accurate than the below results.
 
 ## Creating a Simulated Population
 
-```{r sim_population, echo = TRUE, warning = FALSE, cache = TRUE}
-N = 10^5
-n = 10^3
-it <- 100
-p_y_ep_control <- 1
+The size of the population is $N=10^5$ and the sample is $n=10^3$ observations. Despite neural networks thriving in higher-dimension settings (both of features and observations), complex surveys are often implemented on real data with scarce observations, making a lower-size simulation more suitable for generalizability.
 
-p_1 <- runif(N, -30, 30)
-p_2 <- runif(N, -30, 30)
-nulls <- matrix(rnorm(20*N, 0, 8), ncol = 20)
+The features simulated population is made as the first step of the process. Two informative features $p_1, p_2$ are drawn from random uniform distribution:
+$$
+f(x) = \frac{1}{30+30} \text{ for } x \in (-30, 30)
+$$
+In addition to two informative features, there are $20$ uninformative features drawn from the normal distribution. This distribution is arbitrary but can have unintended consequences due to accidental correlation, noted in {@hastie2017extended}.
 
-p_y_ep <- rnorm(N, mean = 0, sd = p_y_ep_control)
+The population labels $y$ are a nonlinear function of the informative features:
+$$
+y = p_1^2 + p_2^2
+$$
+The labels are then made nonpolynomial by contorting the parabola into a "bowl with flat lip":
+$$
+y' = \left\{ \begin{array}{cc} 
+                y & \hspace{5mm} y<\bar{y} \\
+                \bar{y} & \hspace{5mm} y \geq \bar{y} \\
+                \end{array} \right.
+$$
 
-p_y <- p_1^2 + p_2^2 
-
-p_y[p_y > mean(p_y)] <- mean(p_y)
-
-p_y <- p_y + p_y_ep
-p_y <- abs(p_y)
-
-p_pi_ep <- rnorm(N, mean = 0, sd = 1)
-temp_pi <- sqrt(p_y) + p_pi_ep
-temp_pi <- rescale(temp_pi)
-p_pi <- temp_pi * (n / sum(temp_pi))
-
-p_df <- cbind(p_1, p_2, p_y, p_pi, nulls)
-
-# Statistic_tracker stores the mean estimates of the sample for each method
-statistic_tracker <- data.frame(true_mean = numeric(it), 
-                                oracle_mean = numeric(it),
-                                pi_naive_mean = numeric(it),
-                                median_imp_mean = numeric(it),
-                                lin_imp_mean = numeric(it),
-                                lin_oracle = numeric(it),
-                                nn_imp_mean = numeric(it),
-                                nn_oracle = numeric(it),
-                                nn_pi_imp_mean = numeric(it),
-                                nn_pi_oracle = numeric(it),
-                                nn_resamp_imp_mean = numeric(it),
-                                nn_resamp_oracle = numeric(it),
-                                nn_wmse_imp_mean = numeric(it),
-                                nn_wmse_oracle = numeric(it),
-                                nn_deriv_imp_mean = numeric(it),
-                                nn_deriv_oracle = numeric(it))
+```{r bowl, echo = FALSE}
+knitr::include_graphics("C:/Users/Alexander/Documents/Thesis Data/Thesis Writing Rmd/AMMthesis/figure/bowl.jpg")
 ```
 
-## Monte Carlo Method
+Random noise $\epsilon$ with $\sigma = 1$ is then added to the transformed labels:
+$$
+y'' = y' + \epsilon_y
+$$
 
-I'm thinking that the code for all the methods can be in the back of the thesis in some kind of index.
-```{r monte_carlo, echo = TRUE, warning = FALSE, cache=TRUE}
-for (i in 1:it) {
-  sample_population_by_pi <- sample_n(tbl = p_tbl, size = n, replace = FALSE, weight = p_pi)
-  
-  df <- sample_population_by_pi %>% rename(x_1 = p_1, #Since we are not dealing with population p_ anymore
-                                           x_2 = p_2,
-                                           pi = p_pi,
-                                           y = p_y)
-  # True mean
-  statistic_tracker$true_mean <- true_mean(df)
-  
-  # Oracle mean estimate
-  statistic_tracker$oracle_mean <- oracle_mean(df)
+An inclusion probability $pi$ is then assigned to each observation with a strong correlation to $y$, as well as random normal noise with $\sigma = 1$:
+$$
+\pi = \sqrt{y''} + \epsilon_\pi
+$$
+These values are then rescaled to (0,1) and rescaled so $\sum_i^N \pi_i = n$.
 
-  # Systematic bias is introduced
-  indices <- sample(1:nrow(df), .2*nrow(df), prob = df$y)
-  dropped_obs <- df[indices,]
-  reduced_df <- df[-indices,]
-  
-  # Oracle data set is made by removing uncorrelated features
-  odf <- df[,1:4]
-  o_dropped_obs <- odf[indices,]
-  o_reduced_df <- odf[-indices,]
-  
-}
+Combining the information $y,\pi, p_1, p_2$ and uncorrelated features gives the population on which the simulation will be performed. The true mean of the population labels $\mu_y$ is now known and recorded.
+
+The Monte Carlo simulation is performed for 100 iterations. This is a low number of trials, but is constrained by the computation intensity of running 10 neural networks trained for hundreds of iterations each, as well as performing many weighted samples.
+
+Within each iteration, a single estimation procedure is performed. First, a weighted sample from the population is taken with respect to the inclusion probabilities $\pi_i$ on each observation. From this sample of $n=10^3$ observations, an oracle data set is made by dropping the noise columns, keeping only $p_1, p_2, \pi,$ and $y$. This data set will be used as a benchmark to mirror each imputation method in order to gauge the potentially harmful effects of uninformative features common to real data.
+
+The first step is to record the oracle mean, calculated using information the other methods are not privy to:
+$$
+\hat \mu_{\text{oracle}} = \frac{1}{n} \sum_{i=1}^n y_i \frac{1}{\pi_i}
+$$
+
+All subsequent methods are the methods of study, to be performed where there is missingness in the data. $20\%$ of the observations manually have their labels dropped weighted by $y$, so large labels are more likely to be absent. The result is the form of data we are using to simulate method performance: a complex sample taken from a population with some kind of systematic bias in item response.
+
+The $\pi$-corrected mean estimate, weighted linear regression, and median imputation methods are all described fully in chapter 3, and are closed-form algorithms with no randomness in the fitting and estimation processes. The neural network models, however, have a much larger degree of flexibility and randomness involved in the implementation and execution of the estimate during simulation making monte carlo variability more pronounced.
+
+Neural networks are trained using normalized data on non-convex loss curves in high-dimensional space, making their optimization process stochastic. This simulation uses the heuristic `adam` optimizer. Each model in this simulation uses a 2 hidden layer network with 32 hidden units per layer to make results and applications more comparable. Each layer is wrapped in the `relu` activation function:
+$$
+\text{relu}(x) = \max(0,x)
+$$
+The breadth and depth used here is a heuristic size which could potentially be optimized to suit the problem. This, however, creates a conflict of interest with information leakage which the other methods are not privy to, which induces bias for the success of these algorithms. To maintain the narrative of a minimal-knowledge naive fit, these models use a reasonable exploratory capacity. The models in the fitting process are manually over-trained, then re-trained from scratch to an optimal state. This is done using a validation data set of $15\%$ of the training data. Once trained to an approximate loss minima, the models predict on holdout test data (the observations missing labels) and the population mean estimate is computed and recorded.
+
+## Results
+
+```{r results, echo = FALSE, warning = FALSE}
+knitr::include_graphics("C:/Users/Alexander/Documents/Thesis Data/Thesis Writing Rmd/AMMthesis/figure/newresults.png")
 ```
 
-## 
+Note to Kelly reviewing this: the resampling method and derived parameters method were left out of this for runtime concerns. I think I have to find some way to cloud-compute to be able to do some 100+ iterations with all the methods.
+
+I'm hesitant to write too much about results given the situation.

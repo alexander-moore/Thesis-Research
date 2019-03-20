@@ -9,7 +9,7 @@ MathJax.Hub.Config({
 
 ## Introduction to Machine Learning
 
-From the advent of computation, there has been drive towards automation.
+> From the advent of computation, there has been a drive towards automation. [@goodfellow2016deep]
 
 The capacity to derive patterns from raw data is known as machine learning, a broad term for an extremely diverse collection of algorithms. Machine learning flips the script on classical programming: whereas classical programming takes rules and data to produce answers, machine learning creates rules from data and answers by being "trained rather than explicitly programmed. It's presented with many examples relevant to a task, and it finds a structure that derives rules for automating the task" [@chollet2018deep].
 
