@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Chapter 4 Chapter 4: Simulation | Neural Network Methods in Complex Survey Imputation</title>
+  <meta name="description" content="Chapter 4 Chapter 4: Simulation | Neural Network Methods in Complex Survey Imputation">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+
+  <meta property="og:title" content="Chapter 4 Chapter 4: Simulation | Neural Network Methods in Complex Survey Imputation" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 Chapter 4: Simulation | Neural Network Methods in Complex Survey Imputation" />
+  
+  
+  
+
+<meta name="author" content="Alexander Michael Moore">
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="3-methods.html">
+<link rel="next" href="conclusion.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./"></a></li>
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a></li>
+<li class="chapter" data-level="1" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html"><i class="fa fa-check"></i><b>1</b> Complex Surveys</a><ul>
+<li class="chapter" data-level="1.1" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html#survey-statistics"><i class="fa fa-check"></i><b>1.1</b> Survey Statistics</a></li>
+<li class="chapter" data-level="1.2" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html#imputation"><i class="fa fa-check"></i><b>1.2</b> Imputation</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-math-sci.html"><a href="2-math-sci.html"><i class="fa fa-check"></i><b>2</b> Neural Networks</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-math-sci.html"><a href="2-math-sci.html#introduction-to-machine-learning"><i class="fa fa-check"></i><b>2.1</b> Introduction to Machine Learning</a></li>
+<li class="chapter" data-level="2.2" data-path="2-math-sci.html"><a href="2-math-sci.html#neural-networks"><i class="fa fa-check"></i><b>2.2</b> Neural Networks</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="2-math-sci.html"><a href="2-math-sci.html#background-and-context"><i class="fa fa-check"></i><b>2.2.1</b> Background and Context</a></li>
+<li class="chapter" data-level="2.2.2" data-path="2-math-sci.html"><a href="2-math-sci.html#basics"><i class="fa fa-check"></i><b>2.2.2</b> Basics</a></li>
+<li class="chapter" data-level="2.2.3" data-path="2-math-sci.html"><a href="2-math-sci.html#representation-learning"><i class="fa fa-check"></i><b>2.2.3</b> Representation Learning</a></li>
+<li class="chapter" data-level="2.2.4" data-path="2-math-sci.html"><a href="2-math-sci.html#neural-networks-for-complex-survey-data"><i class="fa fa-check"></i><b>2.2.4</b> Neural Networks for Complex Survey Data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-methods.html"><a href="3-methods.html"><i class="fa fa-check"></i><b>3</b> Methods</a><ul>
+<li class="chapter" data-level="3.0.1" data-path="3-methods.html"><a href="3-methods.html#drop.na"><i class="fa fa-check"></i><b>3.0.1</b> Drop.NA</a></li>
+<li class="chapter" data-level="3.1" data-path="3-methods.html"><a href="3-methods.html#mean-estimation-methods"><i class="fa fa-check"></i><b>3.1</b> Mean Estimation Methods</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="3-methods.html"><a href="3-methods.html#median-imputation"><i class="fa fa-check"></i><b>3.1.1</b> Median Imputation</a></li>
+<li class="chapter" data-level="3.1.2" data-path="3-methods.html"><a href="3-methods.html#linear-regression-imputation-weighted-pi"><i class="fa fa-check"></i><b>3.1.2</b> Linear Regression Imputation (weighted pi)</a></li>
+<li class="chapter" data-level="3.1.3" data-path="3-methods.html"><a href="3-methods.html#naive-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.3</b> Naive Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.4" data-path="3-methods.html"><a href="3-methods.html#loss-weighted-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.4</b> Loss-Weighted Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.5" data-path="3-methods.html"><a href="3-methods.html#pi-feature-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.5</b> <span class="math inline">\(\pi\)</span>-Feature Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.6" data-path="3-methods.html"><a href="3-methods.html#weighted-resample-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.6</b> Weighted Resample Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.7" data-path="3-methods.html"><a href="3-methods.html#derived-feature-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.7</b> Derived Feature Neural Network Imputation</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="3-methods.html"><a href="3-methods.html#tables"><i class="fa fa-check"></i><b>3.2</b> Tables</a></li>
+<li class="chapter" data-level="3.3" data-path="3-methods.html"><a href="3-methods.html#bibliographies"><i class="fa fa-check"></i><b>3.3</b> Bibliographies</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-chapter-4-simulation.html"><a href="4-chapter-4-simulation.html"><i class="fa fa-check"></i><b>4</b> Chapter 4: Simulation</a><ul>
+<li class="chapter" data-level="4.1" data-path="4-chapter-4-simulation.html"><a href="4-chapter-4-simulation.html#exploration-of-methods-in-simulation"><i class="fa fa-check"></i><b>4.1</b> Exploration of Methods in Simulation</a></li>
+<li class="chapter" data-level="4.2" data-path="4-chapter-4-simulation.html"><a href="4-chapter-4-simulation.html#high-dimension-simulation"><i class="fa fa-check"></i><b>4.2</b> High-Dimension Simulation</a></li>
+<li class="chapter" data-level="4.3" data-path="4-chapter-4-simulation.html"><a href="4-chapter-4-simulation.html#monte-carlo-simulation"><i class="fa fa-check"></i><b>4.3</b> Monte Carlo Simulation</a></li>
+<li class="chapter" data-level="4.4" data-path="4-chapter-4-simulation.html"><a href="4-chapter-4-simulation.html#creating-a-simulated-population"><i class="fa fa-check"></i><b>4.4</b> Creating a Simulated Population</a></li>
+<li class="chapter" data-level="4.5" data-path="4-chapter-4-simulation.html"><a href="4-chapter-4-simulation.html#monte-carlo-method"><i class="fa fa-check"></i><b>4.5</b> Monte Carlo Method</a></li>
+<li class="chapter" data-level="4.6" data-path="4-chapter-4-simulation.html"><a href="4-chapter-4-simulation.html#section"><i class="fa fa-check"></i><b>4.6</b> </a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i>Conclusion</a><ul>
+<li class="chapter" data-level="4.7" data-path="conclusion.html"><a href="conclusion.html#future-work"><i class="fa fa-check"></i><b>4.7</b> Future Work</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="A-the-first-appendix.html"><a href="A-the-first-appendix.html"><i class="fa fa-check"></i><b>A</b> The First Appendix</a></li>
+<li class="chapter" data-level="B" data-path="B-the-second-appendix-for-fun.html"><a href="B-the-second-appendix-for-fun.html"><i class="fa fa-check"></i><b>B</b> The Second Appendix, for Fun</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Neural Network Methods in Complex Survey Imputation</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="chapter-4-simulation" class="section level1">
+<h1><span class="header-section-number">Chapter 4</span> Chapter 4: Simulation</h1>
+<div id="exploration-of-methods-in-simulation" class="section level2">
+<h2><span class="header-section-number">4.1</span> Exploration of Methods in Simulation</h2>
+<p>Simulated data is used to evaluate the methods in order to get an understanding of their performance on a data set with known characteristics.</p>
+<p>Full insight into the feature distributions, generative function, random noise, and systematic missingness allow for controlled experimentation on when certain methods thrive.</p>
+</div>
+<div id="high-dimension-simulation" class="section level2">
+<h2><span class="header-section-number">4.2</span> High-Dimension Simulation</h2>
+<ul>
+<li>noisy parameters</li>
+<li>higher dimension (for size of data)</li>
+</ul>
+<p><span class="citation">Hastie, Tibshirani, &amp; Tibshirani (2017)</span></p>
+<p>Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data age, gender, ethnicity, and education might have a predictive relationship with income, while a number of others such as XXXXXXX do not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. {<span class="citation">Hastie et al. (2017)</span>}</p>
+<p>These additional “noisy” parameters are approximated in simulated data by making the generative function of the labels <span class="math inline">\(y\)</span> not a function of a number of the features. All methods used in the simulation are accompanied by their “oracle” counterparts, meaning the same method is run two times: one with access to all features, the oracle restricted only to the relevant features which are inputs to the generative function.</p>
+</div>
+<div id="monte-carlo-simulation" class="section level2">
+<h2><span class="header-section-number">4.3</span> Monte Carlo Simulation</h2>
+<p>Monte Carlo (MC) simulation attempts to overcome the inherent randomness of sampling and neural network training by repeated iterations of the sampling, training, and evaluation steps. A distribution of evaluations is made over many possible samples from the population to get a more complete interpretation of the results.</p>
+<p>It should be noted that neural networks can be more optimized than their performance in MC simulation. This is because a network can be intentionally over-trained on the training data, then re-trained from scratch to the number of epohcs which minimized the validation loss. This poses a challenge in MC simulation, however, where many iterations without user input are needed. Additionally, runtime becomes a vastly greater concern when networks must be over-trained through many epochs.</p>
+</div>
+<div id="creating-a-simulated-population" class="section level2">
+<h2><span class="header-section-number">4.4</span> Creating a Simulated Population</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)</code></pre></div>
+<pre><code>-- Attaching packages ------------------------------------------ tidyverse 1.2.1 --</code></pre>
+<pre><code>v tibble  2.0.1     v purrr   0.3.0
+v tidyr   0.8.2     v stringr 1.4.0
+v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>-- Conflicts --------------------------------------------- tidyverse_conflicts() --
+x dplyr::filter()          masks stats::filter()
+x kableExtra::group_rows() masks dplyr::group_rows()
+x dplyr::lag()             masks stats::lag()</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rescale &lt;-<span class="st"> </span><span class="cf">function</span>(vec) { <span class="co"># rescale to 0,1</span>
+  (vec <span class="op">-</span><span class="st"> </span><span class="kw">min</span>(vec)) <span class="op">/</span><span class="st"> </span>(<span class="kw">max</span>(vec) <span class="op">-</span><span class="st"> </span><span class="kw">min</span>(vec))
+}
+
+N =<span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">5</span>
+n =<span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">3</span>
+it &lt;-<span class="st"> </span><span class="dv">100</span>
+p_y_ep_control &lt;-<span class="st"> </span><span class="dv">1</span>
+
+p_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">runif</span>(N, <span class="op">-</span><span class="dv">30</span>, <span class="dv">30</span>)
+p_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">runif</span>(N, <span class="op">-</span><span class="dv">30</span>, <span class="dv">30</span>)
+nulls &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(<span class="dv">20</span><span class="op">*</span>N, <span class="dv">0</span>, <span class="dv">8</span>), <span class="dt">ncol =</span> <span class="dv">20</span>)
+
+p_y_ep &lt;-<span class="st"> </span><span class="kw">rnorm</span>(N, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> p_y_ep_control)
+
+p_y &lt;-<span class="st"> </span>p_<span class="dv">1</span><span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>p_<span class="dv">2</span><span class="op">^</span><span class="dv">2</span> 
+
+p_y[p_y <span class="op">&gt;</span><span class="st"> </span><span class="kw">mean</span>(p_y)] &lt;-<span class="st"> </span><span class="kw">mean</span>(p_y)
+
+p_y &lt;-<span class="st"> </span>p_y <span class="op">+</span><span class="st"> </span>p_y_ep
+p_y &lt;-<span class="st"> </span><span class="kw">abs</span>(p_y)
+
+p_pi_ep &lt;-<span class="st"> </span><span class="kw">rnorm</span>(N, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">1</span>)
+temp_pi &lt;-<span class="st"> </span><span class="kw">sqrt</span>(p_y) <span class="op">+</span><span class="st"> </span>p_pi_ep
+temp_pi &lt;-<span class="st"> </span><span class="kw">rescale</span>(temp_pi)
+p_pi &lt;-<span class="st"> </span>temp_pi <span class="op">*</span><span class="st"> </span>(n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(temp_pi))
+
+p_df &lt;-<span class="st"> </span><span class="kw">cbind</span>(p_<span class="dv">1</span>, p_<span class="dv">2</span>, p_y, p_pi, nulls)
+p_tbl &lt;-<span class="st"> </span><span class="kw">as.tibble</span>(p_df)
+
+<span class="co"># Statistic_tracker stores the mean estimates of the sample for each method</span>
+statistic_tracker &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">true_mean =</span> <span class="kw">numeric</span>(it), 
+                                <span class="dt">oracle_mean =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">pi_naive_mean =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">median_imp_mean =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">lin_imp_mean =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">lin_oracle =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">nn_imp_mean =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">nn_oracle =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">nn_pi_imp_mean =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">nn_pi_oracle =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">nn_resamp_imp_mean =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">nn_resamp_oracle =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">nn_wmse_imp_mean =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">nn_wmse_oracle =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">nn_deriv_imp_mean =</span> <span class="kw">numeric</span>(it),
+                                <span class="dt">nn_deriv_oracle =</span> <span class="kw">numeric</span>(it))</code></pre></div>
+</div>
+<div id="monte-carlo-method" class="section level2">
+<h2><span class="header-section-number">4.5</span> Monte Carlo Method</h2>
+<p>I’m thinking that the code for all the methods can be in the back of the thesis in some kind of index.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">true_mean &lt;-<span class="st"> </span><span class="cf">function</span>(data) {
+  <span class="kw">mean</span>(data<span class="op">$</span>y)
+}
+
+oracle_mean &lt;-<span class="st"> </span><span class="cf">function</span>(data) {
+  hat_N_sample &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>data<span class="op">$</span>pi)
+  (<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>hat_N_sample) <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>((<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>data<span class="op">$</span>pi) <span class="op">*</span><span class="st"> </span>data<span class="op">$</span>y)
+}
+
+<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>it) {
+  sample_population_by_pi &lt;-<span class="st"> </span><span class="kw">sample_n</span>(<span class="dt">tbl =</span> p_tbl, <span class="dt">size =</span> n, <span class="dt">replace =</span> <span class="ot">FALSE</span>, <span class="dt">weight =</span> p_pi)
+  
+  df &lt;-<span class="st"> </span>sample_population_by_pi <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rename</span>(<span class="dt">x_1 =</span> p_<span class="dv">1</span>, <span class="co">#Since we are not dealing with population p_ anymore</span>
+                                           <span class="dt">x_2 =</span> p_<span class="dv">2</span>,
+                                           <span class="dt">pi =</span> p_pi,
+                                           <span class="dt">y =</span> p_y)
+  <span class="co"># True mean</span>
+  statistic_tracker<span class="op">$</span>true_mean &lt;-<span class="st"> </span><span class="kw">true_mean</span>(df)
+  
+  <span class="co"># Oracle mean estimate</span>
+  statistic_tracker<span class="op">$</span>oracle_mean &lt;-<span class="st"> </span><span class="kw">oracle_mean</span>(df)
+
+  <span class="co"># Systematic bias is introduced</span>
+  indices &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(df), .<span class="dv">2</span><span class="op">*</span><span class="kw">nrow</span>(df), <span class="dt">prob =</span> df<span class="op">$</span>y)
+  dropped_obs &lt;-<span class="st"> </span>df[indices,]
+  reduced_df &lt;-<span class="st"> </span>df[<span class="op">-</span>indices,]
+  
+  <span class="co"># Oracle data set is made by removing uncorrelated features</span>
+  odf &lt;-<span class="st"> </span>df[,<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>]
+  o_dropped_obs &lt;-<span class="st"> </span>odf[indices,]
+  o_reduced_df &lt;-<span class="st"> </span>odf[<span class="op">-</span>indices,]
+  
+}</code></pre></div>
+</div>
+<div id="section" class="section level2">
+<h2><span class="header-section-number">4.6</span> </h2>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="3-methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="conclusion.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": [["thesis.pdf", "PDF"], ["thesis.epub", "EPUB"], ["thesis.docx", "Word"]],
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

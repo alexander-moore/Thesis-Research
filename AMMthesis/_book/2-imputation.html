@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Chapter 2 Imputation | Neural Network Methods in Complex Surveys</title>
+  <meta name="description" content="Chapter 2 Imputation | Neural Network Methods in Complex Surveys">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+
+  <meta property="og:title" content="Chapter 2 Imputation | Neural Network Methods in Complex Surveys" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Imputation | Neural Network Methods in Complex Surveys" />
+  
+  
+  
+
+<meta name="author" content="Alexander Michael Moore">
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="index.html">
+<link rel="next" href="3-math-sci.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./"></a></li>
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Delete line 6 if you only have one advisor</a></li>
+<li class="chapter" data-level="2" data-path="2-imputation.html"><a href="2-imputation.html"><i class="fa fa-check"></i><b>2</b> Imputation</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-imputation.html"><a href="2-imputation.html#survey-statistics"><i class="fa fa-check"></i><b>2.1</b> Survey Statistics</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-math-sci.html"><a href="3-math-sci.html"><i class="fa fa-check"></i><b>3</b> Mathematics and Science</a><ul>
+<li class="chapter" data-level="3.1" data-path="3-math-sci.html"><a href="3-math-sci.html#math"><i class="fa fa-check"></i><b>3.1</b> Math</a></li>
+<li class="chapter" data-level="3.2" data-path="3-math-sci.html"><a href="3-math-sci.html#chemistry-101-symbols"><i class="fa fa-check"></i><b>3.2</b> Chemistry 101: Symbols</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="3-math-sci.html"><a href="3-math-sci.html#typesetting-reactions"><i class="fa fa-check"></i><b>3.2.1</b> Typesetting reactions</a></li>
+<li class="chapter" data-level="3.2.2" data-path="3-math-sci.html"><a href="3-math-sci.html#other-examples-of-reactions"><i class="fa fa-check"></i><b>3.2.2</b> Other examples of reactions</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="3-math-sci.html"><a href="3-math-sci.html#physics"><i class="fa fa-check"></i><b>3.3</b> Physics</a></li>
+<li class="chapter" data-level="3.4" data-path="3-math-sci.html"><a href="3-math-sci.html#biology"><i class="fa fa-check"></i><b>3.4</b> Biology</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-ref-labels.html"><a href="4-ref-labels.html"><i class="fa fa-check"></i><b>4</b> Tables, Graphics, References, and Labels</a><ul>
+<li class="chapter" data-level="4.1" data-path="4-ref-labels.html"><a href="4-ref-labels.html#tables"><i class="fa fa-check"></i><b>4.1</b> Tables</a></li>
+<li class="chapter" data-level="4.2" data-path="4-ref-labels.html"><a href="4-ref-labels.html#figures"><i class="fa fa-check"></i><b>4.2</b> Figures</a></li>
+<li class="chapter" data-level="4.3" data-path="4-ref-labels.html"><a href="4-ref-labels.html#footnotes-and-endnotes"><i class="fa fa-check"></i><b>4.3</b> Footnotes and Endnotes</a></li>
+<li class="chapter" data-level="4.4" data-path="4-ref-labels.html"><a href="4-ref-labels.html#bibliographies"><i class="fa fa-check"></i><b>4.4</b> Bibliographies</a></li>
+<li class="chapter" data-level="4.5" data-path="4-ref-labels.html"><a href="4-ref-labels.html#anything-else"><i class="fa fa-check"></i><b>4.5</b> Anything else?</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i>Conclusion</a></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="A-the-first-appendix.html"><a href="A-the-first-appendix.html"><i class="fa fa-check"></i><b>A</b> The First Appendix</a></li>
+<li class="chapter" data-level="B" data-path="B-the-second-appendix-for-fun.html"><a href="B-the-second-appendix-for-fun.html"><i class="fa fa-check"></i><b>B</b> The Second Appendix, for Fun</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Neural Network Methods in Complex Surveys</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="imputation" class="section level1">
+<h1><span class="header-section-number">Chapter 2</span> Imputation</h1>
+<div id="survey-statistics" class="section level2">
+<h2><span class="header-section-number">2.1</span> Survey Statistics</h2>
+<blockquote>
+<p>Researchers in the social science and health sciences are increasingly interested in using data from complex surveys to conduct the same sorts of analyses that they traditionally conduct with more straightforward data. Medical researchers are also increasingly aware of the advantages of well-designed subsamples when measuring novel, expensive variables on an existing cohort. - Lumley 1969</p>
+</blockquote>
+<p>The implicit pervasiveness of survey statistics in all data motivates our exploration into its significance in imputation.</p>
+<p>Survey statistics differ from statistics modelling in the specification of the random process that generates the data. In model-based statistics, some underlying generative model from which observations are drawn is assumed to exist. By understanding or approximating this model from data, one may draw conclusions on the nature of the generative function provided no meaningful changes to the data are made.</p>
+<p>Contrary to model-based statistics, the analysis of complex survey samples are design based. The observations from a researcher-specified population have fixed features, and randomness is introduced when these observations are drawn from the population according to some stochastic design. This random process is under the control of the researcher, and can be known precisely. The significance of design-based methods is that the probability sample is the procedure for taking samples from a population, not just the resulting data. Using this method, the features of the population from which the observations are drawn may be estimated, but these conclusions may not generalize to other populations. With understanding of the survey design from which data observations arise, the researcher may make improved estimates of the population of study (Lumley 1969).</p>
+<p>The probability sample is the fundamental concept of design-based inference. Taking a random sample of 36,000 people from Oregon is an example of a survey design which implies independent and equal probability sampling of all humans in the state. The Law of Large Numbers is invoked to assume the distribution of sampled observations represent the population from which they are drawn according to any features of interest to the researcher, such as height, weight, or age.</p>
+<p>This type of surveying can be complicated by adding a stratifying element, such as randomly sampling 1,000 people from each of the 36 counties of Oregon. The data created by such a design would likely not be representative of the state, since people from lower-population counties would be more likely to be sampled. However, since the probability of each person in the sample being randomly selected is known (since the population of each county is known), this is still a probability sample. The key point of this process is that a probability sample is the procedure for taking samples from a population, not “just the data we happen to end up with” (Lumley 1969).</p>
+<p>There are four requirements for a data set to be a probability sample:</p>
+<ol style="list-style-type: decimal">
+<li><p>Every individual in the population must have a non-zero probability of ending up in the sample.</p></li>
+<li><p>The probability of inclusion must be known for every individual who does end up in the sample.</p></li>
+<li><p>Every pair of individuals in the sample must have a non-zero probability of both ending up in the sample.</p></li>
+<li><p>The probability of every pair of individuals being included in the sample must be known for every pair of individuals in the sample.</p></li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="3-math-sci.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": [["thesis.pdf", "PDF"], ["thesis.epub", "EPUB"], ["thesis.docx", "Word"]],
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

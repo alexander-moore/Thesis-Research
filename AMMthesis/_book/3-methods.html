@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Chapter 3 Methods | Neural Network Methods in Complex Survey Imputation</title>
+  <meta name="description" content="Chapter 3 Methods | Neural Network Methods in Complex Survey Imputation">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+
+  <meta property="og:title" content="Chapter 3 Methods | Neural Network Methods in Complex Survey Imputation" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Methods | Neural Network Methods in Complex Survey Imputation" />
+  
+  
+  
+
+<meta name="author" content="Alexander Michael Moore">
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="2-math-sci.html">
+<link rel="next" href="4-simulation.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./"></a></li>
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a></li>
+<li class="chapter" data-level="1" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html"><i class="fa fa-check"></i><b>1</b> Complex Surveys</a><ul>
+<li class="chapter" data-level="1.1" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html#survey-statistics"><i class="fa fa-check"></i><b>1.1</b> Survey Statistics</a></li>
+<li class="chapter" data-level="1.2" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html#imputation"><i class="fa fa-check"></i><b>1.2</b> Imputation</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-math-sci.html"><a href="2-math-sci.html"><i class="fa fa-check"></i><b>2</b> Neural Networks</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-math-sci.html"><a href="2-math-sci.html#introduction-to-machine-learning"><i class="fa fa-check"></i><b>2.1</b> Introduction to Machine Learning</a></li>
+<li class="chapter" data-level="2.2" data-path="2-math-sci.html"><a href="2-math-sci.html#neural-networks"><i class="fa fa-check"></i><b>2.2</b> Neural Networks</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="2-math-sci.html"><a href="2-math-sci.html#background-and-context"><i class="fa fa-check"></i><b>2.2.1</b> Background and Context</a></li>
+<li class="chapter" data-level="2.2.2" data-path="2-math-sci.html"><a href="2-math-sci.html#basics"><i class="fa fa-check"></i><b>2.2.2</b> Basics</a></li>
+<li class="chapter" data-level="2.2.3" data-path="2-math-sci.html"><a href="2-math-sci.html#representation-learning"><i class="fa fa-check"></i><b>2.2.3</b> Representation Learning</a></li>
+<li class="chapter" data-level="2.2.4" data-path="2-math-sci.html"><a href="2-math-sci.html#neural-networks-for-complex-survey-data"><i class="fa fa-check"></i><b>2.2.4</b> Neural Networks for Complex Survey Data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-methods.html"><a href="3-methods.html"><i class="fa fa-check"></i><b>3</b> Methods</a><ul>
+<li class="chapter" data-level="3.0.1" data-path="3-methods.html"><a href="3-methods.html#drop.na"><i class="fa fa-check"></i><b>3.0.1</b> Drop.NA</a></li>
+<li class="chapter" data-level="3.1" data-path="3-methods.html"><a href="3-methods.html#mean-estimation-methods"><i class="fa fa-check"></i><b>3.1</b> Mean Estimation Methods</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="3-methods.html"><a href="3-methods.html#median-imputation"><i class="fa fa-check"></i><b>3.1.1</b> Median Imputation</a></li>
+<li class="chapter" data-level="3.1.2" data-path="3-methods.html"><a href="3-methods.html#linear-regression-imputation-weighted-pi"><i class="fa fa-check"></i><b>3.1.2</b> Linear Regression Imputation (weighted pi)</a></li>
+<li class="chapter" data-level="3.1.3" data-path="3-methods.html"><a href="3-methods.html#naive-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.3</b> Naive Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.4" data-path="3-methods.html"><a href="3-methods.html#loss-weighted-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.4</b> Loss-Weighted Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.5" data-path="3-methods.html"><a href="3-methods.html#pi-feature-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.5</b> <span class="math inline">\(\pi\)</span>-Feature Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.6" data-path="3-methods.html"><a href="3-methods.html#weighted-resample-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.6</b> Weighted Resample Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.7" data-path="3-methods.html"><a href="3-methods.html#derived-feature-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.7</b> Derived Feature Neural Network Imputation</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="3-methods.html"><a href="3-methods.html#note"><i class="fa fa-check"></i><b>3.2</b> Note</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-simulation.html"><a href="4-simulation.html"><i class="fa fa-check"></i><b>4</b> Simulation</a><ul>
+<li class="chapter" data-level="4.1" data-path="4-simulation.html"><a href="4-simulation.html#exploration-of-methods-in-simulation"><i class="fa fa-check"></i><b>4.1</b> Exploration of Methods in Simulation</a></li>
+<li class="chapter" data-level="4.2" data-path="4-simulation.html"><a href="4-simulation.html#high-dimension-simulation"><i class="fa fa-check"></i><b>4.2</b> High-Dimension Simulation</a></li>
+<li class="chapter" data-level="4.3" data-path="4-simulation.html"><a href="4-simulation.html#monte-carlo-simulation"><i class="fa fa-check"></i><b>4.3</b> Monte Carlo Simulation</a></li>
+<li class="chapter" data-level="4.4" data-path="4-simulation.html"><a href="4-simulation.html#creating-a-simulated-population"><i class="fa fa-check"></i><b>4.4</b> Creating a Simulated Population</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i>Conclusion</a><ul>
+<li class="chapter" data-level="4.5" data-path="conclusion.html"><a href="conclusion.html#future-work"><i class="fa fa-check"></i><b>4.5</b> Future Work</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="A-the-first-appendix.html"><a href="A-the-first-appendix.html"><i class="fa fa-check"></i><b>A</b> The First Appendix</a></li>
+<li class="chapter" data-level="B" data-path="B-the-second-appendix-for-fun.html"><a href="B-the-second-appendix-for-fun.html"><i class="fa fa-check"></i><b>B</b> The Second Appendix, for Fun</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Neural Network Methods in Complex Survey Imputation</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="methods" class="section level1">
+<h1><span class="header-section-number">Chapter 3</span> Methods</h1>
+<p>Neural Network Imputation in Complex Survey Design: “In a complex survey design, characteristics of the population may affect the sample and are used as design variables. Sample design involves the concepts of stratification, clustering, etc. These concepts usually reflect a complex population structure and should be accounted for during the analysis. In design-based inference, the main source of random variation is induced by the sampling mechanism. Furthermore, in complex survey design, the variance is the average squared deviation of the estimate from its expected value, averages over all possible samples which could be obtained using a given design. Design-based approaches make use of sampling weights as part of the estimation and inference procedures” “One major advantage of artificial neural networks (ANN) is their flexibility in modelling many types of nonlinear relationships. ANNs can be structures to account for complex survey designs and for unit nonresponse as well. In general, sampling weights have been used to adjust for the complex sampling design using unequal sampling.” They use two methods: weighted least squares, and constructing the ANN according to sampling design.</p>
+<p>Missingness is an extremely common problem in real data sets. Many analyses and algorithms such as regression, classification, PCA, and clustering done throughout the sciences rely on having entirely complete observations. For this reason, some strategy must be adopted to transform a raw data set into an analyzable one. There are multiple approaches for a researcher interested in going about this process. The researcher has a data set gathered under a complex survey design where the features <span class="math inline">\(x_1,.x_n\)</span> and respondent probability <span class="math inline">\(\pi_i\)</span> is known for all <span class="math inline">\(i\)</span>, though the label <span class="math inline">\(y_i\)</span> may be missing due to item nonresponse.</p>
+<p>In order to create a data set with no missing values, the researcher may choose to adopt one of the following methods:</p>
+<div id="drop.na" class="section level3">
+<h3><span class="header-section-number">3.0.1</span> Drop.NA</h3>
+<p>One option is to simply remove the observations with missing labels from the data set. This method is extremely easy to implement and serves as a sure-fire way to end up with a data set with no missing values. There are two downsides to this method: The first is that removing observations with missingness obviously decreases the size of the data set and can nontrivially reduce the fidelity of models aiming to understand the population from which the data was taken. The second problem is the assumption of random missingness. If there is any correlation of label to amount of missingness, systematic bias is introduced into the data set, as discussed in Chapter 1. If there is a possibility that larger values are more likely to be dropped, then as a result the sample mean would underestimate the population.</p>
+</div>
+<div id="mean-estimation-methods" class="section level2">
+<h2><span class="header-section-number">3.1</span> Mean Estimation Methods</h2>
+<p>If the researcher is interested only in estimating population mean:</p>
+<p>A common statistic of interest to a researcher is an estimate of the population mean <span class="math inline">\(\mu_y\)</span> using the information from the complex sample with missingness, but taking the naive mean of complete cases is insufficient for two reasons. The first has been discussed in chapter 1, which is the potential of systematic missingness in the data. The second is that the naive mean makes the assumption that the observations represent equal proportions of the population, as in an <em>i.i.d.</em> sample.</p>
+<p>Naive Mean: <span class="math display">\[
+\hat \mu_y = \frac{1}{r} \sum_{i=1}^r y_i
+\]</span> Where <span class="math inline">\(r\)</span> are the complete-case respondents.</p>
+<p>We resolve this issue in the mean estimate formula by weighting contributions to the mean by <span class="math inline">\(\frac{1}{\pi_i}\)</span>, the approximate number of population members represented by observation <span class="math inline">\(i\)</span>:</p>
+<p>Pi-Corrected Naive Mean: <span class="math display">\[
+\hat \mu_y = \frac{1}{r} \sum_{i=1}^r y_i \frac{1}{\pi_i}
+\]</span> This resolves the problem of ignoring the survey design in estimation, but does not account for systematic bias resulting from missingness. This will be an under-estimate of the true population mean in the presence of systematic missingess of large observations.</p>
+<p>Let <span class="math inline">\(\hat \mu_y\)</span> be the sample estimate of the population mean <span class="math inline">\(\mu_y\)</span>. The oracle mean can be considered the “best estimate” of <span class="math inline">\(\mu_y\)</span>, but it is only available in simulation. The oracle mean uses information that the simulation manually drops so as to create an ideal population estimate given a survey sample:</p>
+<p>Oracle Mean: <span class="math display">\[
+\hat \mu_y = \frac{1}{n} \sum_{i=1}^n y_i \frac{1}{\pi_i}
+\]</span> The oracle mean will be used as a benchmark against which the other methods will be compared.</p>
+<p>In order to combat the presence of systematic missing values, we utilize imputation to label the missing observations with the best estimate of <span class="math inline">\(y_i\)</span>. Imputation has the added benefit of approximating a complete-case dataset without dropping observations.</p>
+<p>Works for both: For model-imputation methods, they each use this special mean-predictor function. (the N_hat one)</p>
+<p>The following methods utilize different imputation techniques to create a complete-case dataset by estimating missing values based on information from the complete cases. Once the missing values are imputed, the population mean is estimated</p>
+<p>hat_N_sample &lt;- sum(1/df<span class="math inline">\(pi)  statistic_tracker\)</span>nn_deriv_imp_mean[i] &lt;- (1 / hat_N_sample)*(sum(reduced_df<span class="math inline">\(y / reduced_df\)</span>pi) + sum(nn_y_hat / dropped_obs$pi))</p>
+<p>Imputation Mean Estimator: <span class="math display">\[
+\hat \mu_y(\text{method}) = \frac{1}{\hat N} (\sum_{i=1}^{r} \frac{y_i}{\pi_i} + \sum_{i=1}^{y-r} \frac{\hat y_i}{\pi_i})
+\]</span> Where <span class="math inline">\(y-r\)</span> are the missing cases, <span class="math inline">\(r\)</span> are the respondents, and <span class="math inline">\(\hat N = \sum_{i=1}^n \frac{1}{\pi_i}\)</span>.</p>
+<div id="median-imputation" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Median Imputation</h3>
+<p>Median imputation is another easy way to get complete cases in data for analysis or estimation. Median imputation simply fills in the missing labels with the median of the respondent labels. Median imputation has multiple problems for analysis or estimation. The median offers equal weighting to all observations in a data set, meaning it destroys the informativity of the inclusion probability <span class="math inline">\(\pi\)</span>. It also removes correlation of feature and label, making analyses such as PCA less informative, as covariate relations dictate axis derivations. Median imputation is extremely fast to execute and implement, but creates noninformative observations in the same manner as the Drop.NA method.</p>
+</div>
+<div id="linear-regression-imputation-weighted-pi" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> Linear Regression Imputation (weighted pi)</h3>
+<p>Linear regression is a convex optimization problem of <span class="math inline">\(n+1\)</span> parameters, where <span class="math inline">\(\hat f(x) = \hat y = (m_1x_1 + .+ m_nx_n)+b\)</span> is the estimate of <span class="math inline">\(y\)</span> for observation <span class="math inline">\(i\)</span>. Using the mean of the squared difference between the predicted and actual responses of a training data set, Weighted-MSE Linear Regression scales the squared error contribution of each observation by <span class="math inline">\(\frac{1}{\pi_i}\)</span> to account for rare-case observations with potentially systematic missingess: <span class="math display">\[
+\text{MSE}(f) = \frac{1}{r} \sum_{i=1}^r  (\frac{1}{\pi}(\hat{y} - y))^2
+\]</span></p>
+</div>
+<div id="naive-neural-network-imputation" class="section level3">
+<h3><span class="header-section-number">3.1.3</span> Naive Neural Network Imputation</h3>
+<p>Neural Network Imputation is our baseline model for estimating a population mean. The number of hidden layers, nodes, and loss is left to the user, which would be an incorporation of domain knowledge or exploratory modelling to derive a reasonable model load for learning the data’s generative function. In the context of the researcher having minimal knowledge of the data, a neural network with 2 hidden layers of 64 and 32 units respectively activated by <code>relu</code> functions is a reasonable starting point. Overtraining due to overflexible models can be stimied with a validation set, assuming the data is not small (<span class="math inline">\(n &gt; 10^3\)</span>). “Naive” neural network imputation refers to this model not having access to the <span class="math inline">\(\pi\)</span> feature of the observations as a predictor or incorporate it in any way. This model uses the assumption that the data is <em>i.i.d</em> as a representative for ignoring the survey design, an assumption which is known to be a significant problem. Regardless, the neural network should approximate the generative function with some nonparametric fit, but underestimate the population mean as a result of systematic missingness and observation equity.</p>
+</div>
+<div id="loss-weighted-neural-network-imputation" class="section level3">
+<h3><span class="header-section-number">3.1.4</span> Loss-Weighted Neural Network Imputation</h3>
+<p>Loss-Weighted Neural Network Imputation takes inspiration from the weighted linear regression algorithm. This neural network training uses the same <span class="math inline">\(\pi\)</span>-weighted MSE, but sacrifices the convexity of the loss function, which means pervasive local minima which are distracting to the learning algorithm. The existence of local minima from the high-dimensional model space comes from the flexibility of the many hidden neurons weight transformations within the model. A loss-weighted neural network hopes to account for systematic missingness in the data by heavily punishing the loss term generated from rarer observations. Since rare observations are more likely to be missing, they must be given more weight since they appear less in the training data then the population. Thus a weighting scheme attempts to un-do systematic missingness by making the rarer observations as “heavy” as they would be in the true population by making outliers be worth multiple observations to the loss contribution.</p>
+</div>
+<div id="pi-feature-neural-network-imputation" class="section level3">
+<h3><span class="header-section-number">3.1.5</span> <span class="math inline">\(\pi\)</span>-Feature Neural Network Imputation</h3>
+<p>A <span class="math inline">\(\pi\)</span>-feature neural network has access to <span class="math inline">\(\pi\)</span> as a predictor during training and testing. This is a realistic assumption to make as data collected under a complex survey design must have a <span class="math inline">\(\pi\)</span> probability regardless of whether the label is missing. This method has the benefit of adapting to whether <span class="math inline">\(\pi\)</span> is truly correlated to <span class="math inline">\(y\)</span>, which the loss-weighted method assumes. A neural network optimist could claim that if there is a significant relationship of <span class="math inline">\(\pi\)</span> to <span class="math inline">\(y\)</span>, it will be reflected in the loss during training and the network will adapt accordingly to the information provided by the feature. However if <span class="math inline">\(\pi\)</span> and <span class="math inline">\(y\)</span> are uncorrelated and the missingess is random, the network will not still weight the observations and will correctly ignore the feature to create more accurate predictions with no need for domain knowledge on the relationship of the missingness.</p>
+<p>include_graphics() #“C:DataWriting Rmd.png” # but one of the inputs is also pi</p>
+</div>
+<div id="weighted-resample-neural-network-imputation" class="section level3">
+<h3><span class="header-section-number">3.1.6</span> Weighted Resample Neural Network Imputation</h3>
+<p>The weighted resample method uses the same model as the naive neural network imputation but uses a data preprocessing step to incorporate the survey design information. A weighted resample of size <span class="math inline">\(n\)</span> is taken from the sample with replacement with observation selected by probability <span class="math inline">\(\frac{1}{\pi}\)</span>. The inference of this method is an attempt to “undo” the effects of survey design in gathering the data. A weighted resample in which observations are selected by the inverse inclusion probability uses the insight that an observation with inclusion probability <span class="math inline">\(\pi\)</span> represents <span class="math inline">\(\frac{1}{\pi}\)</span> members of the population. By sampling on this probability, the resampled data set should be an estimate of an <em>i.i.d.</em> sample from the population, making it viable for supervised learning ignoring the survey design elements. From this point the naive neural network method is applied (and directly compared to naive neural network estimates), since ideally this is <em>i.i.d</em> data without need for survey design information tweaks on the algorithm.</p>
+</div>
+<div id="derived-feature-neural-network-imputation" class="section level3">
+<h3><span class="header-section-number">3.1.7</span> Derived Feature Neural Network Imputation</h3>
+<p>This method pre-processes the data by deriving additional features, such as the product of two features and the product of a feature and the inclusion probability. The intention of this method is expediting the training process to allow the approximation of more complex generative functions with less model capacity and training. Intuitively, the relationship of <span class="math inline">\(\pi\)</span> to <span class="math inline">\(x_i\)</span> in the missing data, should it be relevant, will be more easily learned for superior prediction accuracy.</p>
+</div>
+</div>
+<div id="note" class="section level2">
+<h2><span class="header-section-number">3.2</span> Note</h2>
+<ul>
+<li>You can add a Reed Thesis citation<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> option. The best way to do this is to use the phdthesis type of citation, and use the optional “type” field to enter “Reed thesis” or “Undergraduate thesis.”</li>
+</ul>
+
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p><span class="citation">Noble (2002)</span><a href="3-methods.html#fnref1">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="2-math-sci.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="4-simulation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": [["thesis.pdf", "PDF"], ["thesis.epub", "EPUB"], ["thesis.docx", "Word"]],
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

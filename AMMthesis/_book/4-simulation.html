@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Chapter 4 Simulation | Neural Network Methods in Complex Survey Imputation</title>
+  <meta name="description" content="Chapter 4 Simulation | Neural Network Methods in Complex Survey Imputation">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+
+  <meta property="og:title" content="Chapter 4 Simulation | Neural Network Methods in Complex Survey Imputation" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 Simulation | Neural Network Methods in Complex Survey Imputation" />
+  
+  
+  
+
+<meta name="author" content="Alexander Michael Moore">
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="3-methods.html">
+<link rel="next" href="conclusion.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./"></a></li>
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a></li>
+<li class="chapter" data-level="1" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html"><i class="fa fa-check"></i><b>1</b> Complex Surveys</a><ul>
+<li class="chapter" data-level="1.1" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html#survey-statistics"><i class="fa fa-check"></i><b>1.1</b> Survey Statistics</a></li>
+<li class="chapter" data-level="1.2" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html#imputation"><i class="fa fa-check"></i><b>1.2</b> Imputation</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-math-sci.html"><a href="2-math-sci.html"><i class="fa fa-check"></i><b>2</b> Neural Networks</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-math-sci.html"><a href="2-math-sci.html#introduction-to-machine-learning"><i class="fa fa-check"></i><b>2.1</b> Introduction to Machine Learning</a></li>
+<li class="chapter" data-level="2.2" data-path="2-math-sci.html"><a href="2-math-sci.html#neural-networks"><i class="fa fa-check"></i><b>2.2</b> Neural Networks</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="2-math-sci.html"><a href="2-math-sci.html#background-and-context"><i class="fa fa-check"></i><b>2.2.1</b> Background and Context</a></li>
+<li class="chapter" data-level="2.2.2" data-path="2-math-sci.html"><a href="2-math-sci.html#basics"><i class="fa fa-check"></i><b>2.2.2</b> Basics</a></li>
+<li class="chapter" data-level="2.2.3" data-path="2-math-sci.html"><a href="2-math-sci.html#representation-learning"><i class="fa fa-check"></i><b>2.2.3</b> Representation Learning</a></li>
+<li class="chapter" data-level="2.2.4" data-path="2-math-sci.html"><a href="2-math-sci.html#neural-networks-for-complex-survey-data"><i class="fa fa-check"></i><b>2.2.4</b> Neural Networks for Complex Survey Data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-methods.html"><a href="3-methods.html"><i class="fa fa-check"></i><b>3</b> Methods</a><ul>
+<li class="chapter" data-level="3.0.1" data-path="3-methods.html"><a href="3-methods.html#drop.na"><i class="fa fa-check"></i><b>3.0.1</b> Drop.NA</a></li>
+<li class="chapter" data-level="3.1" data-path="3-methods.html"><a href="3-methods.html#mean-estimation-methods"><i class="fa fa-check"></i><b>3.1</b> Mean Estimation Methods</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="3-methods.html"><a href="3-methods.html#median-imputation"><i class="fa fa-check"></i><b>3.1.1</b> Median Imputation</a></li>
+<li class="chapter" data-level="3.1.2" data-path="3-methods.html"><a href="3-methods.html#linear-regression-imputation-weighted-pi"><i class="fa fa-check"></i><b>3.1.2</b> Linear Regression Imputation (weighted pi)</a></li>
+<li class="chapter" data-level="3.1.3" data-path="3-methods.html"><a href="3-methods.html#naive-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.3</b> Naive Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.4" data-path="3-methods.html"><a href="3-methods.html#loss-weighted-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.4</b> Loss-Weighted Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.5" data-path="3-methods.html"><a href="3-methods.html#pi-feature-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.5</b> <span class="math inline">\(\pi\)</span>-Feature Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.6" data-path="3-methods.html"><a href="3-methods.html#weighted-resample-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.6</b> Weighted Resample Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.7" data-path="3-methods.html"><a href="3-methods.html#derived-feature-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.7</b> Derived Feature Neural Network Imputation</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="3-methods.html"><a href="3-methods.html#note"><i class="fa fa-check"></i><b>3.2</b> Note</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-simulation.html"><a href="4-simulation.html"><i class="fa fa-check"></i><b>4</b> Simulation</a><ul>
+<li class="chapter" data-level="4.1" data-path="4-simulation.html"><a href="4-simulation.html#exploration-of-methods-in-simulation"><i class="fa fa-check"></i><b>4.1</b> Exploration of Methods in Simulation</a></li>
+<li class="chapter" data-level="4.2" data-path="4-simulation.html"><a href="4-simulation.html#high-dimension-simulation"><i class="fa fa-check"></i><b>4.2</b> High-Dimension Simulation</a></li>
+<li class="chapter" data-level="4.3" data-path="4-simulation.html"><a href="4-simulation.html#monte-carlo-simulation"><i class="fa fa-check"></i><b>4.3</b> Monte Carlo Simulation</a></li>
+<li class="chapter" data-level="4.4" data-path="4-simulation.html"><a href="4-simulation.html#creating-a-simulated-population"><i class="fa fa-check"></i><b>4.4</b> Creating a Simulated Population</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i>Conclusion</a><ul>
+<li class="chapter" data-level="4.5" data-path="conclusion.html"><a href="conclusion.html#future-work"><i class="fa fa-check"></i><b>4.5</b> Future Work</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="A-the-first-appendix.html"><a href="A-the-first-appendix.html"><i class="fa fa-check"></i><b>A</b> The First Appendix</a></li>
+<li class="chapter" data-level="B" data-path="B-the-second-appendix-for-fun.html"><a href="B-the-second-appendix-for-fun.html"><i class="fa fa-check"></i><b>B</b> The Second Appendix, for Fun</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Neural Network Methods in Complex Survey Imputation</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="simulation" class="section level1">
+<h1><span class="header-section-number">Chapter 4</span> Simulation</h1>
+<p>Just 4 needs more work - ask kelly what it should say? Currently has mention of high-dimension, monte carlo, and methods (needs expansion)</p>
+<p>Discussion of outcomes Discussion of setups: generative function, number noisy variables, noise, results, all the parameters that i’ve chosen thus far Could someone re-create this simulation with the descriptions I gave them? Do everything in Latex, not code</p>
+<p>()</p>
+<div id="exploration-of-methods-in-simulation" class="section level2">
+<h2><span class="header-section-number">4.1</span> Exploration of Methods in Simulation</h2>
+<p>Simulated data is used to evaluate the methods in order to get an understanding of their performance on a data set with known characteristics.</p>
+<p>Full insight into the feature distributions, generative function, random noise, and systematic missingness allow for controlled experimentation on when certain methods thrive. Simulation allows for parameters such as label noise and feature informativity to be changed and measure the response of the methods across any domain.</p>
+</div>
+<div id="high-dimension-simulation" class="section level2">
+<h2><span class="header-section-number">4.2</span> High-Dimension Simulation</h2>
+<p>Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data age, gender, ethnicity, and education might have a predictive relationship with income, while a number of others such as XXXXXXX do not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. Inspired by research in best feature selection methods, non-correlated features are used in the model evaluation step in an attempt to more realistically simulate complex data <span class="citation">(Hastie, Tibshirani, &amp; Tibshirani, 2017)</span>. The addition of these features contributes to the curse of dimensionality and variability of estimates.</p>
+<p>These additional “noisy” parameters are simulated by making the generative function of the labels <span class="math inline">\(y\)</span> not a function of some of the features. All methods used in the simulation are accompanied by their “oracle” counterparts, meaning the same method is run two times: one with access to all features, the oracle restricted only to the relevant features which are inputs to the generative function.</p>
+</div>
+<div id="monte-carlo-simulation" class="section level2">
+<h2><span class="header-section-number">4.3</span> Monte Carlo Simulation</h2>
+<p>Monte Carlo (MC) simulation attempts to overcome the inherent randomness of sampling and model training by repeated iterations of the sampling, training, and evaluation steps. A distribution of output estimates is made over many potential samples from the population to get a more complete interpretation of the results.</p>
+<p>It should be noted that neural networks can be more optimized than their performance in MC simulation. This is because a network can be intentionally over-trained on the training data, then re-trained from scratch to the number of epochs which minimized the validation loss. This poses a challenge in MC simulation, however, where many iterations without user input are needed. Additionally, runtime becomes a vastly greater concern when networks must be over-trained through many epochs, more than doubling the execution time.</p>
+</div>
+<div id="creating-a-simulated-population" class="section level2">
+<h2><span class="header-section-number">4.4</span> Creating a Simulated Population</h2>
+<p>The size of the population is <span class="math inline">\(N=10^5\)</span> and the sample is <span class="math inline">\(n=10^3\)</span> observations. Despite neural networks thriving in higher-dimension settings (both of features and observations), complex surveys are often implemented on real data with scarce observations, making a lower-size simulation more suitable for generalizability.</p>
+<p>The features simulated population is made as the first step of the process. Two informative features <span class="math inline">\(p_1, p_2\)</span> are drawn from random uniform distribution: <span class="math display">\[
+f(x) = \frac{1}{30+30} \text{ for } x \in (-30, 30)
+\]</span> In addition to two informative features, there are <span class="math inline">\(20\)</span> uninformative features drawn from the normal distribution. This distribution is arbitrary but can have unintended consequences due to accidental correlation, noted in {<span class="citation">Hastie et al. (2017)</span>}.</p>
+<p>The population labels <span class="math inline">\(y\)</span> are a nonlinear function of the informative features: <span class="math display">\[
+y = p_1^2 + p_2^2
+\]</span> The labels are then made nonpolynomial by contorting the parabola into a “bowl with flat lip”: <span class="math display">\[
+y&#39; = \left\{ \begin{array}{cc} 
+                y &amp; \hspace{5mm} y&lt;\bar{y} \\
+                \bar{y} &amp; \hspace{5mm} y \geq \bar{y} \\
+                \end{array} \right.
+\]</span></p>
+<p><img src="C:/Users/Alexander/Documents/Thesis Data/Thesis Writing Rmd/AMMthesis/figure/bowl.png" style="display: block; margin: auto;" /></p>
+<p>Random noise <span class="math inline">\(\epsilon\)</span> with <span class="math inline">\(\sigma = 1\)</span> is then added to the transformed labels: <span class="math display">\[
+y&#39;&#39; = y&#39; + \epsilon_y
+\]</span></p>
+<p>An inclusion probability <span class="math inline">\(pi\)</span> is then assigned to each observation with a strong correlation to <span class="math inline">\(y\)</span>, as well as random normal noise with <span class="math inline">\(\sigma = 1\)</span>: <span class="math display">\[
+\pi = \sqrt{y&#39;&#39;} + \epsilon_\pi
+\]</span> These values are then rescaled to (0,1) AND THEN SOMETHING ELSE NOT REALLY SURE WHAT MY CODE SAYS</p>
+<p>Combining the information <span class="math inline">\(y,\pi, p_1, p_2\)</span> and uncorrelated features gives the population on which the simulation will be performed. The true mean of the population labels <span class="math inline">\(\mu_y\)</span> is now known and recorded.</p>
+<p>The Monte Carlo simulation is performed for 100 iterations. This is a low number of trials, but is constrained by the computation intensity of running 10 neural networks trained for hundreds of iterations each, as well as performing many weighted samples.</p>
+<p>Within each iteration, a single estimation procedure is performed. First, a weighted sample from the population is taken with respect to the inclusion probabilities <span class="math inline">\(\pi_i\)</span> on each observation. From this sample of <span class="math inline">\(n=10^3\)</span> observations, an oracle data set is made by dropping the noise columns, keeping only <span class="math inline">\(p_1, p_2, \pi,\)</span> and <span class="math inline">\(y\)</span>. This data set will be used as a benchmark to mirror each imputation method in order to gauge the potentially harmful effects of uninformative features common to real data.</p>
+<p>The first step is to record the oracle mean, calculated using information the other methods are not privy to: <span class="math display">\[
+oracle mean equation here instead of chapter 3?
+\]</span></p>
+<p>All subsequent methods are “real” methods, to be performed where there is missingness in the data. <span class="math inline">\(20\%\)</span> of the observations will havea missing label. Labels are dropped from the sample data set weighted by <span class="math inline">\(y\)</span>, so large labels are more likely to be absent. The result is the form of data we are using to simulate method performance: a complex sample taken from a population with some kind of systematic bias in item response.</p>
+<p>The <span class="math inline">\(\pi\)</span>-corrected mean estimate, weighted linear regression, and median imputation methods are all described fully in chapter 3, and are closed-form algorithms with no randomness in the fitting and estimation processes. The neural network models, however, have a much larger degree of flexibility and randomness involved in the implementation and execution of the estimate during simulation.</p>
+<p>Neural networks are trained using normalized data on non-convex loss curves in high-dimensional space, making their optimization process stochastic. This simulation uses the heuristic <code>adam</code> optimizer. Each model in this simulation uses a 2 hidden layer network with 32 hidden units per layer. Each layer is wrapped in the <code>relu</code> activation function: <span class="math display">\[
+\text{relu}(x) = \max(0,x)
+\]</span> The breadth and depth used here is a heuristic size which could potentially be optimized to suit the problem. This, however, creates a conflict of interest with information leakage which the other methods are not privy to, which induces bias for the success of these algorithms. To maintain the narrative of a minimal-knowledge naive fit, these models use a reasonable exploratory capacity. The models in the fitting process are manually over-trained, then re-trained from scratch to an optimal state. This is done using a validation data set of <span class="math inline">\(15\%\)</span> of the training data. Once trained to an approximate loss minima, the models predict on holdout test data (the observations missing labels) and the population mean estimate is computed and recorded.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="3-methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="conclusion.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": [["thesis.pdf", "PDF"], ["thesis.epub", "EPUB"], ["thesis.docx", "Word"]],
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,16 @@
+base
+devtools
+usethis
+dplyr
+ggplot2
+bookdown
+knitr
+thesisdown
+kableExtra
+tidyverse
+tibble
+tidyr
+readr
+purrr
+stringr
+forcats

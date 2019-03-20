@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Chapter 1 Complex Surveys | Neural Network Methods in Complex Survey Imputation</title>
+  <meta name="description" content="Chapter 1 Complex Surveys | Neural Network Methods in Complex Survey Imputation">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+
+  <meta property="og:title" content="Chapter 1 Complex Surveys | Neural Network Methods in Complex Survey Imputation" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 1 Complex Surveys | Neural Network Methods in Complex Survey Imputation" />
+  
+  
+  
+
+<meta name="author" content="Alexander Michael Moore">
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="index.html">
+<link rel="next" href="2-math-sci.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./"></a></li>
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a></li>
+<li class="chapter" data-level="1" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html"><i class="fa fa-check"></i><b>1</b> Complex Surveys</a><ul>
+<li class="chapter" data-level="1.1" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html#survey-statistics"><i class="fa fa-check"></i><b>1.1</b> Survey Statistics</a></li>
+<li class="chapter" data-level="1.2" data-path="1-complex-surveys.html"><a href="1-complex-surveys.html#imputation"><i class="fa fa-check"></i><b>1.2</b> Imputation</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-math-sci.html"><a href="2-math-sci.html"><i class="fa fa-check"></i><b>2</b> Neural Networks</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-math-sci.html"><a href="2-math-sci.html#introduction-to-machine-learning"><i class="fa fa-check"></i><b>2.1</b> Introduction to Machine Learning</a></li>
+<li class="chapter" data-level="2.2" data-path="2-math-sci.html"><a href="2-math-sci.html#neural-networks"><i class="fa fa-check"></i><b>2.2</b> Neural Networks</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="2-math-sci.html"><a href="2-math-sci.html#background-and-context"><i class="fa fa-check"></i><b>2.2.1</b> Background and Context</a></li>
+<li class="chapter" data-level="2.2.2" data-path="2-math-sci.html"><a href="2-math-sci.html#basics"><i class="fa fa-check"></i><b>2.2.2</b> Basics</a></li>
+<li class="chapter" data-level="2.2.3" data-path="2-math-sci.html"><a href="2-math-sci.html#representation-learning"><i class="fa fa-check"></i><b>2.2.3</b> Representation Learning</a></li>
+<li class="chapter" data-level="2.2.4" data-path="2-math-sci.html"><a href="2-math-sci.html#neural-networks-for-complex-survey-data"><i class="fa fa-check"></i><b>2.2.4</b> Neural Networks for Complex Survey Data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-methods.html"><a href="3-methods.html"><i class="fa fa-check"></i><b>3</b> Methods</a><ul>
+<li class="chapter" data-level="3.0.1" data-path="3-methods.html"><a href="3-methods.html#drop.na"><i class="fa fa-check"></i><b>3.0.1</b> Drop.NA</a></li>
+<li class="chapter" data-level="3.1" data-path="3-methods.html"><a href="3-methods.html#mean-estimation-methods"><i class="fa fa-check"></i><b>3.1</b> Mean Estimation Methods</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="3-methods.html"><a href="3-methods.html#median-imputation"><i class="fa fa-check"></i><b>3.1.1</b> Median Imputation</a></li>
+<li class="chapter" data-level="3.1.2" data-path="3-methods.html"><a href="3-methods.html#linear-regression-imputation-weighted-pi"><i class="fa fa-check"></i><b>3.1.2</b> Linear Regression Imputation (weighted pi)</a></li>
+<li class="chapter" data-level="3.1.3" data-path="3-methods.html"><a href="3-methods.html#naive-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.3</b> Naive Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.4" data-path="3-methods.html"><a href="3-methods.html#loss-weighted-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.4</b> Loss-Weighted Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.5" data-path="3-methods.html"><a href="3-methods.html#pi-feature-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.5</b> <span class="math inline">\(\pi\)</span>-Feature Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.6" data-path="3-methods.html"><a href="3-methods.html#weighted-resample-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.6</b> Weighted Resample Neural Network Imputation</a></li>
+<li class="chapter" data-level="3.1.7" data-path="3-methods.html"><a href="3-methods.html#derived-feature-neural-network-imputation"><i class="fa fa-check"></i><b>3.1.7</b> Derived Feature Neural Network Imputation</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="3-methods.html"><a href="3-methods.html#note"><i class="fa fa-check"></i><b>3.2</b> Note</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-simulation.html"><a href="4-simulation.html"><i class="fa fa-check"></i><b>4</b> Simulation</a><ul>
+<li class="chapter" data-level="4.1" data-path="4-simulation.html"><a href="4-simulation.html#exploration-of-methods-in-simulation"><i class="fa fa-check"></i><b>4.1</b> Exploration of Methods in Simulation</a></li>
+<li class="chapter" data-level="4.2" data-path="4-simulation.html"><a href="4-simulation.html#high-dimension-simulation"><i class="fa fa-check"></i><b>4.2</b> High-Dimension Simulation</a></li>
+<li class="chapter" data-level="4.3" data-path="4-simulation.html"><a href="4-simulation.html#monte-carlo-simulation"><i class="fa fa-check"></i><b>4.3</b> Monte Carlo Simulation</a></li>
+<li class="chapter" data-level="4.4" data-path="4-simulation.html"><a href="4-simulation.html#creating-a-simulated-population"><i class="fa fa-check"></i><b>4.4</b> Creating a Simulated Population</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i>Conclusion</a><ul>
+<li class="chapter" data-level="4.5" data-path="conclusion.html"><a href="conclusion.html#future-work"><i class="fa fa-check"></i><b>4.5</b> Future Work</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="A-the-first-appendix.html"><a href="A-the-first-appendix.html"><i class="fa fa-check"></i><b>A</b> The First Appendix</a></li>
+<li class="chapter" data-level="B" data-path="B-the-second-appendix-for-fun.html"><a href="B-the-second-appendix-for-fun.html"><i class="fa fa-check"></i><b>B</b> The Second Appendix, for Fun</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Neural Network Methods in Complex Survey Imputation</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="complex-surveys" class="section level1">
+<h1><span class="header-section-number">Chapter 1</span> Complex Surveys</h1>
+<div id="survey-statistics" class="section level2">
+<h2><span class="header-section-number">1.1</span> Survey Statistics</h2>
+<blockquote>
+<p>Researchers in the social science and health sciences are increasingly interested in using data from complex surveys to conduct the same sorts of analyses that they traditionally conduct with more straightforward data. Medical researchers are also increasingly aware of the advantages of well-designed subsamples when measuring novel, expensive variables on an existing cohort. - Lumley 1969</p>
+</blockquote>
+<p>The implicit pervasiveness of survey statistics in all data motivates our exploration into its significance in imputation.</p>
+<p>Survey statistics differ from statistics modelling in the specification of the random process that generates the data. In model-based statistics, some underlying generative model from which observations are drawn is assumed to exist. By understanding or approximating this model from data, one may draw conclusions on the nature of the generative function provided no meaningful changes to the data are made.</p>
+<p>Contrary to model-based statistics, the analysis of complex survey samples are design based. The observations from a researcher-specified population have fixed features, and randomness is introduced when these observations are drawn from the population according to some stochastic design. This random process is under the control of the researcher, and can be known precisely. The significance of design-based methods is that the probability sample is the procedure for taking samples from a population, not just the resulting data. Using this method, the features of the population from which the observations are drawn may be estimated, but these conclusions may not generalize to other populations. With understanding of the survey design from which data observations arise, the researcher may make improved estimates of the population of study <span class="citation">(Lumley, 2011)</span>.</p>
+<p>The probability sample is the fundamental concept of design-based inference. Taking a random sample of 36,000 people from Oregon is an example of a survey design which implies independent and equal probability sampling of all humans in the state. The Law of Large Numbers is invoked to assume the distribution of sampled observations represent the population from which they are drawn according to any features of interest to the researcher, such as height, weight, or age.</p>
+<p>This type of surveying can be complicated by adding a stratifying element, such as randomly sampling 1,000 people from each of the 36 counties of Oregon. The data created by such a design would likely not be representative of the state, since people from lower-population counties would be more likely to be sampled. However, since the probability of each person in the sample being randomly selected is known (since the population of each county is known), this is still a probability sample. The key point of this process is that a probability sample is the procedure for taking samples from a population, not “just the data we happen to end up with” <span class="citation">(Lumley, 2011)</span>.</p>
+<p>There are four requirements for a data set to be a probability sample:</p>
+<ol style="list-style-type: decimal">
+<li><p>Every individual in the population must have a non-zero probability of ending up in the sample.</p></li>
+<li><p>The probability of inclusion must be known for every individual who does end up in the sample.</p></li>
+<li><p>Every pair of individuals in the sample must have a non-zero probability of both ending up in the sample.</p></li>
+<li><p>The probability of every pair of individuals being included in the sample must be known for every pair of individuals in the sample.</p></li>
+</ol>
+<p>The fundamental statistical idea behind all of design-based inference is that an individual sampled with a sampling probability <span class="math inline">\(\pi_i\)</span> represents <span class="math inline">\(\frac{1}{\pi_i}\)</span> individuals in the population. The value <span class="math inline">\(\frac{1}{\pi_i}\)</span> is called the sampling weight <span class="citation">(Lumley, 2011)</span>.</p>
+<p>1 and 2 are necessary in order to get valid population estimates, 3 and 4 are necessary to work out the accuracy of the estimates. If individuals were sampled independently of each other the first two properties would guarantee the last two <span class="citation">(Lumley, 2011)</span>. Though 3 and 4 are requirements of a probability sample, they are often not included in datasets as they require an <span class="math inline">\(n \times n\)</span> matrix of probabilities, where <span class="math inline">\(n\)</span> is the number of observations in the data set.</p>
+<p>Data collected under a complex survey design have an additional layer of complexity and are not to be treated as typical independent and identically distributed (<em>i.i.d.</em>) data. Ignoring this complex survey design is found to create significant error in data analyses <span class="citation">(Toth &amp; Eltinge, 2011)</span>. This concern motivates our exploration of accounting for survey design in neural network imputation.</p>
+</div>
+<div id="imputation" class="section level2">
+<h2><span class="header-section-number">1.2</span> Imputation</h2>
+<p>Often in real-world data, there is some degree of missingness. This can be for any number of reasons, illustrated in <a href="#fig:missingness"><strong>??</strong></a>:</p>
+<table>
+<caption>
+<span id="tab:missingness">Table 1.1: </span>Types of missingess
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Description
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Noncoverage
+</td>
+<td style="text-align:left;">
+An element in the target population is not included in the survey sampling frame
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Nonresponse
+</td>
+<td style="text-align:left;">
+A sampled element does not participate in the survey
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Item Nonresponse
+</td>
+<td style="text-align:left;">
+A responding sampled element fails to provide acceptable responses to one or more of the survey items
+</td>
+</tr>
+</tbody>
+</table>
+<p>Table: Types of missingness “The usual form of item nonresponse is imputation, which involves assigning a value for the missing response.” 216 (Brick and Kalton 1996)</p>
+<p>In many statistical analyses, observations with any degree of missingness cannot be present. For example, how would one perform a linear regression with observations that have features but no label? Dropping these terms would remove potentially huge swathes of the data set, particularly in multivariate data sets, and would create systematic bias. Suppose for example a data set with information on roses had a feature with stem length and a label on flower size. Missing values for flower size might not be randomly distributed: there could, for example, be a systematic picking of the large-flowered roses by passersby. To ignore these observations would lead the analyst to draw false conclusions on the relationship of stem length to flower size, and the distribution of flower sizes in the population. Consider <a href="#fig:systematic"><strong>??</strong></a>: <img src="thesis_files/figure-html/systematic-1.png" width="672" style="display: block; margin: auto;" /><img src="thesis_files/figure-html/systematic-2.png" width="672" style="display: block; margin: auto;" /><img src="thesis_files/figure-html/systematic-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Imputation attempts to address this common dilemma in real-world data. Imputation is the process of replacing missingness in data sets with some value that redeems the observation for some degree of analysis. “The aim of these methods is to compensate for the missing data in such a manner that the analysis file may be subjected to any form of analysis without the need for further consideration of the missing data” <span class="citation">(Brick &amp; Kalton, 1996)</span>. Imputation assigns values to missing responses, which allows records with missingness to be retained during analysis. Ideally, imputation would eliminate bias in survey estimates caused by ignoring records with missing data. The catch is that imputation can destroy intervariable relationships, and by nature data is fabricated in the process which leads to overestimation of the precision of survey estimates.</p>
+<p>There are stochastic and deterministic methods for imputation. Deterministic regression imputation is the predicted value from a regression trained on complete-case data. Stochastic imputation differs due to an additional residual added term to the predicted value, taken either from a random respondent or comparable observation, and is usually preferred due to the importance of shape parameters in many analyses <span class="citation">(Brick &amp; Kalton, 1996)</span>.</p>
+<p>One traditional method of imputation is the “Hot-Deck Method”. This method was generally favorable when computation was at an expense, and required extensive knowledge of the survey variables in order to optimize, as explicit model-based imputation needs a valid model for every survey variable <span class="citation">(Maiti, Miller, &amp; Mukhopadhyay, 2008)</span>. This thesis proposes naive artificial neural networks as a solution which requires minimal domain knowledge and resists the curse of dimensionality which other nonparametric methods are susceptible to, such as local polynomial regression <span class="citation">(Maiti et al., 2008)</span>.</p>
+<p>Due to the difficulties imposed by working with high-dimensional, complex survey data with varying degrees of domain knowledge, we turn to neural networks and their structural benefits to reliably perform these challenging imputation problems.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="2-math-sci.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": [["thesis.pdf", "PDF"], ["thesis.epub", "EPUB"], ["thesis.docx", "Word"]],
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
