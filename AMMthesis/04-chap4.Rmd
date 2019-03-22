@@ -1,16 +1,5 @@
 # Simulation
-
-Just 4 needs more work - ask kelly what it should say?
-Currently has mention of high-dimension, monte carlo, and methods (needs expansion)
-
-Discussion of outcomes
-Discussion of setups: generative function, number noisy variables, noise, results, all the parameters that i've chosen thus far
-Could someone re-create this simulation with the descriptions I gave them? 
-Do everything in Latex, not code
-
-()
-
-## Exploration of Methods in Simulation
+## Exploration of Methods Using Simulation
 
 Simulated data is used to evaluate the methods in order to get an understanding of their performance on a data set with known characteristics.
 
@@ -18,14 +7,14 @@ Full insight into the feature distributions, generative function, random noise, 
 
 ## High-Dimension Simulation
 
-Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data age, gender, ethnicity, and education might have a predictive relationship with income, while a number of others such as XXXXXXX do not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. Inspired by research in best feature selection methods, non-correlated features are used in the model evaluation step in an attempt to more realistically simulate complex data [@hastie2017extended]. The addition of these features contributes to the curse of dimensionality and variability of estimates.
+Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data, age, gender, ethnicity, and education might have a predictive relationship with income, while a number of others such as XXXXXXX do not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. Inspired by research in best feature selection methods, non-correlated features are used in the model evaluation step in an attempt to more realistically simulate complex data [@hastie2017extended]. The addition of these features contributes to the curse of dimensionality and variability of estimates.
  
 These additional "noisy" parameters are simulated by making the generative function of the labels $y$ not a function of some of the features. All methods used in the simulation are accompanied by their oracle counterparts, meaning the same method is run two times: one with access to all features, the oracle restricted only to the relevant features which are inputs to the generative function.
 
 ## Monte Carlo Simulation
-Monte Carlo (MC) simulation attempts to overcome the inherent randomness of sampling and model training by repeated iterations of the sampling, training, and evaluation steps. A distribution of output estimates is made over many potential samples from the population to get a more complete interpretation of the results.
+Monte Carlo (MC) simulation attempts to overcome the inherent randomness of sampling and model training by repeated iterations of the sampling, training, and evaluation steps. A distribution of output estimates is made over many potential samples from the population in order to get a more complete interpretation of the results.
 
-It should be noted that neural networks can be more optimized than their performance in the following simulation study. This is because a network can be intentionally over-trained on the training data, then re-trained from scratch to the number of epochs which minimized the validation loss. This poses a challenge in MC simulation, however, where many iterations without user input are needed. Additionally, runtime becomes a vastly greater concern when networks must be over-trained through many epochs, more than doubling the execution time. If computation were no expense, the neural network methods could be expected to be more accurate than the below results.
+It should be noted that neural networks can be more optimized than in their performance in the following simulation study. This is because a network can be intentionally over-trained on the training data, then re-trained from scratch to the number of epochs which minimized the validation loss. This poses a challenge in MC simulation, however, where many iterations without user input are needed. Additionally, runtime becomes a vastly greater concern when networks must be over-trained through many epochs, more than doubling the execution time. If computation were no expense, the neural network methods could be expected to be more accurate than the below results.
 
 ## Creating a Simulated Population
 
@@ -50,7 +39,7 @@ y' = \left\{ \begin{array}{cc}
 $$
 
 ```{r bowl, echo = FALSE}
-knitr::include_graphics("C:/Users/Alexander/Documents/Thesis Data/Thesis Writing Rmd/AMMthesis/figure/bowl.jpg")
+knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/bowl.jpg")
 ```
 
 Random noise $\epsilon$ with $\sigma = 1$ is then added to the transformed labels:
@@ -88,7 +77,7 @@ The breadth and depth used here is a heuristic size which could potentially be o
 ## Results
 
 ```{r results, echo = FALSE, warning = FALSE}
-knitr::include_graphics("C:/Users/Alexander/Documents/Thesis Data/Thesis Writing Rmd/AMMthesis/figure/newresults.png")
+knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/newresults.png")
 ```
 
 Note to Kelly reviewing this: the resampling method and derived parameters method were left out of this for runtime concerns. I think I have to find some way to cloud-compute to be able to do some 100+ iterations with all the methods.
