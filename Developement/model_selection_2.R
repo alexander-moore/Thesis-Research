@@ -47,7 +47,7 @@ nulls <- matrix(rnorm(20*N, 0, 8), ncol = 20)
 p_y_ep <- rnorm(N, mean = 0, sd = p_y_ep_control)
 #p_y <- p_1*p_2 + p_3 + p_y_ep
 
-p_y <- p_1^2 + p_2^2 
+p_y <- p_1 + abs(p_2) + p_y_ep #added noise for reasonability
 #mpy <- mean(p_y)
 #p_y[p_y > mpy] <- p_y[p_y > mpy] + mpy
 
@@ -352,7 +352,7 @@ for (i in 1:it) {
   # with the same method. so re-creating the population by sampling w replacement
   ###################
   
-  if (FALSE) {
+  
   dropped_obs_NA_lab <- dropped_obs
   dropped_obs_NA_lab$y <- NA
   
@@ -412,7 +412,7 @@ for (i in 1:it) {
   hat_N_sample <- sum(1/df$pi)
   statistic_tracker$nn_resamp_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
                                                                  + sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
-  }
+  
   
   ## Mean according to dataset imputed via neural network with custom weighted MSE loss
   # CAUTION: had to do some tricks to extract obs_weights for training (and not validition). uses column 4 for pi, 
@@ -526,7 +526,6 @@ for (i in 1:it) {
   # Mean accoridng to imputed data via neural network
   # With access to derived parameters which are x_i * pi
   
-  if(FALSE) {
   y_train <- reduced_df$y
   reduced_df_nolab <- select(reduced_df, -c(y))
   
@@ -552,9 +551,9 @@ for (i in 1:it) {
   create_validation_split(x_train, y_train)
   
   model <- keras_model_sequential() %>%
-    layer_dense(units = 64, activation = "sigmoid", 
+    layer_dense(units = 32, activation = "relu", 
                 input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 64, activation = "sigmoid") %>%
+    layer_dense(units = 32, activation = "relu") %>%
     layer_dense(units = 1)
   
   model %>% compile(
@@ -565,7 +564,7 @@ for (i in 1:it) {
   history <- model %>% fit(
     partial_x_train,
     partial_y_train,
-    epochs = 2000, #high variance; study further
+    epochs = 300, #high variance; study further
     verbose = 0,
     batch_size = 32,  #what should this be
     validation_data = list(x_val, y_val)
@@ -577,7 +576,7 @@ for (i in 1:it) {
   hat_N_sample <- sum(1/df$pi)
   statistic_tracker$nn_deriv_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
                                                                 + sum(nn_y_hat / dropped_obs$pi))
-  }
+  
   
   print(i)
 }
