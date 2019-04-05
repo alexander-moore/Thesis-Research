@@ -18,3 +18,5 @@ Can do a paragraph on the most important things here:
 - training neural networks correctly: finding the validation minima then re-training every time. I was prevented by computational intensity
 - tweaks on neural networks: **reinforcement learning**, dropout layers, noise layers, pre-trained networks
 - re-visiting weighted resampling by trying bootstrapping methods, bigger resample. bootstrapping many datasets, training on each, and taking mean of estimates. somethign like this to stabilize predictions and sampling variability.
+
+Multiple imputation: since hopefully NN preserve intervarabhle relationships better than linear or median etc
