@@ -11,7 +11,7 @@ library(tensorflow)
 
 N = 10^5
 n = 10^3
-it <- 100
+it <- 30
 
 p_y_ep_control <- 1
 
@@ -567,7 +567,7 @@ for (i in 1:it) {
     epochs = 300, #high variance; study further
     verbose = 0,
     batch_size = 32,  #what should this be
-    validation_data = list(x_val, y_val)
+    validation_data = list(x_val, y_val)  
   )
   
   x_test <- as.matrix(x_test)
@@ -582,7 +582,7 @@ for (i in 1:it) {
 }
 
 # Save the mean table so that we don't have to always re-run it
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\model_selection2_5.csv")
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\AWS_3.csv")
 dat <- statistic_tracker
 
 #dat <- read.csv("c:/Users/Alexander/Documents/thesis stat tracker/10_full.csv")
@@ -629,7 +629,6 @@ for (i in 1:dim(dat)[2]) {
 
 prb_table
 
-# ask "kristen bott" about computation. might have answers to cloud computing or server computing
 # andrew might have some ideas too
 
 library(kableExtra)
