@@ -13,13 +13,13 @@ MathJax.Hub.Config({
 
 The capacity to derive patterns from raw data is known as machine learning, a broad term for an extremely diverse collection of algorithms. Machine learning flips the script on classical programming: whereas classical programming takes rules and data to produce answers, machine learning creates rules from data and answers by being "trained rather than explicitly programmed. It's presented with many examples relevant to a task, and it finds a structure that derives rules for automating the task" [@chollet2018deep].
 
-Machine learning is intended to elucidate or predict patterns in data. These algorithms handle anything from linear regression for predicting a numerical response based on a number of features, to clustering for visualization and assignment of untaught observation classes. The models are trained by minimizing error during exposure to labelled training data with some underlying distribution and random noise, then passed unlabelled test data to predict the corresponding unknown class or value. Predictive (or supervised) machine learning algorithms seek to emulate and elucidate a true unknown generative function from which the data were drawn.
+Machine learning is intended to elucidate or predict patterns in data. These algorithms handle anything from linear regression for predicting a numerical response based on a number of features, to clustering for visualization and assignment of untaught observation classes. Machine learning models are trained by minimizing error during exposure to labelled "training" data with some underlying distribution and random noise. After training, models are passed unlabelled "test" data to predict the corresponding unknown class or value. Predictive (supervised) machine learning algorithms seek to emulate and elucidate a true unknown generative function from which the data were drawn.
 
 For imputation purposes, our goal will be to accurately estimate missing values by approximating the generative function from which they are drawn. Generative functions are of the form
 $$
-y = f(x_1, x_2, .) + \epsilon
+y = f(x_1, x_2, \dots, x_n) + \epsilon
 $$
-Where the true label $y$ of the observation is a function of the features $x_1, ..., x_n$ perturbed by some random noise $\epsilon$.
+where the true label $y$ of the observation is a function of the features $x_1, ..., x_n$ perturbed by some random noise $\epsilon$.
 
 The estimating model will be trained via exposure to labelled observations, called the training data, then used to predict observations with missing labels, called testing data. The challenge in machine learning is learning the correct amount from training data in order to derive the underlying distribution of the observations without simply memorizing the labels of the training set. This memorizaion problem is called overfitting and is central to machine learning.
 
@@ -33,15 +33,14 @@ knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/fi
 knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/badfit.png")
 ```
 
-An underfit model \@ref(fig:underfit) also fails to capture the underlying distribution, due to a lack of flexibility. A linear regression, though it minimizes its training MSE, clearly fails to capture the underlying distribution of the data:
+An underfit model, \@ref(fig:underfit), also fails to capture the underlying distribution, due to a lack of flexibility. A linear regression, though it minimizes its training MSE, clearly fails to capture the underlying distribution of the data:
 
 ```{r underfit, echo = FALSE, fig.cap = "An underfit model fails to capture the underlying distribution"}
 knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/underfit.png")
 
 ```
 
-\@ref(fig:underfit)
-A well-trained model which straddles these extrema captures the apparent underlying distribution of the data in a general sense by approximating the generative function from which they are drawn, and remains fairly constant under different draws from the same distribution:
+\@ref(fig:underfit) displays a well-trained model which straddles these extrema and captures the apparent underlying distribution of the data in a general sense by approximating the generative function from which they are drawn, and remains fairly constant under different draws from the same distribution:
 
 ```{r goodmod, echo = FALSE, fig.cap = "This model has the correct level of flexibility, and accurately captures the underlying generative function while avoiding overtraining based on noise."}
 knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/true.png")
@@ -55,6 +54,8 @@ knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/fi
 knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/biasvariance.png")
 
 ```
+
+Fortmann, Scott. “Bias and Variance.” Understanding the Bias-Variance Tradeoff, June 2012, scott.fortmann-roe.com/docs/BiasVariance.html.
 
 Figure \@ref(fig:biasvar) demonstrates the involvement of model complexity (or flexibility) in terms of training error. Model complexity refers to the ability of the model to approximate complex generative functions. We see that as the flexibility of the model increases, the bias on the training set always decreases, representing the model's performance on observations with labels. However, complexity beyond the models optimal value implies over-flexibility, in which the model is able to memorize random noise rather than stopping at the trend of the data. This increases the total error of the model when exposed to data that comes from the same generative function that the model has not been exposed to, such as a testing data set or another observation from outside the training set. Higher flexibility models create more variable models, which though trained on data from the same generative function differ greatly in appearance due to the random sample of training data. These models are unstable for inference and generalize poorly. 
 
