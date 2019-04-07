@@ -582,7 +582,7 @@ for (i in 1:it) {
 }
 
 # Save the mean table so that we don't have to always re-run it
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\AWS_3.csv")
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\AWS_6.csv")
 dat <- statistic_tracker
 
 #dat <- read.csv("c:/Users/Alexander/Documents/thesis stat tracker/10_full.csv")

@@ -2,11 +2,12 @@
 
 #First get column names
 
-fmli151x <- read.csv("C:/Users/Alexander/Documents/Thesis Data/fmli151x.csv")
-fmli152  <- read.csv("C:/Users/Alexander/Documents/Thesis Data/fmli152.csv")
-fmli153  <- read.csv("C:/Users/Alexander/Documents/Thesis Data/fmli153.csv")
-fmli154  <- read.csv("C:/Users/Alexander/Documents/Thesis Data/fmli154.csv")
-fmli161  <- read.csv("C:/Users/Alexander/Documents/Thesis Data/fmli161.csv")
+fmli151x <- read.csv("data/intrvw15/intrvw15/fmli151x.csv")
+fmli152  <- read.csv("data/intrvw15/intrvw15/fmli152.csv")
+fmli153  <- read.csv("data/intrvw15/intrvw15/fmli153.csv")
+fmli154  <- read.csv("data/intrvw15/intrvw15/fmli154.csv")
+fmli161  <- read.csv("data/intrvw15/intrvw15/fmli161.csv")
+
 
 #memi151x <- read.csv("C:/Users/Alexander/Documents/Data File Downloads/memi151x.csv")
 
