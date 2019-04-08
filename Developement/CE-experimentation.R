@@ -48,3 +48,26 @@ count_nas(didf)
 write.csv(didf, file = "Data/didf.csv")
 
 # Assuming data is in the correct shape, here's how the real testing goes down
+
+# Split the CE data into training and testing. Might want some kind of scheme to 
+# get the right amount of high-pi and low-pi observations in each
+# (testing is unlabelled, but we know the right answer)
+
+# Compute oracle mean estimate
+
+# Compute median imputation mean estimate
+
+# Run pi-weighted linear regression to impute, use formula from sim to compute mean estimate
+
+# Run naive NN, compute mean estimate
+
+# Run pi-feature NN, compute mean estimate
+
+# Run weighted-MSE NN, compute mean estimate
+
+# Run resample NN, compute mean estimate
+
+# Run derived parameter NN, compute mean estimate
+
+
+# Impute the truly missing labels for fun?

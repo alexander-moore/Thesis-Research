@@ -11,7 +11,7 @@ library(tensorflow)
 
 N = 10^5
 n = 10^3
-it <- 30
+it <- 5
 
 p_y_ep_control <- 1
 
@@ -435,7 +435,8 @@ for (i in 1:it) {
   normalize_data(x_train, x_test)
   create_validation_split(x_train, y_train)
   
-  obs_weights <- 1 / partial_x_train[,3]  # this is non-generalizable and will be a problem if we change the number of features. 
+  #obs_weights <- 1 / partial_x_train[,3]  # this is non-generalizable and will be a problem if we change the number of features. 
+  obs_weights <- partial_x_train[,3]  # this is non-generalizable and will be a problem if we change the number of features. 
   
   partial_x_train <- partial_x_train[,-3]
   x_val <- x_val[,-3]
@@ -582,7 +583,7 @@ for (i in 1:it) {
 }
 
 # Save the mean table so that we don't have to always re-run it
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\AWS_6.csv")
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\AWS_7.csv")
 dat <- statistic_tracker
 
 #dat <- read.csv("c:/Users/Alexander/Documents/thesis stat tracker/10_full.csv")

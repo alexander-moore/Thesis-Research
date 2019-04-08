@@ -30,13 +30,13 @@ knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/fi
 ```
 
 ```{r overfitre, echo = FALSE, fig.cap = "The overfit model does not accurately reflect the underlying distribution from which both datasets are drawn. Rather, it captures only the random noise of the data on which it was trained. It would be a mistake to assume the generative function is a degree 15 polynomial just because the training error of such a function is low."}
-knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/badfit.png")
+knitr::include_graphics("AMMthesis/figure/badfit.png")
 ```
 
 An underfit model, \@ref(fig:underfit), also fails to capture the underlying distribution, due to a lack of flexibility. A linear regression, though it minimizes its training MSE, clearly fails to capture the underlying distribution of the data:
 
 ```{r underfit, echo = FALSE, fig.cap = "An underfit model fails to capture the underlying distribution"}
-knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/underfit.png")
+knitr::include_graphics("AMMthesis/figure/underfit.png")
 
 ```
 
