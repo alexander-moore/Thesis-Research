@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.4.2)  9 APR 2019 17:14
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.4.2)  9 APR 2019 17:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -881,21 +881,17 @@ LaTeX Warning: Reference `fig:overfitre' on page 10 undefined on input line 502
 .
 
 
-LaTeX Warning: File `Thesis-Research/images/overfit.png' not found on input lin
-e 505.
-
-
-! Package pdftex.def Error: File `Thesis-Research/images/overfit.png' not found
-: using draft setting.
+! Package pdftex.def Error: File `\unhbox\voidb@x \penalty \@M \ {}/Thesis-Rese
+arch/images/overfit.png' not found: using draft setting.
 
 See the pdftex.def package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.505 ...phics{Thesis-Research/images/overfit.png}
+l.505 ...ics{~/Thesis-Research/images/overfit.png}
                                                    
 Here is how much of TeX's memory you used:
- 8738 strings out of 494562
+ 8735 strings out of 494562
  133750 string characters out of 6175797
  216260 words of memory out of 5000000
  12188 multiletter control sequences out of 15000+600000

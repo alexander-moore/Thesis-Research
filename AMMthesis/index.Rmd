@@ -65,7 +65,6 @@ if(!require(devtools))
 if(!require(thesisdown))
   devtools::install_github("ismayc/thesisdown")
 library(thesisdown)
-
 ```
 
 <!-- You'll need to include the order that you'd like Rmd files to appear in the _bookdown.yml file for

@@ -238,7 +238,7 @@ The estimating model will be trained via exposure to labelled observations, call
 \@ref(fig:overfit) is an illustration of this pervasive principle in a regression example. An overfit (or too-flexible) model simply learns the observation's labels, rather than the underlying distribution (or generative function, in this case a second-degree polynomial). The overfit model fails to learn the underlying generative function, and instead learns the random noise of the training observations, and thus is a poor explanation of a new realization from the same generative function, seen in \@ref(fig:overfit) and \@ref(fig:overfitre):
 
 ```{r overfit, echo = FALSE, fig.cap = "The overfit model has extremely low error on the realization of the data on which it was trained."}
-knitr::include_graphics("Thesis-Research/images/overfit.png")
+knitr::include_graphics("~/Thesis-Research/images/overfit.png")
 ```
 
 ```{r overfitre, echo = FALSE, fig.cap = "The overfit model does not accurately reflect the underlying distribution from which both datasets are drawn. Rather, it captures only the random noise of the data on which it was trained. It would be a mistake to assume the generative function is a degree 15 polynomial just because the training error of such a function is low."}
