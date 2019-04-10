@@ -38,8 +38,8 @@ y' = \left\{ \begin{array}{cc}
                 \end{array} \right.
 $$
 
-```{r bowl, echo = FALSE}
-knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/bowl.jpg")
+```{r, echo = FALSE}
+knitr::include_graphics("Thesis-Research/images/bowl.jpg")
 ```
 
 Random noise $\epsilon$ with $\sigma = 1$ is then added to the transformed labels:
@@ -74,10 +74,10 @@ $$
 $$
 The breadth and depth used here is a heuristic size which could potentially be optimized to suit the problem. This, however, creates a conflict of interest with information leakage which the other methods are not privy to, which induces bias for the success of these algorithms. To maintain the narrative of a minimal-knowledge naive fit, these models use a reasonable exploratory capacity. The models in the fitting process are manually over-trained, then re-trained from scratch to an optimal state. This is done using a validation data set of $15\%$ of the training data. Once trained to an approximate loss minima, the models predict on holdout test data (the observations missing labels) and the population mean estimate is computed and recorded.
 
-## Results
+## Results aaaaaaaaa
 
-```{r results, echo = FALSE, warning = FALSE}
-knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/newresults.png")
+```{r, echo = FALSE, warning = FALSE}
+knitr::include_graphics("Thesis-Research/images/newresults.png")
 ```
 
 Note to Kelly reviewing this: the resampling method and derived parameters method were left out of this for runtime concerns. I think I have to find some way to cloud-compute to be able to do some 100+ iterations with all the methods.

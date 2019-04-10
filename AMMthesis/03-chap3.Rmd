@@ -60,7 +60,7 @@ Loss-Weighted Neural Network Imputation takes inspiration from the weighted line
 A $\pi$-feature neural network has access to $\pi$ as a predictor during training and testing. This is a realistic assumption to make as data collected under a complex survey design must have a $\pi$ probability regardless of whether the label is missing. This method has the benefit of adapting to whether $\pi$ is truly correlated to $y$, which the loss-weighted method assumes. A neural network optimist could claim that if there is a significant relationship of $\pi$ to $y$, it will be reflected in the loss during training and the network will adapt accordingly to the information provided by the feature. However if $\pi$ and $y$ are uncorrelated and the missingess is random, the network will not still weight the observations and will correctly ignore the feature to create more accurate predictions with no need for domain knowledge on the relationship of the missingness.
 
 ```{r feature, echo = FALSE}
-knitr::include_graphics("C:/Users/Alexander/Desktop/Thesis-Research/AMMthesis/figure/network.png")
+knitr::include_graphics("Thesis-Research/images/network.png")
 # but one of the inputs is also pi
 ```
 
