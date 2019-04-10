@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.4.2)  9 APR 2019 17:20
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.4.4)  9 APR 2019 20:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -644,7 +644,7 @@ Package: ltcaption 2018/08/26 v1.4-95 longtable captions (AR)
 Package caption Info: rotating package is loaded.
 )
 Package color Info: Redefining color shadecolor on input line 79.
-No file thesis.aux.
+(./thesis.aux)
 \openout1 = `thesis.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 185.
@@ -709,6 +709,7 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 185.
 LaTeX Info: Redefining \pageref on input line 185.
 LaTeX Info: Redefining \nameref on input line 185.
+(./thesis.out) (./thesis.out)
 \@outlinefile=\write4
 \openout4 = `thesis.out'.
 
@@ -776,19 +777,32 @@ dftex.map}] [2
 ] [3] [4
 
 
-]
+] (./thesis.toc
+Underfull \vbox (badness 1502) has occurred while \output is active []
+
+[5])
 \tf@toc=\write5
 \openout5 = `thesis.toc'.
 
-[5] [6
-
-]
+[6] (./thesis.lot)
 \tf@lot=\write6
 \openout6 = `thesis.lot'.
 
-[7] [8
+[7
 
-]
+] [8
+
+] (./thesis.lof
+LaTeX Font Info:    Try loading font information for T1+lmtt on input line 6.
+(c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
+File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+Underfull \hbox (badness 10000) in paragraph at lines 7--7
+ [][] [][][]$\T1/lmtt/m/n/12 https : / / medium . com / @ageitgey / machine -[]
+ learning -[] is -[] fun -[] 
+ []
+
+)
 \tf@lof=\write7
 \openout7 = `thesis.lof'.
 
@@ -822,11 +836,6 @@ been already used, duplicate ignored
                    \relax 
 l.309 T
        his type of surveying can be complicated by adding unequal inclusion [3]
-LaTeX Font Info:    Try loading font information for T1+lmtt on input line 362.
-
-(c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
-File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-)
 LaTeX Font Info:    Try loading font information for TS1+lmtt on input line 364
 .
 (c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmtt.fd
@@ -848,7 +857,7 @@ Overfull \hbox (215.73074pt too wide) in paragraph at lines 375--386
  [][] 
  []
 
-<thesis_files/figure-latex/systematic-1.pdf, id=118, 469.755pt x 325.215pt>
+<thesis_files/figure-latex/systematic-1.pdf, id=317, 469.755pt x 325.215pt>
 File: thesis_files/figure-latex/systematic-1.pdf Graphic file (type pdf)
 <use thesis_files/figure-latex/systematic-1.pdf>
 Package pdftex.def Info: thesis_files/figure-latex/systematic-1.pdf  used on in
@@ -870,33 +879,224 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 ]
 Chapter 2.
 [9]
+<figure/overfit.png, id=348, 219.06844pt x 412.54124pt>
+File: figure/overfit.png Graphic file (type png)
+<use figure/overfit.png>
+Package pdftex.def Info: figure/overfit.png  used on input line 505.
+(pdftex.def)             Requested size: 219.06789pt x 412.54024pt.
+<figure/badfit.png, id=349, 219.06844pt x 412.54124pt>
+File: figure/badfit.png Graphic file (type png)
+<use figure/badfit.png>
+Package pdftex.def Info: figure/badfit.png  used on input line 511.
+(pdftex.def)             Requested size: 219.06789pt x 412.54024pt.
 
-LaTeX Warning: Reference `fig:overfit' on page 10 undefined on input line 495.
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[10 <./figure/overfit.png>]
+<figure/underfit.png, id=356, 219.06844pt x 412.54124pt>
+File: figure/underfit.png Graphic file (type png)
+<use figure/underfit.png>
+Package pdftex.def Info: figure/underfit.png  used on input line 524.
+(pdftex.def)             Requested size: 219.06789pt x 412.54024pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[11 <./figure/badfit.png>]
+<figure/true.png, id=363, 219.06844pt x 412.54124pt>
+File: figure/true.png Graphic file (type png)
+<use figure/true.png>
+Package pdftex.def Info: figure/true.png  used on input line 534.
+(pdftex.def)             Requested size: 219.06789pt x 412.54024pt.
+<figure/stayGood.png, id=364, 219.06844pt x 412.54124pt>
+File: figure/stayGood.png Graphic file (type png)
+<use figure/stayGood.png>
+Package pdftex.def Info: figure/stayGood.png  used on input line 534.
+(pdftex.def)             Requested size: 219.06789pt x 412.54024pt.
+<figure/biasvariance.png, id=365, 507.95486pt x 319.02043pt>
+File: figure/biasvariance.png Graphic file (type png)
+<use figure/biasvariance.png>
+Package pdftex.def Info: figure/biasvariance.png  used on input line 537.
+(pdftex.def)             Requested size: 507.95363pt x 319.01964pt.
+
+Overfull \hbox (74.33363pt too wide) in paragraph at lines 537--538
+ [][] 
+ []
 
 
-LaTeX Warning: Reference `fig:overfit' on page 10 undefined on input line 502.
+Overfull \hbox (24.75166pt too wide) in paragraph at lines 534--539
+[][] [] 
+ []
 
 
-LaTeX Warning: Reference `fig:overfitre' on page 10 undefined on input line 502
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[12 <./figure/underfit.png>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[13 <./figure/true.png> <./figure/stayGood.png>] [14 <./figure/biasvariance.png
+>] [15]
+<figure/optimize.png, id=393, 1606.0pt x 1118.1775pt>
+File: figure/optimize.png Graphic file (type png)
+<use figure/optimize.png>
+Package pdftex.def Info: figure/optimize.png  used on input line 684.
+(pdftex.def)             Requested size: 1605.99611pt x 1118.17477pt.
+
+Overfull \hbox (1172.37611pt too wide) in paragraph at lines 684--685
+ [][] 
+ []
+
+
+Underfull \hbox (badness 1924) in paragraph at lines 685--685
+[]\T1/lmr/m/n/12 Figure 2.5: |[][]$\T1/lmtt/m/n/12 https : / / medium . com / @
+ageitgey / machine -[] learning -[]
+ []
+
+[16]
+Overfull \vbox (506.74477pt too high) has occurred while \output is active []
+
+[17 <./figure/optimize.png (PNG copy)>] [18]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[19] [20] [21] [22
+
+]
+Chapter 3.
+
+Underfull \vbox (badness 6510) has occurred while \output is active []
+
+[23] [24] [25]
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <14.4> on input line 1049.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 1049.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 1049.
+<figure/network.png, id=448, 1204.5pt x 752.8125pt>
+File: figure/network.png Graphic file (type png)
+<use figure/network.png>
+Package pdftex.def Info: figure/network.png  used on input line 1065.
+(pdftex.def)             Requested size: 1204.49707pt x 752.81065pt.
+
+Overfull \hbox (788.50189pt too wide) in paragraph at lines 1065--1066
+[][] 
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[26]
+Overfull \vbox (102.38066pt too high) has occurred while \output is active []
+
+[27 <./figure/network.png>] [28]
+Chapter 4.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[29
+
+]
+<figure/bowl.jpg, id=466, 607.26875pt x 607.26875pt>
+File: figure/bowl.jpg Graphic file (type jpg)
+<use figure/bowl.jpg>
+Package pdftex.def Info: figure/bowl.jpg  used on input line 1183.
+(pdftex.def)             Requested size: 607.26727pt x 607.26727pt.
+
+Overfull \hbox (191.2721pt too wide) in paragraph at lines 1183--1184
+[][] 
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[30] [31 <./figure/bowl.jpg>] [32]
+<figure/newresults.png, id=480, 755.07094pt x 462.97969pt>
+File: figure/newresults.png Graphic file (type png)
+<use figure/newresults.png>
+Package pdftex.def Info: figure/newresults.png  used on input line 1257.
+(pdftex.def)             Requested size: 755.06909pt x 462.97855pt.
+
+Overfull \hbox (321.4491pt too wide) in paragraph at lines 1257--1258
+[] 
+ []
+
+[33 <./figure/newresults.png (PNG copy)>] [34
+
+]
+Chapter 5.
+[35] [36
+
+]
+LaTeX Font Info:    Try loading font information for TS1+lmr on input line 1297
 .
+(c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+) [37] [38
 
+]
+Appendix A.
+LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 1327.
 
-! Package pdftex.def Error: File `\unhbox\voidb@x \penalty \@M \ {}/Thesis-Rese
-arch/images/overfit.png' not found: using draft setting.
+LaTeX Warning: Reference `ref-labels' on page 39 undefined on input line 1334.
 
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.505 ...ics{~/Thesis-Research/images/overfit.png}
-                                                   
+[39] [40
+
+]
+Appendix B.
+[41] [42
+
+]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1400.
+[43
+
+]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1400.
+(./thesis.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1400.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1400.
+
+Package rerunfilecheck Info: File `thesis.out' has not changed.
+(rerunfilecheck)             Checksum: D20DFA6438E5B05C87C6E60930F95584;2569.
+
+LaTeX Warning: There were undefined references.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1400.
+ ) 
 Here is how much of TeX's memory you used:
- 8735 strings out of 494562
- 133750 string characters out of 6175797
- 216260 words of memory out of 5000000
- 12188 multiletter control sequences out of 15000+600000
- 43219 words of font info for 45 fonts, out of 8000000 for 9000
+ 9032 strings out of 494562
+ 138458 string characters out of 6175797
+ 220334 words of memory out of 5000000
+ 12361 multiletter control sequences out of 15000+600000
+ 68575 words of font info for 70 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 36i,12n,45p,244b,480s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,12n,45p,493b,480s stack positions out of 5000i,500n,10000p,200000b,80000s
+{c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-
+ec.enc}{c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/l
+m/lm-ts1.enc}{c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/d
+vips/lm/lm-mathex.enc}{c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fo
+nts/enc/dvips/lm/lm-mathsy.enc}{c:/Users/Alexander/AppData/Roaming/TinyTeX/texm
+f-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/Users/Alexander/AppData/Roaming/TinyTeX
+/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}<c:/Users/Alexander/AppData/Roamin
+g/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/Users/Alexander/AppDa
+ta/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/Users/Alexan
+der/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi12.pfb><c:/Use
+rs/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi6.pfb
+><c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/l
+mmi8.pfb><c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/pub
+lic/lm/lmr12.pfb><c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/t
+ype1/public/lm/lmr8.pfb><c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/
+fonts/type1/public/lm/lmri12.pfb><c:/Users/Alexander/AppData/Roaming/TinyTeX/te
+xmf-dist/fonts/type1/public/lm/lmro12.pfb><c:/Users/Alexander/AppData/Roaming/T
+inyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/Users/Alexander/AppData/
+Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy8.pfb><c:/Users/Alexander/
+AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtk10.pfb><c:/Users/A
+lexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt12.pfb><c
+:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt
+i10.pfb>
+Output written on thesis.pdf (61 pages, 2814409 bytes).
+PDF statistics:
+ 629 PDF objects out of 1000 (max. 8388607)
+ 525 compressed objects within 6 object streams
+ 127 named destinations out of 1000 (max. 500000)
+ 344 words of extra memory for PDF output out of 10000 (max. 10000000)
 
-!  ==> Fatal error occurred, no output PDF file produced!

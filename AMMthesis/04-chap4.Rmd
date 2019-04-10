@@ -39,7 +39,7 @@ y' = \left\{ \begin{array}{cc}
 $$
 
 ```{r, echo = FALSE}
-knitr::include_graphics("Thesis-Research/images/bowl.jpg")
+knitr::include_graphics("figure/bowl.jpg")
 ```
 
 Random noise $\epsilon$ with $\sigma = 1$ is then added to the transformed labels:
@@ -77,7 +77,7 @@ The breadth and depth used here is a heuristic size which could potentially be o
 ## Results aaaaaaaaa
 
 ```{r, echo = FALSE, warning = FALSE}
-knitr::include_graphics("Thesis-Research/images/newresults.png")
+knitr::include_graphics("figure/newresults.png")
 ```
 
 Note to Kelly reviewing this: the resampling method and derived parameters method were left out of this for runtime concerns. I think I have to find some way to cloud-compute to be able to do some 100+ iterations with all the methods.
