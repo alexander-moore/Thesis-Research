@@ -429,8 +429,12 @@ for (i in 1:it) {
   normalize_data(x_train, x_test)
   create_validation_split(x_train, y_train)
   
-  #obs_weights <- 1 / partial_x_train[,3]  # this is non-generalizable and will be a problem if we change the number of features. 
-  obs_weights <- partial_x_train[,3]  # this is non-generalizable and will be a problem if we change the number of features. 
+  obs_weights <- 1 / partial_x_train[,3]  # this is non-generalizable and will be a problem if we change the number of features. 
+  #obs_weights <- partial_x_train[,3]  # this is non-generalizable and will be a problem if we change the number of features. 
+  
+  
+  # ASSURE URSELF THAT THIS IS THE CORRECT COLUMN AND SCALE, GET A SENSE FOR THE SCORES
+  
   
   partial_x_train <- partial_x_train[,-3]
   x_val <- x_val[,-3]
@@ -453,14 +457,14 @@ for (i in 1:it) {
     partial_x_train,
     partial_y_train,
     sample_weight = obs_weights,
-    epochs = 105,
+    epochs = 105, #this is fishy ASSURE YOURSELF OF THIS
     verbose = 0,
     batch_size = 32,
     validation_data = list(x_val, y_val)
   )
   
   
-  nn_y_hat <- predict(model, x_test)
+  nn_y_hat <- predict(model, x_test) # DOES PREDICT HAVE A WEIGHT ARGUMENT MAYBE????
   
   hat_N_sample <- sum(1/df$pi)
   statistic_tracker$nn_wmse_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
