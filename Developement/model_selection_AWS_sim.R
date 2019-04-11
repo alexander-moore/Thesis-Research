@@ -347,12 +347,6 @@ for (i in 1:it) {
   # on the full sample. the missing values in the resample are then imputed and 
   # the imputation mean is taken on the new data set
   # (without pi feature)
-  ###################
-  # in the future, instead of making another n-size df, what if we scaled back up to N
-  # with the same method. so re-creating the population by sampling w replacement
-  ###################
-  
-  
   dropped_obs_NA_lab <- dropped_obs
   dropped_obs_NA_lab$y <- NA
   
@@ -629,8 +623,6 @@ for (i in 1:dim(dat)[2]) {
 }
 
 prb_table
-
-# andrew might have some ideas too
 
 library(kableExtra)
 library(knitr)
