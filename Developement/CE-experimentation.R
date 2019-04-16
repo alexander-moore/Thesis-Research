@@ -66,11 +66,11 @@ median_impute <- function(df) {
 df <- fmli171x
 
 df <- cbind(df, pi = 1 / df$FINLWT21)
-which( colnames(df)=="FINLWT21" ) #41
-which( colnames(df)=="pi" ) #606
+which( colnames(df)=="FINLWT21")
+which( colnames(df)=="pi" ) 
 
 # Potential Labels
-which( colnames(df)=="FINCBTAX" ) #37 (no missingness, but is BLS derived)
+which( colnames(df)=="FINCBTAX" ) # (no missingness, but is BLS derived)
 #AGE_REF_
 
 
@@ -91,6 +91,8 @@ count_nas(idf)
 #count_nas(didf)
 
 write.csv(idf, file = "Data/imputed_CE.csv")
+
+dat <- read_csv("Data/imputed_CE.csv")
 
 # Assuming data is in the correct shape, here's how the real testing goes down
 it <- 3
@@ -113,12 +115,12 @@ statistic_tracker <- data.frame(true_mean = numeric(it),
                                 nn_deriv_oracle = numeric(it))
 
 # Prep label
-df <- idf
+df <- dat
 
 label <- "FINCBTAX"
 label_index <- which(colnames(df) == label)
 
-mu_y <- mean(df[,label_index])
+mu_y <- mean(df$FINCBTAX)
 mu_y # == mean american household income :)
 
 for (i in 1:it) {
@@ -135,69 +137,65 @@ for (i in 1:it) {
   # Oracle mean
   # this is a standard estimator which is done on the full (nonmissing) data to compare
   hat_N_sample <- sum(1 / df$pi)
-  statistic_tracker$oracle_mean[i] <- (1 / hat_N_sample) * sum((1 / df$pi) * df$y)
+  statistic_tracker$oracle_mean[i] <- (1 / hat_N_sample) * sum((1 / df$pi) * df$FINCBTAX)
   
   #########
   # Drop some labels - weighted to high y
   zeros <- rep(0, nrow(df))
-  rec <- pmax(zeros, df[,label_index])
+  rec <- pmax(zeros, df$FINCBTAX)
   
-  indices <- sample(1:nrow(df), .25*nrow(df), prob = rec)
+  indices <- sample(1:nrow(df), .20*nrow(df), prob = rec)
   
   # Make df with all features (noisy)
   dropped_obs <- df[indices,]
-  reduced_df <- df[-indices,] # These have a large differnce: 296 for dropped and 276 for reduced df
+  reduced_df <- df[-indices,] 
   
   # Make oracle df without noisy parameters
-  odf <- select(df, pi) # write good, relevant features here
+  odf <- select(df, pi) # put good insight params here
   o_dropped_obs <- odf[indices,]
   o_reduced_df <- odf[-indices,]
   
   #########
-  # Oracle mean
-  # this is a standard estimator which is done on the full (nonmissing) data to compare
-  hat_N_sample <- sum(1 / df$pi)
-  statistic_tracker$oracle_mean[i] <- (1 / hat_N_sample) * sum((1 / df$pi) * df[,label_index])
-  
-  #########
   # pi-weighted naive mean
-  # non-imputation of estimate which accounts for complex design
+  # non-imputation of estimate which accounts for complex design but ignores systematic
   hat_N_respondent <- sum(1 / (reduced_df$pi))
   statistic_tracker$pi_naive_mean[i] <- (1 / hat_N_respondent)*sum((1 / reduced_df$pi) * 
-                                                                     reduced_df[,label_index])
+                                                                     reduced_df$FINCBTAX)
   
   # Compute median imputation mean estimate
   
   #########
   # Median imputation: fill missing values with median
   len <- dim(dropped_obs)[1]
-  median_list <- rep(median(reduced_df[,label_index]), len)
-  labels <- as.vector(reduced_df[,label_index])
+  median_list <- rep(median(reduced_df$FINCBTAX), len)
+  labels <- as.vector(reduced_df$FINCBTAX)
   median_list <- as.vector(median_list)
   
   imputed_list <- c(labels,median_list)
   
   statistic_tracker$median_imp_mean[i] <- (1 / hat_N_sample) * sum((1 / df$pi) * 
                                                                      imputed_list)
+  
   #########
   # Linear regression imputation: MSE 1/pi weighted
   red_weight <- 1 / reduced_df$pi
   lin_dat <- select(reduced_df, -c(pi))
   lin_dropped <- select(dropped_obs, -c(pi))
   
-  linear_model <- lm(lin_dat[,label_index] ~ ., data = lin_dat, weights = red_weight)
+  linear_model <- lm(lin_dat$FINCBTAX ~ ., data = lin_dat, weights = red_weight)
   
   lm_y_hat <- predict(linear_model, lin_dropped) # THROWS WARN
   hat_N_sample <- sum(1/df$pi)
   statistic_tracker$lin_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df[,label_index] / reduced_df$pi) 
                                                            + sum(lm_y_hat / dropped_obs$pi))
+  
   #########
   # Mean accoridng to imputed data via naive neural network (ignore complex design)
-  y_train <- reduced_df[,label_index]
-  reduced_df_nolab <- select(reduced_df, -c(pi, y)) # this y needs to be the variable????
+  y_train <- reduced_df$FINCBTAX
+  reduced_df_nolab <- select(reduced_df, -c(pi, FINCBTAX))
   
-  y_test <- dropped_obs[,label_index]
-  dropped_obs_nolab <- select(dropped_obs, -c(pi,y)) # this y needs to be the variable????
+  y_test <- dropped_obs$FINCBTAX
+  dropped_obs_nolab <- select(dropped_obs, -c(pi, FINCBTAX))
   
   reduced_df_nolab <- as.matrix(reduced_df_nolab)
   dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
@@ -208,8 +206,9 @@ for (i in 1:it) {
   normalize_data(x_train, x_test)
   create_validation_split(x_train, y_train)
   
+  # Intentionally over-train on the training data to find the validation minimum
   model <- keras_model_sequential() %>%
-    layer_dense(units = 32, activation = "relu", 
+    layer_dense(units = 64, activation = "relu", 
                 input_shape = dim(x_train)[[2]]) %>%
     layer_dense(units = 32, activation = "relu") %>%
     layer_dense(units = 1)
@@ -223,12 +222,36 @@ for (i in 1:it) {
   history <- model %>% fit(
     partial_x_train,
     partial_y_train,
-    epochs = 375, 
+    epochs = 1500, 
     verbose = 0,
-    batch_size = 32,  #512
+    batch_size = 32,  
     validation_data = list(x_val, y_val)
   )
-  #390
+  
+  goodtrain <- which.min(history$metrics$val_mean_absolute_error)
+  
+  # Train a new model for the validation-minimizing number of epochs
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 64, activation = "relu", 
+                input_shape = dim(x_train)[[2]]) %>%
+    layer_dense(units = 32, activation = "relu") %>%
+    layer_dense(units = 1)
+  
+  model %>% compile(
+    optimizer = "adam",
+    loss = "mse",
+    metrics = c("mae")
+  )
+  
+  history <- model %>% fit(
+    partial_x_train,
+    partial_y_train,
+    epochs = goodtrain, 
+    verbose = 0,
+    batch_size = 32,
+    validation_data = list(x_val, y_val)
+  )
+  
   x_test <- as.matrix(x_test)
   nn_y_hat <- predict(model, x_test)
   
@@ -358,13 +381,13 @@ for (i in 1:it) {
   resamp_df <- sample_n(tbl = orig_tbl, size = nrow(orig_tbl), replace = TRUE, weight = weight_vec)
   
   # re-partition into complete cases, and cases to be imputed
-  resamp_reduced_df <- resamp_df[-which(is.na(resamp_df[,label_index])),]
-  resamp_dropped_obs <- resamp_df[which(is.na(resamp_df[,label_index])),]
+  resamp_reduced_df <- resamp_df[-which(is.na(resamp_df$FINCBTAX)),]
+  resamp_dropped_obs <- resamp_df[which(is.na(resamp_df$FINCBTAX)),]
   
-  y_train <- resamp_reduced_df[,label_index]
+  y_train <- resamp_reduced_df$FINCBTAX
   resamp_reduced_df_nolab <- select(resamp_reduced_df, -c(y))
   
-  y_test <- resamp_dropped_obs[,label_index]
+  y_test <- resamp_dropped_obs$FINCBTAX
   resamp_dropped_obs_nolab <- select(resamp_dropped_obs, -c(y))
   
   resamp_reduced_df_nolab <- as.matrix(resamp_reduced_df_nolab)
