@@ -83,3 +83,18 @@ knitr::include_graphics("figure/newresults.png")
 Note to Kelly reviewing this: the resampling method and derived parameters method were left out of this for runtime concerns. I think I have to find some way to cloud-compute to be able to do some 100+ iterations with all the methods.
 
 I'm hesitant to write too much about results given the situation.
+## Results
+Not a place to list findings. Rather, convince that what I did is correct, worthy of study, and impactful. Be honest about the generalizability of the work. If the findings are negative, take care to explain why the results still matter (discussion of why linear regression is so dank at mean estimation). Cast the negative result as a useful insight, rather than a problem with the methodology.
+
+```{r}
+# table of oracle ratios
+knitr::include_graphics("figure/aws_full_results.png")
+```
+
+```{r}
+# a table of all results
+knitr::include_graphics("figure/AWS_results.png")
+```
+
+it should come as no suprise that __ outperforms __
+they all do ____, because of ____

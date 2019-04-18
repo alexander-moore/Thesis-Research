@@ -590,6 +590,13 @@ write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis sta
 
 ################################################
 # Compare results
+# oracle only
+
+
+
+
+
+
 dat <- statistic_tracker
 
 mse_table <- dat[1,]
@@ -645,4 +652,37 @@ test %>%
   kable() %>%
   kable_styling()
 
-# Impute the truly missing labels for fun?
+# mean and SD ratios
+df <- read.csv("Data/AWS_running_short.csv")
+df <- df[,-1]
+
+means <- apply(df, FUN = mean, MARGIN = 2)
+means
+
+sds <- apply(df, FUN = sd, MARGIN = 2)
+sds
+
+mean_ratio <- means / means[2]
+mean_ratio
+
+sd_ratio <- sds / sds[2]
+sd_ratio
+
+# fULL
+df <- read.csv("Data/AWS_running_full.csv")
+df <- df[,-1]
+
+means <- apply(df, FUN = mean, MARGIN = 2)
+means
+
+sds <- apply(df, FUN = sd, MARGIN = 2)
+sds
+
+mean_ratio <- means / means[2]
+mean_ratio
+
+sd_ratio <- sds / sds[2]
+sd_ratio
+
+
+

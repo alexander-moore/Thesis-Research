@@ -11,7 +11,7 @@ library(tensorflow)
 
 N = 10^5
 n = 10^3
-it <- 50
+it <- 100
 
 p_y_ep_control <- 1
 
@@ -73,15 +73,10 @@ statistic_tracker <- data.frame(true_mean = numeric(it),
                                 median_imp_mean = numeric(it),
                                 lin_imp_mean = numeric(it),
                                 lin_oracle = numeric(it),
-                                nn_imp_mean = numeric(it),
                                 nn_oracle = numeric(it),
-                                nn_pi_imp_mean = numeric(it),
                                 nn_pi_oracle = numeric(it),
-                                nn_resamp_imp_mean = numeric(it),
                                 nn_resamp_oracle = numeric(it),
-                                nn_wmse_imp_mean = numeric(it),
                                 nn_wmse_oracle = numeric(it),
-                                nn_deriv_imp_mean = numeric(it),
                                 nn_deriv_oracle = numeric(it))
 # Want to estimate:
 mu_y <- (1 / N) * sum(p_tbl$p_y)
@@ -308,9 +303,59 @@ for (i in 1:it) {
   nn_resamp_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_resamp_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
+  statistic_tracker$nn_resamp_oracle[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
                                                                  + sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
   
+  # weighted MSE oracle
+  y_train <- o_reduced_df$y
+  reduced_df_nolab <- select(o_reduced_df, -c(y))  # NEED TO DROP PI LATER. CANT DROP NOW SINCE NEED TO EXTRACT PI FROM TRAINING DATA
+  
+  y_test <- o_dropped_obs$y
+  dropped_obs_nolab <- select(o_dropped_obs, -c(y))
+  
+  reduced_df_nolab <- as.matrix(reduced_df_nolab)
+  dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
+  
+  x_train <- reduced_df_nolab
+  x_test <- dropped_obs_nolab
+  
+  #normalize_data(x_train, x_test)
+  create_validation_split(x_train, y_train)
+  
+  obs_weights <- 1 / partial_x_train[,3]
+  partial_x_train <- partial_x_train[,-3]
+  x_train <- x_train[,-3]
+  x_val <- x_val[,-3]
+  
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 32, activation = "relu", 
+                input_shape = dim(x_train)[[2]]) %>%
+    layer_dense(units = 32, activation = "relu") %>%
+    layer_dense(units = 1)
+  
+  model %>% compile(
+    optimizer = "adam",
+    loss = "mse",
+    metrics = c("mae")
+  )
+  
+  history <- model %>% fit(
+    partial_x_train,
+    partial_y_train,
+    sample_weight = obs_weights,
+    epochs = 250,
+    verbose = 0,
+    batch_size = 32,
+    validation_data = list(x_val, y_val)
+  )
+  
+  x_test <- as.matrix(x_test)
+  x_test <- x_test[,-3]
+  nn_y_hat <- predict(model, x_test)
+  
+  hat_N_sample <- sum(1/df$pi)
+  statistic_tracker$nn_wmse_oracle[i] <- (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) 
+                                                             + sum(nn_y_hat / o_dropped_obs$pi))
   
   
   # Oracle derived params
@@ -362,7 +407,7 @@ for (i in 1:it) {
   nn_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_deriv_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
+  statistic_tracker$nn_deriv_oracle[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
                                                                 + sum(nn_y_hat / dropped_obs$pi))
   
   
@@ -370,7 +415,7 @@ for (i in 1:it) {
 }
 
 # Save the mean table so that we don't have to always re-run it
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\AWS_ALEXHERE_1.csv")
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\AWS_ALEXHERE_2.csv")
 dat <- statistic_tracker
 
 #dat <- read.csv("c:/Users/Alexander/Documents/thesis stat tracker/10_full.csv")

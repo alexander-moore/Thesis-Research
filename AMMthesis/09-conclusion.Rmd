@@ -2,9 +2,6 @@
 
 If we don't want Conclusion to have a chapter number next to it, we can add the `{-}` attribute.
 
-## Results (SHOULD GO IN OTHER CHAPTERS, 3 AND 4)
-Not a place to list findings. Rather, convince that what I did is correct, worthy of study, and impactful. Be honest about the generalizability of the work. If the findings are negative, take care to explain why the results still matter (discussion of why linear regression is so dank at mean estimation). Cast the negative result as a useful insight, rather than a problem with the methodology
-
 ## The End
 the end of the paper should summarize your main finginds, interpret what your results mean in context, discuss limitations, and point to where there is room for4 improvement or further analaysis. This is your last chance to make an impression, and say everything I want to say.
 
@@ -17,9 +14,9 @@ the end of the paper should summarize your main finginds, interpret what your re
 
 ## Conclusion
 A conclusion should not introduce new material. Conclusion brief, and only contain main points of paper. It will be redundant: that is the point. 
-## Future Work
 
-There are so many exciting unexplored methods and tweaks that would be worth investigating.
+## Future Work
+There are so many exciting unexplored methods and tweaks that would be worth investigating for the improvement of neural network complex survey imputation methods for mean estimation.
 
 Many I don't know how to implement, couldn't find a good use, don't understand enough, or was computationally restricted, especially during monte carlo simulation!
 
