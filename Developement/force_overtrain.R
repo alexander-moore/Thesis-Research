@@ -42,13 +42,16 @@ normalize_data <- function(train_data, test_data) {
 }
 
 # custom `adam` optimizer, learning rate up for grabs
-use_me <- optimizer_adam(lr = 0.005, beta_1 = 0.9, beta_2 = 0.999,
+# .001 default, .005 testing (methods were using 600 epo)
+use_me <- optimizer_adam(lr = 0.008, beta_1 = 0.9, beta_2 = 0.999,
                          epsilon = NULL, decay = 0, amsgrad = FALSE, clipnorm = NULL,
                          clipvalue = NULL)
 
 dat <- read_csv("Data/imputed_CE.csv")
 
 # Assuming data is in the correct shape, here's how the real testing goes down
+it <- 20
+
 statistic_tracker <- data.frame(true_mean = numeric(it), 
                                 oracle_mean = numeric(it),
                                 pi_naive_mean = numeric(it),
@@ -70,15 +73,13 @@ statistic_tracker <- data.frame(true_mean = numeric(it),
 df <- select(dat, c(FINCBTAX, pi, AGE_REF, BATHRMQ, BEDROOMQ, EDUC_REF, FAM_SIZE, 
                     FSALARYX))
 
-df <- df[1:1000,]
+#df <- df[1:1000,]
 
 #label <- "FINCBTAX"
 #label_index <- which(colnames(df) == label)
 
 mu_y <- mean(df$FINCBTAX)
 mu_y # == mean american household income :)
-
-it <- 3
 
 for (i in 1:it) {
   
@@ -165,37 +166,41 @@ for (i in 1:it) {
   
   # Intentionally over-train on the training data to find the validation minimum
   model <- keras_model_sequential() %>%
-    layer_dense(units = 128, activation = "relu", 
+    layer_dense(units = 64, activation = "relu", 
                 input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 128, activation = "relu") %>%
+    layer_dense(units = 64, activation = "relu") %>%
     layer_dense(units = 1)
   
   model %>% compile(
-    optimizer = "adam",
+    optimizer = use_me,
     loss = "mse",
     metrics = c("mae")
   )
   
+  epo <- 300
   history <- model %>% fit(
     partial_x_train,
     partial_y_train,
-    epochs = 500, 
+    epochs = epo, 
     verbose = 0,
     #batch_size = 8,  
     validation_data = list(x_val, y_val)
   )
   
   goodtrain <- which.min(history$metrics$val_loss)
+  goodtrain
+  print("of")
+  epo
   
   # Train a new model for the validation-minimizing number of epochs
   model <- keras_model_sequential() %>%
-    layer_dense(units = 128, activation = "relu", 
+    layer_dense(units = 64, activation = "relu", 
                 input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 128, activation = "relu") %>%
+    layer_dense(units = 64, activation = "relu") %>%
     layer_dense(units = 1)
   
   model %>% compile(
-    optimizer = "adam",
+    optimizer = use_me,
     loss = "mse",
     metrics = c("mae")
   )
@@ -216,15 +221,16 @@ for (i in 1:it) {
   statistic_tracker$nn_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
                                                           + sum(nn_y_hat / dropped_obs$pi))
   
+  print("Finished nn imp mean")
   #########
   # Mean according to imputed data via neural network w pi feature
   y_train <- reduced_df$FINCBTAX
   reduced_df_nolab <- select(reduced_df, -c(FINCBTAX))
-  reduced_df_nolab$pi <- 1 / reduced_df_nolab$pi
+  #reduced_df_nolab$pi <- 1 / reduced_df_nolab$pi
   
   y_test <- dropped_obs$FINCBTAX
   dropped_obs_nolab <- select(dropped_obs, -c(FINCBTAX))
-  dropped_obs_nolab$pi <- 1 / dropped_obs_nolab$pi
+  #dropped_obs_nolab$pi <- 1 / dropped_obs_nolab$pi
   
   reduced_df_nolab <- as.matrix(reduced_df_nolab)
   dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
@@ -237,11 +243,10 @@ for (i in 1:it) {
   
   # intentionally over-train the model
   model <- keras_model_sequential() %>%
-    layer_dense(units = 128, activation = "relu", 
+    layer_dense(units = 64, activation = "relu", 
                 input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 128, activation = "relu") %>%
+    layer_dense(units = 64, activation = "relu") %>%
     layer_dense(units = 1)
-  
   
   
   model %>% compile(
@@ -250,22 +255,26 @@ for (i in 1:it) {
     metrics = c("mae")
   )
   
+  epo <- 300
   history <- model %>% fit(
     partial_x_train,
     partial_y_train,
-    epochs = 1000,
+    epochs = epo,
     verbose = 0,
     #batch_size = 32,
     validation_data = list(x_val, y_val)
   )
   
   goodtrain <- which.min(history$metrics$val_loss)
+  goodtrain
+  print("of")
+  epo
   
   # re-train the new model to the val-min
   model <- keras_model_sequential() %>%
-    layer_dense(units = 128, activation = "relu", 
+    layer_dense(units = 64, activation = "relu", 
                 input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 128, activation = "relu") %>%
+    layer_dense(units = 64, activation = "relu") %>%
     layer_dense(units = 1)
   
   model %>% compile(
@@ -289,6 +298,9 @@ for (i in 1:it) {
   hat_N_sample <- sum(1/df$pi)
   statistic_tracker$nn_pi_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
                                                              + sum(nn_pi_y_hat / dropped_obs$pi))
+  
+  print("Finished nn pi imp mean")
+  
   
   ## Mean according to dataset imputed via neural network with custom weighted MSE loss
   # CAUTION: had to do some tricks to extract obs_weights for training (and not validition). uses column 4 for pi, 
@@ -314,18 +326,28 @@ for (i in 1:it) {
   obs_weights <- 1 / partial_x_train[,1] 
   partial_x_train <- partial_x_train[,-1]
   
-  normalize_data(x_train, x_test)
-  #normalize_data(partial_x_train, x_test)
+  normalize_wmse_data <- function(train_data, val_data, test_data) {
+    mean <- apply(train_data, 2, mean)
+    std <- apply(train_data, 2, sd)
+    
+    x_train <<- scale(train_data, center = mean, scale = std)
+    x_val <<- scale(val_data, center = mean, scale = std)
+    x_test <<- scale(test_data, center = mean, scale = std)
+  }
   
+  normalize_wmse_data(x_train, x_val, x_test)
+
   x_val <- x_val[,-1]
   x_test <- as.matrix(x_test)
   x_test <- x_test[,-1]
   
+  x_train <- x_train[,-1]
+  
   # intentionally overtrain
   model <- keras_model_sequential() %>%
-    layer_dense(units = 128, activation = "relu", 
+    layer_dense(units = 64, activation = "relu", 
                 input_shape = dim(partial_x_train)[[2]]) %>%
-    layer_dense(units = 128, activation = "relu") %>%
+    layer_dense(units = 64, activation = "relu") %>%
     layer_dense(units = 1)
   
   model %>% compile(
@@ -334,23 +356,27 @@ for (i in 1:it) {
     metrics = c("mae")
   )
   
+  epo <- 50
   history <- model %>% fit(
     partial_x_train,
     partial_y_train,
     sample_weight = obs_weights,
-    epochs = 2000,
-    verbose = 0,
-    #batch_size = 32,
+    epochs = epo,
+    #verbose = 0,
+    #batch_size = 64,
     validation_data = list(x_val, y_val)
   )
   
   goodtrain <- which.min(history$metrics$val_loss)
+  goodtrain
+  print("of")
+  epo
   
   # retrain 
   model <- keras_model_sequential() %>%
-    layer_dense(units = 128, activation = "relu", 
+    layer_dense(units = 64, activation = "relu", 
                 input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 128, activation = "relu") %>%
+    layer_dense(units = 64, activation = "relu") %>%
     layer_dense(units = 1)
   
   model %>% compile(
@@ -371,8 +397,11 @@ for (i in 1:it) {
   nn_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_wmse_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df[,label_index] / reduced_df$pi) 
+  statistic_tracker$nn_wmse_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
                                                                + sum(nn_y_hat / dropped_obs$pi))
+  
+  print("Finished nn wmse mean")
+  
   
   ##########
   # Mean according to imputed dataset via neural network with weighted resample
@@ -380,11 +409,11 @@ for (i in 1:it) {
   # the imputation mean is taken on the new data set
   # (without pi feature)
   dropped_obs_NA_lab <- dropped_obs
-  dropped_obs_NA_lab$y <- NA
+  dropped_obs_NA_lab$FINCBTAX <- NA
   
   orig_df <- rbind(reduced_df, dropped_obs_NA_lab)
   
-  # sample by inclusion probability or pi ?????
+  # re-sample by inclusion probability 
   weight_vec <- 1 / as.numeric(orig_df$pi)  
   
   orig_tbl <- as_tibble(orig_df)
@@ -397,10 +426,10 @@ for (i in 1:it) {
   resamp_dropped_obs <- resamp_df[which(is.na(resamp_df$FINCBTAX)),]
   
   y_train <- resamp_reduced_df$FINCBTAX
-  resamp_reduced_df_nolab <- select(resamp_reduced_df, -c(y))
+  resamp_reduced_df_nolab <- select(resamp_reduced_df, -c(FINCBTAX))
   
   y_test <- resamp_dropped_obs$FINCBTAX
-  resamp_dropped_obs_nolab <- select(resamp_dropped_obs, -c(y))
+  resamp_dropped_obs_nolab <- select(resamp_dropped_obs, -c(FINCBTAX))
   
   resamp_reduced_df_nolab <- as.matrix(resamp_reduced_df_nolab)
   resamp_dropped_obs_nolab <- as.matrix(resamp_dropped_obs_nolab)
@@ -412,46 +441,77 @@ for (i in 1:it) {
   create_validation_split(x_train, y_train)
   
   model <- keras_model_sequential() %>%
-    layer_dense(units = 32, activation = "relu", 
+    layer_dense(units = 64, activation = "relu", 
                 input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 32, activation = "relu") %>%
+    layer_dense(units = 64, activation = "relu") %>%
     layer_dense(units = 1)
   
   model %>% compile(
-    optimizer = "adam",
+    optimizer = use_me,
+    loss = "mse",
+    metrics = c("mae")
+  )
+  
+  epo <- 300
+  history <- model %>% fit(
+    partial_x_train,
+    partial_y_train,
+    epochs = epo,
+    verbose = 0,
+    validation_data = list(x_val, y_val)
+  )
+  
+  goodtrain <- which.min(history$metrics$val_loss)
+  goodtrain
+  print("of")
+  epo
+  
+  # retrain 
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 64, activation = "relu", 
+                input_shape = dim(x_train)[[2]]) %>%
+    layer_dense(units = 64, activation = "relu") %>%
+    layer_dense(units = 1)
+  
+  model %>% compile(
+    optimizer = use_me,
     loss = "mse",
     metrics = c("mae")
   )
   
   history <- model %>% fit(
-    partial_x_train,
-    partial_y_train,
-    epochs = 200,
-    verbose = 0,
-    batch_size = 32,
-    validation_data = list(x_val, y_val)
+    x_train,
+    y_train,
+    epochs = goodtrain, 
+    verbose = 0
+    #batch_size = 32,
+    #validation_data = list(x_val, y_val)
   )
   
   x_test <- as.matrix(x_test)
   nn_resamp_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_resamp_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df[,label_index] / reduced_df$pi) 
+  statistic_tracker$nn_resamp_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
                                                                  + sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
+  
+  print("Finished resamp imp mean")
+  
+  
   ########
   # Derived-parameter NN imputation, where derived parameters are ??
   
-  y_train <- reduced_df$y
-  reduced_df_nolab <- select(reduced_df, -c(y))
+  y_train <- reduced_df$FINCBTAX
+  reduced_df_nolab <- select(reduced_df, -c(FINCBTAX))
   
-  y_test <- dropped_obs$y
-  dropped_obs_nolab <- select(dropped_obs, -c(y))
+  y_test <- dropped_obs$FINCBTAX
+  dropped_obs_nolab <- select(dropped_obs, -c(FINCBTAX))
   
-  x1pi <- (reduced_df_nolab$x_1)*(reduced_df_nolab$pi)
-  x2pi <- (reduced_df_nolab$x_2)*(reduced_df_nolab$pi)
+  x1pi <- (reduced_df_nolab$FSALARYX)*(reduced_df_nolab$pi)
+  x2pi <- (reduced_df_nolab$AGE_REF)*(reduced_df_nolab$pi)
   
-  dx1pi <- (dropped_obs_nolab$x_1)*(dropped_obs_nolab$pi)
-  dx2pi <- (dropped_obs_nolab$x_2)*(dropped_obs_nolab$pi)
+  dx1pi <- (dropped_obs_nolab$FSALARYX)*(dropped_obs_nolab$pi)
+  dx2pi <- (dropped_obs_nolab$AGE_REF)*(dropped_obs_nolab$pi)
   
   reduced_df_nolab <- cbind(reduced_df_nolab, x1pi, x2pi)
   dropped_obs_nolab <- cbind(dropped_obs_nolab, dx1pi, dx2pi)
@@ -466,34 +526,67 @@ for (i in 1:it) {
   create_validation_split(x_train, y_train)
   
   model <- keras_model_sequential() %>%
-    layer_dense(units = 32, activation = "relu", 
+    layer_dense(units = 64, activation = "relu", 
                 input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 32, activation = "relu") %>%
+    layer_dense(units = 64, activation = "relu") %>%
     layer_dense(units = 1)
   
   model %>% compile(
-    optimizer = "adam",
+    optimizer = use_me,
     loss = "mse",
     metrics = c("mae"))
   
+  epo <- 300
   history <- model %>% fit(
     partial_x_train,
     partial_y_train,
-    epochs = 300, #high variance; study further
+    epochs = epo,
     verbose = 0,
-    batch_size = 32,  #what should this be
+    #batch_size = 32, 
     validation_data = list(x_val, y_val)  
+  )
+  
+  goodtrain <- which.min(history$metrics$val_loss)
+  goodtrain
+  print("of")
+  epo
+  
+  # retrain 
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 64, activation = "relu", 
+                input_shape = dim(x_train)[[2]]) %>%
+    layer_dense(units = 64, activation = "relu") %>%
+    layer_dense(units = 1)
+  
+  model %>% compile(
+    optimizer = use_me,
+    loss = "mse",
+    metrics = c("mae")
+  )
+  
+  history <- model %>% fit(
+    x_train,
+    y_train,
+    epochs = goodtrain, 
+    verbose = 0
+    #batch_size = 32,
+    #validation_data = list(x_val, y_val) 
   )
   
   x_test <- as.matrix(x_test)
   nn_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_deriv_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df[,label_index] / reduced_df$pi) 
+  statistic_tracker$nn_deriv_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
                                                                 + sum(nn_y_hat / dropped_obs$pi))
+  print("Finished derived param imp mean")
   
   print(i)
 }
+
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\force_o_1.csv")
+
+
 ################################################
 # Compare results
 dat <- statistic_tracker
