@@ -74,6 +74,14 @@ $$
 $$
 The breadth and depth used here is a heuristic size which could potentially be optimized to suit the problem. This, however, creates a conflict of interest with information leakage which the other methods are not privy to, which induces bias for the success of these algorithms. To maintain the narrative of a minimal-knowledge naive fit, these models use a reasonable exploratory capacity. The models in the fitting process are manually over-trained, then re-trained from scratch to an optimal state. This is done using a validation data set of $15\%$ of the training data. Once trained to an approximate loss minima, the models predict on holdout test data (the observations missing labels) and the population mean estimate is computed and recorded.
 
+## Evaluating models
+### Oracle Mean:
+The oracle mean is the Horvitz-Thompson estimator with access to the complete sample before missingness is induced [@horvitz1952generalization]. The oracle mean will be used as a benchmark against which the other methods will be compared.
+$$
+\hat \mu_{\text{oracle}} = \frac{1}{N} \sum_{i=1}^n y_i \frac{1}{\pi_i}
+$$
+Since the oracle mean has access to information that the other methods do not, it is the ideal estimate of a population mean given a sample. The difference between the oracle and $\pi$-corrected estimates are indices $n$ and $r$ over which the sum is taken.
+
 ## Results aaaaaaaaa
 
 ```{r, echo = FALSE, warning = FALSE}
@@ -85,11 +93,6 @@ Note to Kelly reviewing this: the resampling method and derived parameters metho
 I'm hesitant to write too much about results given the situation.
 ## Results
 Not a place to list findings. Rather, convince that what I did is correct, worthy of study, and impactful. Be honest about the generalizability of the work. If the findings are negative, take care to explain why the results still matter (discussion of why linear regression is so dank at mean estimation). Cast the negative result as a useful insight, rather than a problem with the methodology.
-
-```{r}
-# table of oracle ratios
-knitr::include_graphics("figure/aws_full_results.png")
-```
 
 ```{r}
 # a table of all results

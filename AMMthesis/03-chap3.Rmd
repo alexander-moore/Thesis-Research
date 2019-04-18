@@ -1,43 +1,36 @@
 # Methods
 Missingness is an extremely common problem in real data sets. Many analyses and algorithms such as regression, classification, PCA, and clustering done throughout the sciences rely on having entirely complete observations. For this reason, some strategy must be adopted to transform a raw data set into an analyzable one.
 
-There are multiple approaches for a researcher interested in going about this process. The researcher has a data set gathered under a complex survey design where the features $x_1,...x_n$ and inclusion probability $\pi_i$ is known for all $i$, though the label $y_i$ may be missing due to item nonresponse. In order to create a data set with no missing values, the researcher may choose to adopt one of the following methods. These methods borrow notions from complex survey design about using design variables to model how characteristics of the population affecting the sample [@maiti2008neural]. Neural network methods have the advantage of flexibility in approximating any functional relationship, and can be tuned using sampling weights to account for complex sampling design using unequal sampling [@maiti2008neural].
+There are multiple approaches for a researcher interested in going about this process. The researcher has a data set gathered under a complex survey design where the features $x_1,...x_n$ and inclusion probability $\pi_i$ is known for all $i$, though the label $y_i$ may be missing due to item nonresponse. Sample observations with item response are the elements $r \subseteq s$, of which there are $n_r$, and there are $n_{s-r}$ nonresponders $s-r \subset s$. In order to create a data set with no missing values, the researcher may choose to adopt one of the following methods. These methods borrow notions from complex survey design about using design variables to model how characteristics of the population affects the sample [@maiti2008neural]. Neural network methods have the advantage of flexibility in approximating any functional relationship, and can be tuned using sampling weights to account for complex sampling design using unequal sampling [@maiti2008neural].
 
-There are two primary tasks for a researcher: representative complete-case data, and statistic estimation via accurate imputation. The following methods are imputation techniques designed with these goals in mind. Imputation methods utilize different techniques to create a complete-case dataset by estimating missing values based on information from the complete cases. Once the missing values are imputed, the population statistic is estimated and the approximate complete-case data set may be used.
+There are two primary tasks for a researcher: representative complete-case data, and statistical estimation via accurate imputation. The following methods are imputation techniques designed with these goals in mind. Imputation methods utilize different techniques to create a complete-case dataset by estimating missing values based on information from the complete cases. Once the missing values are imputed, the population parameter is estimated using the approximate complete-case data set.
 
 ## Mean Estimation Methods
-A common statistic of interest to a researcher is an estimate of the population mean $\mu_y$ using the information from the complex sample with missingness, but taking the naive mean of complete cases is insufficient for two reasons. The first has been discussed in Chapter 1, which is the potential of systematic missingness in the data. The second is that the naive mean makes the assumption that the observations represent equal proportions of the population, as in an *i.i.d.* sample.
 
 ### Naive Mean:
-$$
-\hat \mu_y = \frac{1}{r} \sum_{i=1}^r y_i
-$$
-Where $r$ are the complete-case respondents.
+A common statistic of interest to a researcher is an estimate of the population mean $\mu_y = \frac{1}{N}\sum_{i \in N} y_i$ using the information from the complex sample with missingness. Taking the naive mean of complete cases is insufficient for two reasons. The first has been discussed in Chapter 1, which is the potential of systematic missingness in the data. The second is that the naive mean makes the assumption that the observations represent equal proportions of the population, as in an *i.i.d.* sample.
 
-We resolve this issue in the mean estimate formula by weighting contributions to the mean by $\frac{1}{\pi_i}$, the approximate number of population members represented by observation $i$:
-
+The naive mean estimator ignores survey design and allows equal contribution of all observations:
+$$
+\hat \mu_y = \frac{1}{r} \sum_{i \in r} y_i
+$$
 ### Pi-Corrected Naive Mean:
+We resolve this issue in the mean estimate formula by weighting contributions to the mean by $\frac{1}{\pi_i}$, the approximate number of population members represented by observation $i$. This value is the Horvitz-Thompson estimator of the true number of people who would respond in the population [@horvitz1952generalization]:
 $$
-\hat \mu_y = \frac{1}{\hat N} \sum_{i=1}^r y_i \frac{1}{\pi_i}
+\hat \mu_y = \frac{1}{\hat N_r} \sum_{i \in r} y_i \frac{1}{\pi_i}
 $$
-Where $\hat N = \sum_{i=1}^r \frac{1}{\pi_i}$. This resolves the problem of ignoring the survey design in estimation, but does not account for systematic bias resulting from missingness. This will be an under-estimate of the true population mean in the presence of systematic missingess of large observations.
+Where $\hat N_r = \sum_{i \in r} \frac{1}{\pi_i}$. This resolves the problem of ignoring the survey design in estimation, but does not account for systematic bias resulting from missingness. For example, the $\pi$-corrected naive mean estimate of the population mean will be an under-estimate of the true population mean in the presence of systematic missingess of large observations.
 
 Let $\hat \mu_y$ be the sample estimate of the population mean $\mu_y$. The oracle mean can be considered the "best estimate" of $\mu_y$, but it is only available in simulation. The oracle mean uses information that the simulation manually drops so as to create an ideal population estimate given a survey sample:
-
-### Oracle Mean:
-$$
-\hat \mu_{\text{oracle}} = \frac{1}{n} \sum_{i=1}^n y_i \frac{1}{\pi_i}
-$$
-This is the Horvitz-Thompson estimator with access to the complete sample before missingness is induced. The oracle mean will be used as a benchmark against which the other methods will be compared.
 
 ## Imputation Methods
 In order to combat the presence of systematic missing values, we utilize imputation to label the missing observations with the best estimate of $y_i$, $\hat y_i$. Imputation has the added benefit of approximating a complete-case dataset without dropping observations.
 
 ### Imputation Mean Estimator:
 $$
-\hat \mu_y(\text{method}) = \frac{1}{\hat N} (\sum_{i=1}^{r} \frac{y_i}{\pi_i} + \sum_{i=1}^{y-r} \frac{\hat y_i}{\pi_i})
+\hat \mu_y(\text{method}) = \frac{1}{\hat N} (\sum_{i \in r} \frac{y_i}{\pi_i} + \sum_{i \in s-r} \frac{\hat y_i}{\pi_i})
 $$
-Where $y-r$ are the missing cases, $r$ are the respondents, and $\hat N = \sum_{i=1}^n \frac{1}{\pi_i}$.
+Where $s-r$ are the missing cases, $r$ are the respondents, and $\hat N = \sum_{i \in n} \frac{1}{\pi_i}$ is the Horvitz-Thompson estimator of the population size [@horvitz1952generalization].
 
 ### Drop.NA
 One option is to simply remove the observations with missing labels from the data set. This method is extremely easy to implement and serves as a sure-fire way to end up with a data set with no missing values. There are two downsides to this method: The first is that removing observations with missingness obviously decreases the size of the data set and can nontrivially reduce the fidelity of models aiming to understand the population from which the data was taken. The second problem is the assumption of random missingness. If there is any correlation of label to amount of missingness, systematic bias is introduced into the data set, as discussed in Chapter 1. For example, if there is a possibility that larger values are more likely to be dropped, then as a result the sample mean would underestimate the population mean.
@@ -46,9 +39,9 @@ One option is to simply remove the observations with missing labels from the dat
 Median imputation is another easy way to get complete cases in data for analysis or estimation. Median imputation simply fills in the missing labels with the median of the respondent labels. Median imputation has multiple problems for analysis or estimation. The median offers equal weighting to all observations in a data set, meaning it destroys the informativity of the inclusion probability $\pi$. It also removes correlation of feature and label, making analyses such as PCA less informative, as covariate relations dictate axis derivations. Median imputation is extremely fast to execute and implement, but creates noninformative observations in the same manner as the Drop.NA method.
 
 ### Weighted Linear Regression Imputation
-Linear regression is a convex optimization problem of $n+1$ parameters, where $\hat f(x) = \hat y = (m_1x_1 + .+ m_nx_n)+b$ is the estimate of $y$ for observation $i$. Using the mean of the squared difference between the predicted and actual responses of a training data set, weighted-MSE linear regression scales the squared error contribution of each observation by $\frac{1}{\pi_i}$ to account for rare-case observations with potentially systematic missingess:
+Linear regression is a convex optimization problem of $p+1$ parameters, where $\hat f(x) = \hat y = (m_1x_1 + .+ m_px_p)+b$ is the estimate of $y$ for observation $i$ given features $\boldsymbol{x} = [x_1, \dots ,x_p]$. Using the mean of the squared difference between the predicted and actual responses of a training data set, weighted-MSE linear regression scales the squared error contribution of each observation by $\frac{1}{\pi_i}$ to account for rare-case observations with potentially systematic missingess, and returns a scalar loss:
 $$
-\text{MSE}(f) = \frac{1}{r} \sum_{i=1}^r  (\frac{1}{\pi}(\hat{y} - y))^2
+\text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2
 $$
 Significant to this algorithm, however, is the contribution of $\pi$ regardless of whether it is informative. In data known to have systematic label missingness, this is not a problem. However, it is not always the case that $\pi$ is informative, and including this scaling term would be harmful to cases in which $\pi$ and $y$ are uncorrelated.
 
