@@ -111,7 +111,7 @@
   \newcommand{\NormalTok}[1]{#1}
 
 % To pass between YAML and LaTeX the dollar signs are added by CII
-\title{Neural Network Methods for Complex Survey Imputation}
+\title{Mean Estimation via Neural Network Methods in Complex Survey Imputation}
 \author{Alexander Michael Moore}
 % The month and year that you submit your FINAL draft TO THE LIBRARY (May or December)
 \date{May 2019}
@@ -171,10 +171,20 @@ class (for LaTeX) and the R bookdown package, in general.
 }
 
 \Abstract{
-This is my abstract. Packet from unrealeased textbook has great guide
-for abstract. \par
-
-Second paragraph of abstract starts here.
+Abstract last. 100-500 words. Abstract should be able to stand alone:
+results and approach blatantly and simply stated. Want to sell paper at
+a glimpse
+\begin{itemize}
+\tightlist
+\item
+  main objectiuve and rationale of project
+\item
+  outline of methods used
+\item
+  results of the project
+\item
+  conclusions about the implications of the project
+\end{itemize}
 }
 
 % End of CII addition
@@ -204,10 +214,20 @@ Second paragraph of abstract starts here.
 
   \listoffigures
   \begin{abstract}
-    This is my abstract. Packet from unrealeased textbook has great guide
-    for abstract. \par
-    
-    Second paragraph of abstract starts here.
+    Abstract last. 100-500 words. Abstract should be able to stand alone:
+    results and approach blatantly and simply stated. Want to sell paper at
+    a glimpse
+    \begin{itemize}
+    \tightlist
+    \item
+      main objectiuve and rationale of project
+    \item
+      outline of methods used
+    \item
+      results of the project
+    \item
+      conclusions about the implications of the project
+    \end{itemize}
   \end{abstract}
   \begin{dedication}
     You can have a dedication here if you wish.
@@ -593,9 +613,9 @@ their proven potential in solving complicated real-world applications
 with promising and increasingly dominant accuracy in practice, often at
 the cost of a lack of inferability.
 
-This lack of infer-ability is the typical downside of working with
-neural networks as the inference on a model can be more important than
-the predictive accuracy depending on the problem. Once a simple linear
+This lack of inferability is the typical downside of working with neural
+networks as the inference on a model can be more important than the
+predictive accuracy depending on the problem. Once a simple linear
 regression is trained, the coefficients on the predictors offer an
 immediately understandable interpretation of the behavior of the data.
 For example, a coefficient of .3 on a feature \(x\) has a simple,
@@ -610,15 +630,18 @@ Neural Networks are a composition of functions. The following describes
 a full neural network:
 
 \[
-\hat y = f(x; \theta, \omega) = f^n ( f^{n-1}  ( ... f^1(x)))
-\] In this function, we see the input features \(x\), the learned
-coefficients \(\theta\), the learning rate \(\omega\), and the output
-prediction \(\hat{y}\). Consider one of the layers of the network,
-\(f_i\). This layer is an activation function on linear function:
+\hat y = f(\boldsymbol{x}; \theta, \omega) = f^n ( f^{n-1}  ( ... f^1(\boldsymbol{x}; \theta, \omega)))
+\] In this function, we see the input features \(x \in \mathbb{R}^n\),
+the learned coefficients \(\theta\), the learning rate
+\(\omega \in \mathbb{R}\), and the output prediction \(\hat{y}\).
+Consider one of the layers of the network, \(f^i\). This layer is an
+activation function composed with a linear function:
 
 \[
-f^i = \max ( 0 , {W_i}^T x + c_i)
-\]
+f^i = \max ( 0 , {\boldsymbol{W}_i}^T \boldsymbol{x} + c_i)
+\] Where \(\boldsymbol{W}_i^T \boldsymbol{x} + c_i\) is the interior
+linear function for \(\boldsymbol{W}_i^T \in \mathbb{R}^n\),
+\(c_i \in \mathbb{R}\).
 
 The activation function shown above is the rectified linear unit, or
 \(\max(0,a)\). Activation functions are significant as they introduce
@@ -630,22 +653,17 @@ give the full description of the network, called \(\theta\). So the
 output of a 1-layer network can be expressed as
 
 \[
-f(x; W, c, w, b) = w^T \max( 0 , W^T x +c ) +b
+f(x; W, c, w, b) = w^T \max( 0 , \boldsymbol{W}^T \boldsymbol{x} +c ) +b
 \]
 
 The final activation function is another structural parameter left to
-the designer of the network. The typical choices are
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Linear units for Gaussian output distributions
-\item
-  Sigmoid units for Bernoulli output distributions
-\item
-  Softmax units for Multinoulli output distributions
-\end{enumerate}
-(Goodfellow et al., 2016)
+the designer of the network, but differs from interior activation
+functions as the output of the network is restricted to the codomain of
+the function, limiting the number of reasonable choices. The typical
+output layer for scalar regression is a linear unit, on behalf of the
+codomain \((-\infty,\infty)\) of the activation: \[
+f^n(\boldsymbol{x}) = 1*(\boldsymbol{W}_n^T \boldsymbol{x} + c_n)
+\]
 
 The learning rate \(\omega\) and a loss function are meta-parameters,
 given by the user creating the neural network. These two parameters are
@@ -653,7 +671,7 @@ used during the training of the network. During training, gradient
 descent is used to descend the loss function in order to find the
 optimal parameters for the network.
 
-Loss functions are ways of describing performance of a model when
+Loss functions are ways of describing the performance of a model when
 predicting labels of a data set. The loss function takes the model and
 data as inputs, and outputs a real number. Loss functions can be
 minimized in training by optimization which leads the network to find
@@ -920,7 +938,9 @@ is that the naive mean makes the assumption that the observations
 represent equal proportions of the population, as in an \emph{i.i.d.}
 sample.
 
-Naive Mean: \[
+\subsection{Naive Mean:}\label{naive-mean}
+
+\[
 \hat \mu_y = \frac{1}{r} \sum_{i=1}^r y_i
 \] Where \(r\) are the complete-case respondents.
 
@@ -948,8 +968,11 @@ population estimate given a survey sample:
 
 \[
 \hat \mu_{\text{oracle}} = \frac{1}{n} \sum_{i=1}^n y_i \frac{1}{\pi_i}
-\] The oracle mean will be used as a benchmark against which the other
-methods will be compared.
+\] This is the Horvitz-Thompson estimator with access to the complete
+sample before missingness is induced. The oracle mean will be used as a
+benchmark against which the other methods will be compared.
+
+\section{Imputation Methods}\label{imputation-methods}
 
 In order to combat the presence of systematic missing values, we utilize
 imputation to label the missing observations with the best estimate of
@@ -992,18 +1015,23 @@ informative, as covariate relations dictate axis derivations. Median
 imputation is extremely fast to execute and implement, but creates
 noninformative observations in the same manner as the Drop.NA method.
 
-\subsection{Linear Regression Imputation (weighted
-pi)}\label{linear-regression-imputation-weighted-pi}
+\subsection{Weighted Linear Regression
+Imputation}\label{weighted-linear-regression-imputation}
 
 Linear regression is a convex optimization problem of \(n+1\)
 parameters, where \(\hat f(x) = \hat y = (m_1x_1 + .+ m_nx_n)+b\) is the
 estimate of \(y\) for observation \(i\). Using the mean of the squared
 difference between the predicted and actual responses of a training data
-set, Weighted-MSE Linear Regression scales the squared error
+set, weighted-MSE linear regression scales the squared error
 contribution of each observation by \(\frac{1}{\pi_i}\) to account for
 rare-case observations with potentially systematic missingess: \[
 \text{MSE}(f) = \frac{1}{r} \sum_{i=1}^r  (\frac{1}{\pi}(\hat{y} - y))^2
-\]
+\] Significant to this algorithm, however, is the contribution of
+\(\pi\) regardless of whether it is informative. In data known to have
+systematic label missingness, this is not a problem. However, it is not
+always the case that \(\pi\) is informative, and including this scaling
+term would be harmful to cases in which \(\pi\) and \(y\) are
+uncorrelated.
 
 \subsection{Naive Neural Network
 Imputation}\label{naive-neural-network-imputation}
@@ -1016,7 +1044,8 @@ learning the data's generative function. In the context of the
 researcher having minimal knowledge of the data, a neural network with 2
 hidden layers of 32 units activated by \texttt{relu} functions is a
 reasonable starting point. Overtraining due to overflexible models can
-be stimied with a validation set, assuming the data is not small
+be stimied with a validation set, assuming the data is not so small as
+to create unrepresentative data by subsetting the training data further
 (\(n > 10^3\)). ``Naive'' neural network imputation refers to this model
 not having access to the \(\pi\) feature of the observations as a
 predictor or incorporate it in any way. This model uses the assumption
@@ -1024,12 +1053,14 @@ that the data is \emph{i.i.d} as a representative for ignoring the
 survey design, an assumption which is known to be a significant problem.
 Regardless, the neural network should approximate the generative
 function with some nonparametric fit, but underestimate the population
-mean as a result of systematic missingness and observation equity.
+mean as a result of systematic missingness and observation equity. This
+baseline model will be the pacemaker for the other neural network
+methods to improve upon by incorporating survey design information.
 
-\subsection{Loss-Weighted Neural Network
-Imputation}\label{loss-weighted-neural-network-imputation}
+\subsection{Weighted Loss Neural Network
+Imputation}\label{weighted-loss-neural-network-imputation}
 
-Loss-Weighted Neural Network Imputation takes inspiration from the
+Weighted Loss Neural Network Imputation takes inspiration from the
 weighted linear regression algorithm. This neural network training uses
 the same \(\pi\)-weighted MSE, but sacrifices the convexity of the loss
 function, which means pervasive local minima which are distracting to
@@ -1082,18 +1113,22 @@ making it viable for supervised learning ignoring the survey design
 elements. From this point the naive neural network method is applied
 (and directly compared to naive neural network estimates), since ideally
 this is \emph{i.i.d} data without need for survey design information
-tweaks on the algorithm.
+tweaks on the algorithm. \includegraphics{figure/bs.png}
 
 \subsection{Derived Feature Neural Network
 Imputation}\label{derived-feature-neural-network-imputation}
 
-This method pre-processes the data by deriving additional features, such
-as the product of two features and the product of a feature and the
-inclusion probability. The intention of this method is expediting the
+This method pre-processes the data by adding additional features to the
+data. In the simulation and \texttt{CE} experiments, this is done by
+multiplying two informative features with \(\pi\) and concatenating the
+result to the data. The intention of this method is expediting the
 training process to allow the approximation of more complex generative
-functions with less model capacity and training. Intuitively, the
-relationship of \(\pi\) to \(x_i\) in the missing data, should it be
-relevant, will be more easily learned for superior prediction accuracy.
+functions with less model capacity and training. Intuitively, should the
+relationship of \(\pi\) to \(x_i\) in the missing data be relevant, it
+will be more easily learned for superior prediction accuracy. This
+method does have an implicit ``oracle'' element, however, as knowing
+which columns to derive from a real data set is incorporation of a
+significant amount of domain knowledge.
 
 \chapter{Simulation}\label{simulation}
 
@@ -1273,15 +1308,46 @@ aaaaaaaaaaaaaaa
 If we don't want Conclusion to have a chapter number next to it, we can
 add the \texttt{\{-\}} attribute.
 
-\textbf{More info}
+\section{Results (SHOULD GO IN OTHER CHAPTERS, 3 AND
+4)}\label{results-should-go-in-other-chapters-3-and-4}
 
-And here's some other random info: the first paragraph after a chapter
-title or section head \emph{shouldn't be} indented, because indents are
-to tell the reader that you're starting a new paragraph. Since that's
-obvious after a chapter or section title, proper typesetting doesn't add
-an indent there.
+Not a place to list findings. Rather, convince that what I did is
+correct, worthy of study, and impactful. Be honest about the
+generalizability of the work. If the findings are negative, take care to
+explain why the results still matter (discussion of why linear
+regression is so dank at mean estimation). Cast the negative result as a
+useful insight, rather than a problem with the methodology
 
-\section{Future Work}\label{future-work}
+\section{The End}\label{the-end}
+
+the end of the paper should summarize your main finginds, interpret what
+your results mean in context, discuss limitations, and point to where
+there is room for4 improvement or further analaysis. This is your last
+chance to make an impression, and say everything I want to say.
+
+\section{Discussion}\label{discussion}
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  What are the key features of your analysis and results?
+\item
+  Do your results confirm or contradict your initial expectations or
+  earlier work?
+\item
+  What problems did you run into, and if still unsolved, wgat are
+  suggestions for addressing
+\item
+  Knowing what you know now, what reccomendations in context do you
+  have?
+\item
+  What should someone work on next, building off of your work?
+\end{enumerate}
+\section{Conclusion}\label{conclusion-1}
+
+A conclusion should not introduce new material. Conclusion brief, and
+only contain main points of paper. It will be redundant: that is the
+point. \#\# Future Work
 
 There are so many exciting unexplored methods and tweaks that would be
 worth investigating.

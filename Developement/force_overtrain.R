@@ -188,9 +188,9 @@ for (i in 1:it) {
   )
   
   goodtrain <- which.min(history$metrics$val_loss)
-  goodtrain
+  print(goodtrain)
   print("of")
-  epo
+  print(epo)
   
   # Train a new model for the validation-minimizing number of epochs
   model <- keras_model_sequential() %>%
@@ -267,8 +267,9 @@ for (i in 1:it) {
   
   goodtrain <- which.min(history$metrics$val_loss)
   goodtrain
+  print(goodtrain)
   print("of")
-  epo
+  print(epo)
   
   # re-train the new model to the val-min
   model <- keras_model_sequential() %>%
@@ -362,15 +363,15 @@ for (i in 1:it) {
     partial_y_train,
     sample_weight = obs_weights,
     epochs = epo,
-    #verbose = 0,
+    verbose = 0,
     #batch_size = 64,
     validation_data = list(x_val, y_val)
   )
   
   goodtrain <- which.min(history$metrics$val_loss)
-  goodtrain
+  print(goodtrain)
   print("of")
-  epo
+  print(epo)
   
   # retrain 
   model <- keras_model_sequential() %>%
@@ -462,9 +463,9 @@ for (i in 1:it) {
   )
   
   goodtrain <- which.min(history$metrics$val_loss)
-  goodtrain
+  print(goodtrain)
   print("of")
-  epo
+  print(epo)
   
   # retrain 
   model <- keras_model_sequential() %>%
@@ -547,9 +548,9 @@ for (i in 1:it) {
   )
   
   goodtrain <- which.min(history$metrics$val_loss)
-  goodtrain
+  print(goodtrain)
   print("of")
-  epo
+  print(epo)
   
   # retrain 
   model <- keras_model_sequential() %>%
