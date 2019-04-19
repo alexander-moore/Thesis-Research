@@ -12,19 +12,34 @@ the end of the paper should summarize your main finginds, interpret what your re
 4. Knowing what you know now, what reccomendations in context do you have?
 5. What should someone work on next, building off of your work?
 
+
+
+conclsuion can talk a lot about the TONS of hyperparameters, all the caveats
+- can slap a basic version of NN on without domain knowledge, 
+but can incorporate knowledge in tons of tweaks on all the hyperparameters
+
+
+
 ## Conclusion
 A conclusion should not introduce new material. Conclusion brief, and only contain main points of paper. It will be redundant: that is the point. 
 
+If a researcher is interested in an easy to implement, computationally inexpensive heuristic algorithm to impute complex survey data for mean estimation, weighted linear regression is the most appealing method. The reality of real data is that it is more likely noisy than functional. 
+
+The performance of linear regression in noisy-feature simulation shows the robustness of the algorithm to heuristic implementation. The lack of domain knowledge necessary to select variables in order to implement an effective linear regression makes the model highly appealing for stable results regardless of feature space size.
+
+Neural network methods are promising, however, because of their many degrees flexibility. The nonparametric models are adaptable to more complex intervariable relationships of the data. If a domain expert hypothesized a sophisticated function on a subset of variables which make an excellent label predictor without knowing its specific form, there is room for that structure in the neural network architecture.
+
+Likewise, the massive space of hyperparameters for even a simple feedforward neural network gives immeasurable potential to a savvy designer. Understanding of the shape of the loss function, necessary load of the model, and relationship of features are all examples of knowledge lending itself to specific selections of model load, activations, optimizers, losses, weightings, connectivity, and countless other tweaks letting a knowledgable designer maximize predictive performance.
+
+However, as mentioned in \@ref(sec:sim_results), the task is population mean estimation, not predictive accuracy. [[[[[[[Talk to kelly about this. obviously predicting values near true label is good, but that need not be the case to get extremely accurate population estimates]]]]]]]
+
+
+
 ## Future Work
-There are so many exciting unexplored methods and tweaks that would be worth investigating for the improvement of neural network complex survey imputation methods for mean estimation.
 
-Many I don't know how to implement, couldn't find a good use, don't understand enough, or was computationally restricted, especially during monte carlo simulation!
+- something better than linear regression as comparison: local polynomial, etc. some other very-stable heuristic method
 
-Can do a paragraph on the most important things here:
-
-- something better than linear regression: local polynomial, etc
-- training neural networks correctly: finding the validation minima then re-training every time. I was prevented by computational intensity
-- tweaks on neural networks: **reinforcement learning**, dropout layers, noise layers, pre-trained networks
 - re-visiting weighted resampling by trying bootstrapping methods, bigger resample. bootstrapping many datasets, training on each, and taking mean of estimates. somethign like this to stabilize predictions and sampling variability.
 
-Multiple imputation: since hopefully NN preserve intervarabhle relationships better than linear or median etc
+Multiple imputation: since hopefully NN preserve intervariable relationships better than linear or median etc
+

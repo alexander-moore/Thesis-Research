@@ -43,9 +43,9 @@ normalize_data <- function(train_data, test_data) {
 
 # custom `adam` optimizer, learning rate up for grabs
 # .001 default, .005 testing (methods were using 600 epo)
-adam_lr <- optimizer_adam(lr = 0.02, beta_1 = 0.9, beta_2 = 0.999,
-                         epsilon = NULL, decay = 0, amsgrad = FALSE, clipnorm = NULL,
-                         clipvalue = NULL)
+adam_lr <- optimizer_adam(lr = 0.1, beta_1 = 0.9, beta_2 = 0.999,
+                          epsilon = NULL, decay = 0, amsgrad = FALSE, clipnorm = NULL,
+                          clipvalue = NULL)
 
 dat <- read_csv("Data/imputed_CE.csv")
 
@@ -57,17 +57,11 @@ statistic_tracker <- data.frame(true_mean = numeric(it),
                                 pi_naive_mean = numeric(it),
                                 median_imp_mean = numeric(it),
                                 lin_imp_mean = numeric(it),
-                                lin_oracle = numeric(it),
                                 nn_imp_mean = numeric(it),
-                                nn_oracle = numeric(it),
                                 nn_pi_imp_mean = numeric(it),
-                                nn_pi_oracle = numeric(it),
                                 nn_resamp_imp_mean = numeric(it),
-                                nn_resamp_oracle = numeric(it),
                                 nn_wmse_imp_mean = numeric(it),
-                                nn_wmse_oracle = numeric(it),
-                                nn_deriv_imp_mean = numeric(it),
-                                nn_deriv_oracle = numeric(it))
+                                nn_deriv_imp_mean = numeric(it))
 
 # Prep label
 df <- select(dat, c(FINCBTAX, pi, AGE_REF, BATHRMQ, BEDROOMQ, EDUC_REF, FAM_SIZE,
@@ -81,7 +75,8 @@ df <- select(dat, c(FINCBTAX, pi, AGE_REF, BATHRMQ, BEDROOMQ, EDUC_REF, FAM_SIZE
 mu_y <- mean(df$FINCBTAX)
 mu_y # == mean american household income :)
 
-testing <- FALSE
+testing <- TRUE
+epo <- 200
 
 for (i in 1:it) {
   
@@ -175,7 +170,7 @@ for (i in 1:it) {
       metrics = c("mae")
     )
     
-    epo <- 500
+    #epo <- 70
     history <- model %>% fit(
       partial_x_train,
       partial_y_train,
@@ -210,30 +205,32 @@ for (i in 1:it) {
       #batch_size = 32,
       #validation_data = list(x_val, y_val)
     )
+    plot(history)
+  } else {
+  
+    # Train a new model for the validation-minimizing number of epochs
+    model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu", 
+                  input_shape = dim(x_train)[[2]]) %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1)
+    
+    model %>% compile(
+      optimizer = adam_lr,
+      loss = "mse",
+      metrics = c("mae")
+    )
+    
+    history <- model %>% fit(
+      x_train,
+      y_train,
+      epochs = 419, 
+      verbose = 0
+      #callbacks = EarlyStopping()
+      #batch_size = 32,
+      #validation_data = list(x_val, y_val)
+    )
   }
-  
-  # Train a new model for the validation-minimizing number of epochs
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 64, activation = "relu", 
-                input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 64, activation = "relu") %>%
-    layer_dense(units = 1)
-  
-  model %>% compile(
-    optimizer = adam_lr,
-    loss = "mse",
-    metrics = c("mae")
-  )
-  
-  history <- model %>% fit(
-    x_train,
-    y_train,
-    epochs = 419, 
-    verbose = 0
-    #callbacks = EarlyStopping()
-    #batch_size = 32,
-    #validation_data = list(x_val, y_val)
-  )
   
   x_test <- as.matrix(x_test)
   nn_y_hat <- predict(model, x_test)
@@ -248,10 +245,10 @@ for (i in 1:it) {
   # Mean according to imputed data via neural network w pi feature
   y_train <- reduced_df$FINCBTAX
   reduced_df_nolab <- select(reduced_df, -c(FINCBTAX))
-
+  
   y_test <- dropped_obs$FINCBTAX
   dropped_obs_nolab <- select(dropped_obs, -c(FINCBTAX))
-
+  
   reduced_df_nolab <- as.matrix(reduced_df_nolab)
   dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
   
@@ -276,13 +273,12 @@ for (i in 1:it) {
       metrics = c("mae")
     )
     
-    epo <- 2000
+    #epo <- 50
     history <- model %>% fit(
       partial_x_train,
       partial_y_train,
       epochs = epo,
       verbose = 0,
-      #batch_size = 32,
       validation_data = list(x_val, y_val)
     )
     
@@ -290,29 +286,52 @@ for (i in 1:it) {
     print(goodtrain)
     print("of")
     print(epo)
+    
+    # re-train the new model to the val-min
+    model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu", 
+                  input_shape = dim(x_train)[[2]]) %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1)
+    
+    model %>% compile(
+      optimizer = adam_lr,
+      loss = "mse",
+      metrics = c("mae")
+    )
+    
+    history <- model %>% fit(
+      x_train,
+      y_train,
+      epochs = goodtrain, 
+      verbose = 0
+    )
+    plot(history)
+    
+  } else {
+  
+    # re-train the new model to the val-min
+    model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu", 
+                  input_shape = dim(x_train)[[2]]) %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1)
+    
+    model %>% compile(
+      optimizer = adam_lr,
+      loss = "mse",
+      metrics = c("mae")
+    )
+    
+    history <- model %>% fit(
+      x_train,
+      y_train,
+      epochs = 218, 
+      verbose = 0
+      #batch_size = 32,
+      #validation_data = list(x_val, y_val)
+    )
   }
-  
-  # re-train the new model to the val-min
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 64, activation = "relu", 
-                input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 64, activation = "relu") %>%
-    layer_dense(units = 1)
-  
-  model %>% compile(
-    optimizer = adam_lr,
-    loss = "mse",
-    metrics = c("mae")
-  )
-  
-  history <- model %>% fit(
-    x_train,
-    y_train,
-    epochs = 218, 
-    verbose = 0
-    #batch_size = 32,
-    #validation_data = list(x_val, y_val)
-  )
   
   x_test <- as.matrix(x_test)
   nn_pi_y_hat <- predict(model, x_test)
@@ -354,11 +373,13 @@ for (i in 1:it) {
   
   
   # Extract partial pi from full train x
+  #range01 <- function(x){(x-min(x))/(max(x)-min(x))}
+  
   pi_prime <- pi_vec[-val_indices]
   obs_weights <- 1 / pi_prime
-  
+
   full_obs_weights <- 1 / pi_vec
-  
+
   # remove pi from x_test and x_train, partial_x_train, x_val
   x_test <- select(x_test, -c(pi))
   x_train <- select(x_train, -c(pi))
@@ -373,7 +394,7 @@ for (i in 1:it) {
   x_test <- scale(x_test, center = mean, scale = std)
   x_val <- scale(x_val, center = mean, scale = std)
   partial_x_train <- scale(partial_x_train, center = mean, scale = std)
-
+  
   #######
   
   if(testing){
@@ -390,7 +411,7 @@ for (i in 1:it) {
       metrics = c("mae")
     )
     
-    epo <- 600
+    #epo <- 50
     history <- model %>% fit(
       partial_x_train,
       partial_y_train,
@@ -404,31 +425,55 @@ for (i in 1:it) {
     print(goodtrain)
     print("of")
     print(epo)
+    
+    # retrain 
+    model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu", 
+                  input_shape = dim(x_train)[[2]]) %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1)
+    
+    model %>% compile(
+      optimizer = adam_lr,
+      loss = "mse",
+      metrics = c("mae")
+    )
+    
+    history <- model %>% fit(
+      x_train,
+      y_train,
+      epochs = goodtrain, 
+      verbose = 0,
+      sample_weight = full_obs_weights
+    )
+    plot(history)
+    
+  } else {
+  
+    # retrain 
+    model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu", 
+                  input_shape = dim(x_train)[[2]]) %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1)
+    
+    model %>% compile(
+      optimizer = adam_lr,
+      loss = "mse",
+      metrics = c("mae")
+    )
+    
+    history <- model %>% fit(
+      x_train,
+      y_train,
+      epochs = 209, 
+      verbose = 0,
+      sample_weight = full_obs_weights
+    )
   }
   
-  # retrain 
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 64, activation = "relu", 
-                input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 64, activation = "relu") %>%
-    layer_dense(units = 1)
-  
-  model %>% compile(
-    optimizer = adam_lr,
-    loss = "mse",
-    metrics = c("mae")
-  )
-  
-  history <- model %>% fit(
-    x_train,
-    y_train,
-    epochs = 209, 
-    verbose = 0,
-    sample_weight = full_obs_weights
-  )
-  
   nn_y_hat <- predict(model, x_test)
-
+  
   hat_N_sample <- sum(1/df$pi)
   statistic_tracker$nn_wmse_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
                                                                + sum(nn_y_hat / dropped_obs$pi))
@@ -486,7 +531,7 @@ for (i in 1:it) {
       metrics = c("mae")
     )
     
-    epo <- 400
+    #epo <- 100
     history <- model %>% fit(
       partial_x_train,
       partial_y_train,
@@ -499,29 +544,52 @@ for (i in 1:it) {
     print(goodtrain)
     print("of")
     print(epo)
+    
+    # retrain 
+    model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu", 
+                  input_shape = dim(x_train)[[2]]) %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1)
+    
+    model %>% compile(
+      optimizer = adam_lr,
+      loss = "mse",
+      metrics = c("mae")
+    )
+    
+    history <- model %>% fit(
+      x_train,
+      y_train,
+      epochs = goodtrain, 
+      verbose = 0
+    )
+    plot(history)
+    
+  } else {
+  
+    # retrain 
+    model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu", 
+                  input_shape = dim(x_train)[[2]]) %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1)
+    
+    model %>% compile(
+      optimizer = adam_lr,
+      loss = "mse",
+      metrics = c("mae")
+    )
+    
+    history <- model %>% fit(
+      x_train,
+      y_train,
+      epochs = 800, 
+      verbose = 0
+      #batch_size = 32,
+      #validation_data = list(x_val, y_val)
+    )
   }
-
-  # retrain 
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 64, activation = "relu", 
-                input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 64, activation = "relu") %>%
-    layer_dense(units = 1)
-  
-  model %>% compile(
-    optimizer = adam_lr,
-    loss = "mse",
-    metrics = c("mae")
-  )
-  
-  history <- model %>% fit(
-    x_train,
-    y_train,
-    epochs = 800, 
-    verbose = 0
-    #batch_size = 32,
-    #validation_data = list(x_val, y_val)
-  )
   
   x_test <- as.matrix(x_test)
   nn_resamp_y_hat <- predict(model, x_test)
@@ -572,7 +640,7 @@ for (i in 1:it) {
       loss = "mse",
       metrics = c("mae"))
     
-    epo <- 1000
+    #epo <- 40
     history <- model %>% fit(
       partial_x_train,
       partial_y_train,
@@ -586,28 +654,53 @@ for (i in 1:it) {
     print(goodtrain)
     print("of")
     print(epo)
+    
+    # retrain 
+    model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu", 
+                  input_shape = dim(x_train)[[2]]) %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1)
+    
+    model %>% compile(
+      optimizer = adam_lr,
+      loss = "mse",
+      metrics = c("mae")
+    )
+    
+    history <- model %>% fit(
+      x_train,
+      y_train,
+      epochs = goodtrain, 
+      verbose = 0
+      #batch_size = 32,
+      #validation_data = list(x_val, y_val) 
+    )
+    plot(history)
+    
+  } else {
+    # retrain 
+    model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu", 
+                  input_shape = dim(x_train)[[2]]) %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1)
+    
+    model %>% compile(
+      optimizer = adam_lr,
+      loss = "mse",
+      metrics = c("mae")
+    )
+    
+    history <- model %>% fit(
+      x_train,
+      y_train,
+      epochs = 165, 
+      verbose = 0
+      #batch_size = 32,
+      #validation_data = list(x_val, y_val) 
+    )
   }
-  # retrain 
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 64, activation = "relu", 
-                input_shape = dim(x_train)[[2]]) %>%
-    layer_dense(units = 64, activation = "relu") %>%
-    layer_dense(units = 1)
-  
-  model %>% compile(
-    optimizer = adam_lr,
-    loss = "mse",
-    metrics = c("mae")
-  )
-  
-  history <- model %>% fit(
-    x_train,
-    y_train,
-    epochs = 165, 
-    verbose = 0
-    #batch_size = 32,
-    #validation_data = list(x_val, y_val) 
-  )
   
   x_test <- as.matrix(x_test)
   nn_y_hat <- predict(model, x_test)
@@ -620,7 +713,7 @@ for (i in 1:it) {
   print(i)
 }
 
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\force_o_1.csv")
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\LRepo_1.csv")
 
 
 ################################################

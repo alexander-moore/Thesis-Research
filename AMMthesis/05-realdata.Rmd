@@ -3,7 +3,11 @@
 ## Data
 The Consumer Expenditure (CE) Surveys provide data on "expenditures, income, and demographic characteristics of consumers in the United States (cite CE https://www.bls.gov/cex/pumd-getting-started-guide.htm). CE data are collected by the Census Bureau for the Bureau of Labor Statistics (BLS). The data are primary used to revise the relative importance of goods and services in the market basket of the Consumer Price Index". 
 
-The data will be the `fmli171x` survey data
+The data will be the `fmli171x` survey data, one of the quarterly surveys for 2017 which contains household information such as specific incomes, expenditures, home description, and family description. The data has a low degree of missingness as quarterly information is propagated between surveys to create complete observations.
+
+The mean estimation methods from chapter 3 will be used to estimate the population mean household income before tax, `FINCBTAX`. Like all data gathered by BLS `FINCBTAX` is subject to missingness, but has been imputed in their data sets. This means for the purpose of our experiment on method imputation quality, we must artifically impose missingness then compare our imputation results to a combination of true labels and BLS-derived labels. This is an unavoidable pitfall of working with real data, as we paradoxically require "truly missing" labels to impute, but need the true label to compare the quality of our imputation to.
+
+According IRS Statistics of Income, the average household adjusted gross income (AGI) was \$67,565 in 2015. This is the last year the population mean income is available. 
 
 ## Procedure
 The CE data method performance comparison will be performed in much the same way as the simulated data method comparison.
@@ -23,6 +27,19 @@ The following process is repeated a number of times to create a distribution of 
   + For the real data, a more accurate neural network method is adopted in which each network undergoes two trainings: the first finds the ideal train duration by overtraining on the training data, the second re-trains the model to the validation minimum of the first model.
 4. The results are compared using MSE, oracle ratio, and PRB. 
 
-The dimension of the neural networks has changed somewhat to account for the new data. Still working on the specifics of this
+The dimension of the neural networks has changed somewhat to account for the new data. Since the number of informative parameters has increased along with the complexity of the generative function transforming them to the label, the size of the model has increased. The standard real-data neural network uses the same two hidden layers activated by `relu` and a linear output layer, but now has 64 hidden units per layer. This describes a significantly higher dimension model as the input vector $\boldsymbol{x}$ undergoes multiple high dimension linear transformations wrapped in the `relu` activation:
+$$
+\begin{align}
+\boldsymbol{x} &\in \mathbb{R}^6 \\
+&\rightarrow \mathbb{R}^{64} \\
+&\rightarrow \mathbb{R}^{64} \rightarrow \mathbb{R}
+\end{align}
+$$
+Parameterized by matrices of dimension $6 \times 64$, $64 \times 64$, $64 \times 1$, instead of $6 \times 32$, $32 \times 32$, $32 \times 1$ as in the 32 hidden unit simulation.
+
+To accomidate the significantly higher number of trainable features in this network the hyperparameter $\omega$, the learning rate, must be initialized higher in the `adam` optimization algorithm. This can expedite the number of epochs (training data exposures) needed for the algorithm to converge, but can sacrifice predictive fidelty, a constraint imposed by computational demand. This tradeoff is made in the name of a more statistically informative monte carlo simulation.
+
 ## Results
-Not a place to list findings. Rather, convince that what I did is correct, worthy of study, and impactful. Be honest about the generalizability of the work. If the findings are negative, take care to explain why the results still matter (discussion of why linear regression is so dank at mean estimation). Cast the negative result as a useful insight, rather than a problem with the methodology
+Not a place to list findings. Rather, convince that what I did is correct, worthy of study, and impactful. Be honest about the generalizability of the work. If the findings are negative, take care to explain why the results still matter. Cast the negative result as a useful insight, rather than a problem with the methodology
+
+(discussion of why linear regression is naturally great at mean estimation)

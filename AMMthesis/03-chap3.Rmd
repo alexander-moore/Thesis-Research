@@ -41,7 +41,9 @@ Median imputation is another easy way to get complete cases in data for analysis
 ### Weighted Linear Regression Imputation
 Linear regression is a convex optimization problem of $p+1$ parameters, where $\hat f(x) = \hat y = (m_1x_1 + .+ m_px_p)+b$ is the estimate of $y$ for observation $i$ given features $\boldsymbol{x} = [x_1, \dots ,x_p]$. Using the mean of the squared difference between the predicted and actual responses of a training data set, weighted-MSE linear regression scales the squared error contribution of each observation by $\frac{1}{\pi_i}$ to account for rare-case observations with potentially systematic missingess, and returns a scalar loss:
 $$
-\text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2
+\begin{align}
+\text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2 (\#eq:wmse)
+\end{align}
 $$
 Significant to this algorithm, however, is the contribution of $\pi$ regardless of whether it is informative. In data known to have systematic label missingness, this is not a problem. However, it is not always the case that $\pi$ is informative, and including this scaling term would be harmful to cases in which $\pi$ and $y$ are uncorrelated.
 
@@ -49,19 +51,23 @@ Significant to this algorithm, however, is the contribution of $\pi$ regardless 
 Neural Network Imputation is our baseline model for imputation for estimating a population mean. The number of hidden layers, nodes, and loss is left to the user, which would be an incorporation of domain knowledge or exploratory modelling to derive a reasonable model load for learning the data's generative function. In the context of the researcher having minimal knowledge of the data, a neural network with 2 hidden layers of 32 units activated by `relu` functions is a reasonable starting point. Overtraining due to overflexible models can be stimied with a validation set, assuming the data is not so small as to create unrepresentative data by subsetting the training data further ($n > 10^3$). "Naive" neural network imputation refers to this model not having access to the $\pi$ feature of the observations as a predictor or incorporate it in any way. This model uses the assumption that the data is *i.i.d* as a representative for ignoring the survey design, an assumption which is known to be a significant problem. Regardless, the neural network should approximate the generative function with some nonparametric fit, but underestimate the population mean as a result of systematic missingness and observation equity. This baseline model will be the pacemaker for the other neural network methods to improve upon by incorporating survey design information.
 
 ### Weighted Loss Neural Network Imputation
-Weighted Loss Neural Network Imputation takes inspiration from the weighted linear regression algorithm. This neural network training uses the same $\pi$-weighted MSE, but sacrifices the convexity of the loss function, which means pervasive local minima which are distracting to the learning algorithm. The existence of local minima from the high-dimensional model space comes from the flexibility of the many hidden neurons weight transformations within the model. A loss-weighted neural network hopes to account for systematic missingness in the data by heavily punishing the loss term generated from rarer observations. Since rare observations are more likely to be missing, they must be given more weight since they appear less in the training data then the population. Thus a weighting scheme attempts to un-do systematic missingness by making the rarer observations as "heavy" as they would be in the true population by making outliers be worth multiple observations to the loss contribution.
+Weighted Loss Neural Network Imputation takes inspiration from the weighted linear regression algorithm. This neural network training uses the same $\pi$-weighted MSE of equation \@ref(eq:wsme), but sacrifices the convexity of the loss function of the linear model, which means pervasive local minima which are distracting to the learning algorithm:
+$$
+\text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2
+$$
+The existence of local minima from the high-dimensional model space comes from the flexibility of the many hidden neurons weight transformations within the model. A loss-weighted neural network hopes to account for systematic missingness in the data by heavily punishing the loss term generated from rarer observations. Since rare observations are more likely to be missing, they must be given more weight since they appear less in the training data then the population. Thus a weighting scheme attempts to un-do systematic missingness by making the rarer observations as "heavy" as they would be in the true population by making outliers be worth multiple observations to the loss contribution.
 
 ### $\pi$-Feature Neural Network Imputation
 A $\pi$-feature neural network has access to $\pi$ as a predictor during training and testing. This is a realistic assumption to make as data collected under a complex survey design must have a $\pi$ probability regardless of whether the label is missing. This method has the benefit of adapting to whether $\pi$ is truly correlated to $y$, which the loss-weighted method assumes. A neural network optimist could claim that if there is a significant relationship of $\pi$ to $y$, it will be reflected in the loss during training and the network will adapt accordingly to the information provided by the feature. However if $\pi$ and $y$ are uncorrelated and the missingess is random, the network will not still weight the observations and will correctly ignore the feature to create more accurate predictions with no need for domain knowledge on the relationship of the missingness.
 
-```{r feature, echo = FALSE}
+```{r feature, echo = FALSE, out.width="50%"}
 knitr::include_graphics("figure/network.png")
 # but one of the inputs is also pi
 ```
 
 ### Weighted Resample Neural Network Imputation
 The weighted resample method uses the same model as the naive neural network imputation but uses a data preprocessing step to incorporate the survey design information. A weighted resample of size $n$ is taken from the sample with replacement with observation selected by probability $\frac{1}{\pi}$. The inference of this method is an attempt to "undo" the effects of survey design in gathering the data. A weighted resample in which observations are selected by the inverse inclusion probability uses the insight that an observation with inclusion probability $\pi$ represents $\frac{1}{\pi}$ members of the population. By sampling on this probability, the resampled data set should be an estimate of an *i.i.d.* sample from the population, making it viable for supervised learning ignoring the survey design elements. From this point the naive neural network method is applied (and directly compared to naive neural network estimates), since ideally this is *i.i.d* data without need for survey design information tweaks on the algorithm.
-```{r bspic, echo = FALSE}
+```{r bspic, echo = FALSE, out.width = "50%"}
 knitr::include_graphics("figure/bs.png")
 ```
 
