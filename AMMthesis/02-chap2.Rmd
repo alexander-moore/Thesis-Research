@@ -23,38 +23,45 @@ where the true label $y$ of the observation is a function of the features $x_1, 
 
 The estimating model will be trained via exposure to labelled observations, called the training data, then used to predict observations with missing labels, called testing data. The challenge in machine learning is learning the correct amount from training data in order to derive the underlying distribution of the observations without simply memorizing the labels of the training set. This memorizaion problem is called overfitting and is central to machine learning.
 
-\@ref(fig:overfit) is an illustration of this pervasive principle in a regression example. An overfit (or too-flexible) model simply learns the observation's labels, rather than the underlying distribution (or generative function, in this case a second-degree polynomial). The overfit model fails to learn the underlying generative function, and instead learns the random noise of the training observations, and thus is a poor explanation of a new realization from the same generative function, seen in \@ref(fig:overfit) and \@ref(fig:overfitre):
-
-```{r overfit, echo = FALSE, fig.cap = "The overfit model has extremely low error on the realization of the data on which it was trained."}
+```{r overfit, echo = FALSE, fig.cap = "The overfit model"}
 knitr::include_graphics("figure/overfit.png")
 ```
 
-```{r overfitre, echo = FALSE, fig.cap = "The overfit model does not accurately reflect the underlying distribution from which both datasets are drawn. Rather, it captures only the random noise of the data on which it was trained. It would be a mistake to assume the generative function is a degree 15 polynomial just because the training error of such a function is low."}
+\@ref(fig:overfit) is an illustration of this pervasive principle in a regression example. An overfit (or too-flexible) model simply learns the observation's labels, rather than the underlying distribution (or generative function, in this case a second-degree polynomial). 
+
+The overfit model \@ref(fig:overfit) has extremely low error on the realization of the data on which it was trained, but fails to learn the underlying generative function, and instead learns the random noise of the training observations. Thus this model is a poor descriptor of new realization from the same generative function, seen in \@ref(fig:overfit) and \@ref(fig:overfitre):
+
+```{r overfitre, echo = FALSE, fig.cap = "Overfit model over new data"}
 knitr::include_graphics("figure/badfit.png")
 ```
 
+The overfit model does not accurately reflect the underlying distribution from which both datasets are drawn. Rather, it captures only the random noise of the data on which it was trained. It would be a mistake to assume the generative function is a degree 15 polynomial just because the training error of such a function is low.
+
 An underfit model, \@ref(fig:underfit), also fails to capture the underlying distribution, due to a lack of flexibility. A linear regression, though it minimizes its training MSE, clearly fails to capture the underlying distribution of the data:
 
-```{r underfit, echo = FALSE, fig.cap = "An underfit model fails to capture the underlying distribution"}
+```{r underfit, echo = FALSE, fig.cap = "An underfit model"}
 knitr::include_graphics("figure/underfit.png")
-
 ```
 
 \@ref(fig:goodmod) displays a well-trained model which straddles these extrema and captures the apparent underlying distribution of the data in a general sense by approximating the generative function from which they are drawn, and remains fairly constant under different draws from the same distribution. The aptly-flexible model has consistent performance on new realizations of the data. The model performing well on data it was not trained on is called generalizability.
 
-```{r goodmod, echo = FALSE, fig.cap = "This model has the correct level of flexibility, and accurately captures the underlying generative function while avoiding overtraining based on noise."}
-a <- knitr::include_graphics("figure/true.png")
+```{r goodmod, echo = FALSE, fig.cap = "A well-fit model"}
+knitr::include_graphics("figure/true.png")
 ```
-```{r, echo = FALSE}
-b <- knitr::include_graphics("figure/stayGood.png")
+
+\@ref(fig:goodmod) has the correct level of flexibility, and accurately captures the underlying generative function while avoiding overtraining based on noise. This makes the model generalize well on a new data draw:
+
+```{r newreal, echo = FALSE}
+knitr::include_graphics("figure/stayGood.png")
 ```
+
+The relationship of the fit and complexity of the model is described by the bias-variance tradeoff phenomena.
 
 ```{r biasvar, echo = FALSE, fig.cap = "The bias-variance tradeoff"}
 knitr::include_graphics("figure/biasvariance.png")
 ```
-Fortmann, Scott. “Bias and Variance.” Understanding the Bias-Variance Tradeoff, June 2012, scott.fortmann-roe.com/docs/BiasVariance.html.
 
-Figure \@ref(fig:biasvar) demonstrates the involvement of model complexity (or flexibility) in terms of training error. Model complexity refers to the ability of the model to approximate complex generative functions. We see that as the flexibility of the model increases, the bias on the training set always decreases, representing the model's performance on observations with labels. However, complexity beyond the models optimal value implies over-flexibility, in which the model is able to memorize random noise rather than stopping at the trend of the data. This increases the total error of the model when exposed to data that comes from the same generative function that the model has not been exposed to, such as a testing data set or another observation from outside the training set. Higher flexibility models create more variable models, which though trained on data from the same generative function differ greatly in appearance due to the random sample of training data. These models are unstable for inference and generalize poorly. 
+Figure \@ref(fig:biasvar)^[Fortmann, Scott. “Bias and Variance.” Understanding the Bias-Variance Tradeoff, June 2012, scott.fortmann-roe.com/docs/BiasVariance.html.] demonstrates the involvement of model complexity (or flexibility) in terms of training error. Model complexity refers to the ability of the model to approximate complex generative functions. We see that as the flexibility of the model increases, the bias on the training set always decreases, representing the model's performance on observations with labels. However, complexity beyond the models optimal value implies over-flexibility, in which the model is able to memorize random noise rather than stopping at the trend of the data. This increases the total error of the model when exposed to data that comes from the same generative function that the model has not been exposed to, such as a testing data set or another observation from outside the training set. Higher flexibility models create more variable models, which though trained on data from the same generative function differ greatly in appearance due to the random sample of training data. These models are unstable for inference and generalize poorly. 
 
 One key difference from statistical modelling and survey statistics methods is the point at which randomness is introduced into the data. Machine learning attempts to approximate the function from which the data was randomly generated, while survey statistics imply that randomness in data comes from the survey design. The paradox of where randomness is introduced into the data is resolved with the existence of a superpopulation $U$, where each observation has label $y = f(x) + \epsilon$, some generative function. From this superpopulation, a population $u$ is created through *i.i.d.* realizations from $U$. From this population $u$, the survey is taken. Thus there still exists a generative function from which the population is drawn, but the features and label of the observations are fixed by the time the complex survey is taken on the population, reconciling the two methodologies.
 
@@ -106,20 +113,16 @@ $$
 
 MSE, a typical loss function for regression applications, takes the mean squared difference of the predicted label $\hat y$ and the true label $y$ of the observations.
 
-```{r optimize, echo = FALSE, fig.cap = "A convex loss function", out.width= "70%"}
+```{r optimize, echo = FALSE, fig.cap = "A convex loss function", out.width= "95%"}
 knitr::include_graphics("figure/optimize.png")
 ```
 
-https://medium.com/@ageitgey/machine-learning-is-fun-80ea3ec3c471
-
-CITE ME
-
-We can see that the loss of a linear regression is a function of $m$ and $c$ given some data which is minimized at $m = 0$ and $c = 0$. The learning rate is the amount that the functions' coefficients are updated as the loss function is optimized from some initial coordinates in search of the minimum loss.
+In \@ref(fig:optimize) ^[Geitgey, Adam. “Machine Learning Is Fun!” Medium, Medium, 5 May 2014, medium.com/@ageitgey/machine-learning-is-fun-80ea3ec3c471.] We can see that the loss of a linear regression is a function of $m$ and $c$ given some data which is minimized at $m = 0$ and $c = 0$. The learning rate is the amount that the functions' coefficients are updated as the loss function is optimized from some initial coordinates in search of the minimum loss.
 
 Much like training a linear regression, the training of the neural network aims to drive the approximating function to the underlying function. The important difference induced by nonparametric models, however, is the nonconvexity of the loss. The large amount of coefficients which define even a relatively small network complicate the optimization problem and make local minima a demanding distraction. Optimization is typically done with gradient learning using a loss function, or maximum likelihood estimation. Most modern neural networks are trained using maximum likelihood, in  which the cost function is the negative log-likelihood between the training data and model distribution [@goodfellow2016deep].
 
 ### Representation Learning
-If you were handed a photograph and were asked if it contained a car, there's a good chance you would immediately know the answer. But how are you coming to this conclusion? The human mind recognizes patterns of the image it has seen before, like a round bumper, a rectangular windshield, and a few circular tires with a certain spatial relationship to come to the conclusion that there is, in fact, a car in the photograph. It is this process of representation learning that prompted early researchers [[Citation Needed]] to create representation-based learning algorithms to extrapolate on information in the same way as the human mind. The emulation of human neural cells was the birth of deep learning, a class of machine learning algorithms which takes its name from multiple layers of connected nodes simulating a proposed structure of the neurons of the human mind. Representation learning takes observation's features as a first layer into a composition of functions, in which each layer (or function) transforms the data according to a learned representation transformation that the subsequent layer takes as an input. This composition allows for complex relationships of features to be learned in increasingly sophisticated ways, making neural networks ideal for large-dimensional datasets. For large-dimensional features, such as in Consumer Spending Data, images, or audio, these hierarchical representations (or layered representations) are important for distilling human-like feature extraction and iterative predictor space transformation. To achieve hierarchical representation properties, subsequent layers understand more complex functions of input variables as each layer transforms inputs and and weight relationships that minimize the overall loss of the network. As each layer receives the transformed output of the previous layer, more complex relationships of features can be derived.
+If you were handed a photograph and were asked if it contained a car, there's a good chance you would immediately know the answer. But how are you coming to this conclusion? The human mind recognizes patterns of the image it has seen before, like a round bumper, a rectangular windshield, and a few circular tires with a certain spatial relationship to come to the conclusion that there is, in fact, a car in the photograph. It is this process of representation learning that prompted early researchers to create representation-based learning algorithms to extrapolate on information relationships in the same way as the human mind. The emulation of human neural cells was the birth of neural networks, a class of machine learning algorithms which takes its name from multiple layers of connected nodes simulating a proposed structure of the neurons of the human mind. Representation learning takes observation's features as a first layer into a composition of functions, in which each layer (or function) transforms the data according to a learned representation transformation that the subsequent layer takes as an input. This composition allows for complex relationships of features to be learned in increasingly sophisticated ways, making neural networks ideal for large-dimensional datasets. For large-dimensional feature spaces such as in Consumer Expenditure Data, images, or audio, these hierarchical representations (or layered representations) are important for distilling human-like feature extraction and iterative predictor space transformation. To achieve hierarchical representation properties, subsequent layers understand more complex functions of input variables as each layer transforms inputs and and weight relationships that minimize the overall loss of the network. As each layer receives the transformed output of the previous layer, more complex relationships of features can be derived.
 
 Successive layers of the network learn transformed representations of the data which lend themselves to an effective linear regression performed by the final layer, called the output layer. This process of successive transformation learns meaningful representations on which the output layer can be most accurate. Since the full network does not have a single functional representation, it is nonparametric. The flexibility and power of neural networks in fields demanding domain knowledge is that they can approximate any function, per the Universal Approximation Theorem (Hornik et al., 1989; Cybenko, 1989). The theorem states that a feedforward network with a linear output layer and at least one hidden layer with any "squashing" activation function can approximate any function from one finite-dimensional space to another with any desired nonzero amount of error, provided that the network is given enough hidden units. Thus the user decision required is the depth and breadth of the network, optimized through validation set meta-analysis.
 

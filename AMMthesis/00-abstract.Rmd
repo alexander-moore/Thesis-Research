@@ -6,28 +6,3 @@ Abstract last. 100-500 words. Abstract should be able to stand alone: results an
 - conclusions about the implications of the project
 
 Missing data is problematic and pervasive in real surveys. Complex survey imputation aims to replace missing data with approximations. Modified neural networks (weighted loss, weighted resample, $\pi$-feature, derived parameter) are compared to weighted linear regression for mean estimation in artificial and real data using Monte Carlo simulation on imputation of manually-induced missing data. The methods' population mean estimates are compared to the known true mean in both experiments. The results show the effectiveness of the neural network family in low-noise nonlinear generative functions, and XXXXX in Bureau of Labour Statistics Consumer Expenditure Survey data. Keras and tensorFlow are utilized for neural network models.
-
-
-
-
-
-**example**
-Neural Network Imputation
-In Complex Survey Design 
-
-Abstract—Missing data yields many analysis challenges. In case
-of complex survey design, in addition to dealing with missing data,
-researchers need to account for the sampling design to achieve useful
-inferences. Methods for incorporating sampling weights in neural
-network imputation were investigated to account for complex survey
-designs. An estimate of variance to account for the imputation
-uncertainty as well as the sampling design using neural networks will
-be provided. A simulation study was conducted to compare
-estimation results based on complete case analysis, multiple
-imputation using a Markov Chain Monte Carlo, and neural network
-imputation. Furthermore, a public-use dataset was used as an
-example to illustrate neural networks imputation under a complex
-survey design.
-
-Keywords—Complex survey, estimate, imputation, neural
-networks, variance.

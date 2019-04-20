@@ -1,13 +1,13 @@
 # Consumer Expenditure Surveys
 
 ## Data
-The Consumer Expenditure (CE) Surveys provide data on "expenditures, income, and demographic characteristics of consumers in the United States (cite CE https://www.bls.gov/cex/pumd-getting-started-guide.htm). CE data are collected by the Census Bureau for the Bureau of Labor Statistics (BLS). The data are primary used to revise the relative importance of goods and services in the market basket of the Consumer Price Index". 
+The Consumer Expenditure (CE) Surveys ^[https://www.bls.gov/cex/pumd-getting-started-guide.htm] provide data on "expenditures, income, and demographic characteristics of consumers in the United States. The CE data are collected by the Census Bureau for the Bureau of Labor Statistics (BLS). The data are primary used to revise the relative importance of goods and services in the market basket of the Consumer Price Index". 
 
 The data will be the `fmli171x` survey data, one of the quarterly surveys for 2017 which contains household information such as specific incomes, expenditures, home description, and family description. The data has a low degree of missingness as quarterly information is propagated between surveys to create complete observations.
 
 The mean estimation methods from chapter 3 will be used to estimate the population mean household income before tax, `FINCBTAX`. Like all data gathered by BLS `FINCBTAX` is subject to missingness, but has been imputed in their data sets. This means for the purpose of our experiment on method imputation quality, we must artifically impose missingness then compare our imputation results to a combination of true labels and BLS-derived labels. This is an unavoidable pitfall of working with real data, as we paradoxically require "truly missing" labels to impute, but need the true label to compare the quality of our imputation to.
 
-According IRS Statistics of Income, the average household adjusted gross income (AGI) was \$67,565 in 2015. This is the last year the population mean income is available. 
+According IRS Statistics of Income, the average household adjusted gross income (AGI) was \$67,565 in 2015. This is the last year the population mean household income is available. This numbercould be considered the true population mean $\mu_y$, but is derived differently than the BLS CE data.
 
 ## Procedure
 The CE data method performance comparison will be performed in much the same way as the simulated data method comparison.
@@ -16,7 +16,7 @@ The `fmli171x` survey data is first pre-processed to remove features with large 
 
 The label to be used is `FINCBTAX`, the financial income of the response household before taxes. This label has no missingness as it is BLS-derived (already imputed).
 
-This process returns a complete-case data set of 6208 family samples across 607 variables. There are 127 million households in the US.
+This process returns a complete-case data set of 6208 family samples across 607 variables. There are 127 million households in the US, whcih can be used as an approximate population size $N$.
 
 The problem of assessing model performance in real-world data is the paradox of missing labels: ideally, we would impute a missing label, then learn the true value, and score the model accordingly. For this data, we will again rely on Monte Carlo simulation to create a distribution of population mean estimates (U.S. mean household income) by inducing missingness in the known labels, imputing, and comparing results via MSE to the true mean.
 
@@ -29,11 +29,9 @@ The following process is repeated a number of times to create a distribution of 
 
 The dimension of the neural networks has changed somewhat to account for the new data. Since the number of informative parameters has increased along with the complexity of the generative function transforming them to the label, the size of the model has increased. The standard real-data neural network uses the same two hidden layers activated by `relu` and a linear output layer, but now has 64 hidden units per layer. This describes a significantly higher dimension model as the input vector $\boldsymbol{x}$ undergoes multiple high dimension linear transformations wrapped in the `relu` activation:
 $$
-\begin{align}
-\boldsymbol{x} &\in \mathbb{R}^6 \\
-&\rightarrow \mathbb{R}^{64} \\
-&\rightarrow \mathbb{R}^{64} \rightarrow \mathbb{R}
-\end{align}
+\boldsymbol{x} \in \mathbb{R}^6 \\
+\rightarrow \mathbb{R}^{64} \\
+\rightarrow \mathbb{R}^{64} \rightarrow \mathbb{R}
 $$
 Parameterized by matrices of dimension $6 \times 64$, $64 \times 64$, $64 \times 1$, instead of $6 \times 32$, $32 \times 32$, $32 \times 1$ as in the 32 hidden unit simulation.
 
@@ -42,4 +40,4 @@ To accomidate the significantly higher number of trainable features in this netw
 ## Results
 Not a place to list findings. Rather, convince that what I did is correct, worthy of study, and impactful. Be honest about the generalizability of the work. If the findings are negative, take care to explain why the results still matter. Cast the negative result as a useful insight, rather than a problem with the methodology
 
-(discussion of why linear regression is naturally great at mean estimation)
+From an ultra-early glimpse (iterations = 5), resample is best. Really cool stuff, especially considering 1. resample was terrible in simulation and 2. resampling to n didnt seem like a good idea. But its performing great so far. super cool. all the methods are really, really far off. estimating 50k when true is 62k. But NN seem to be on-par or slightly outperforming linear sometimes. we'll see how it shapes up

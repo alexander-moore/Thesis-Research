@@ -1,23 +1,21 @@
 # Simulation
-## Exploration of Methods Using Simulation
 
+## Exploration of Methods Using Simulation
 Simulated data is used to evaluate the methods in order to get an understanding of their performance on a data set with known characteristics.
 
 Full insight into the feature distributions, generative function, random noise, and systematic missingness allow for controlled experimentation on when certain methods thrive. Simulation allows for parameters such as label noise and feature informativity to be changed and measure the response of the methods across any domain.
 
 ## High-Dimension Simulation
-
-Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data, age, gender, ethnicity, and education might have a predictive relationship with income, while a number of others such as XXXXXXX do not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. Inspired by research in best feature selection methods, non-correlated features are used in the model evaluation step in an attempt to more realistically simulate complex data [@hastie2017extended]. The addition of these features contributes to the curse of dimensionality and variability of estimates.
+Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data, age, gender, ethnicity, and education might have a predictive relationship with household income, while a number of others such as state, reference person gender, and social security income may not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. Inspired by research in best feature selection methods, non-correlated features are used in the model evaluation step in an attempt to more realistically simulate complex data [@hastie2017extended]. The addition of these features contributes to the curse of dimensionality and variability of estimates.
  
 These additional "noisy" parameters are simulated by making the generative function of the labels $y$ not a function of some of the features. All methods used in the simulation are accompanied by their oracle counterparts, meaning the same method is run two times: one with access to all features, the oracle restricted only to the relevant features which are inputs to the generative function.
 
 ## Monte Carlo Simulation
 Monte Carlo (MC) simulation attempts to overcome the inherent randomness of sampling and model training by repeated iterations of the sampling, training, and evaluation steps. A distribution of output estimates is made over many potential samples from the population in order to get a more complete interpretation of the results.
 
-It should be noted that neural networks can be more optimized than in their performance in the following simulation study. This is because a network can be intentionally over-trained on the training data, then re-trained from scratch to the number of epochs which minimized the validation loss. This poses a challenge in MC simulation, however, where many iterations without user input are needed. Additionally, runtime becomes a vastly greater concern when networks must be over-trained through many epochs, more than doubling the execution time. If computation were no expense, the neural network methods could be expected to be more accurate than the below results.
+It should be noted that neural networks can be more optimized than in their performance in the following simulation study. This is because a network can be intentionally over-trained on the training data, then re-trained from scratch to the number of epochs which minimized the validation loss. This poses a challenge in MC simulation, however, where many iterations without user input are needed. Additionally, runtime becomes a vastly greater concern when networks must be over-trained through many epochs, more than doubling the execution time. If computation were no expense, the neural network methods could be expected to be slightly more accurate than the below results. This is somewhat mitigated by a weighted sampling scheme with somewhat low observation variability and a strong signal between features and label.
 
 ## Creating a Simulated Population
-
 The size of the population is $N=10^5$ and the sample is $n=10^3$ observations. Despite neural networks thriving in higher-dimension settings (both of features and observations), complex surveys are often implemented on real data with scarce observations, making a lower-size simulation more suitable for generalizability.
 
 The features simulated population is made as the first step of the process. Two informative features $p_1, p_2$ are drawn from random uniform distribution:
@@ -38,7 +36,7 @@ y' = \left\{ \begin{array}{cc}
                 \end{array} \right.
 $$
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = "70%"}
 knitr::include_graphics("figure/bowl.jpg")
 ```
 
@@ -85,16 +83,16 @@ Since the oracle mean has access to information that the other methods do not, i
 ## Results {#sim_results}
 Not a place to list findings. Rather, convince that what I did is correct, worthy of study, and impactful. Be honest about the generalizability of the work. If the findings are negative, take care to explain why the results still matter (discussion of why linear regression is so dank at mean estimation). Cast the negative result as a useful insight, rather than a problem with the methodology.
 
-```{r}
+```{r sim_results_table, echo = FALSE}
 # a table of all results
 knitr::include_graphics("figure/AWS_results.png")
 ```
 
-The weighted-MSE and derived-parameter methods were left out of the simulation results for runtime concerns and unpromising results.
+The weighted-MSE and derived-parameter methods were left out of the simulation results for runtime concerns and unpromising results on this generative function.
 
 The oracle counterpart for each method outperforms the noisy-parameter method, as is expected. The discrepancy in the linear regression method can be attributed to monte carlo variability, but the finding is significant that these are so similar. Whereas the neural network methods were anticipated to have consistent results despite noisy parameters while the linear regression would struggle, the opposite is true. This could be attributed to the training duration, as a higher number of epochs may have dropped the weights of the noisy parameters to be ignored.
 
-All methods underestimated the population mean, described by the relative bias column of the results. EXCEPT FOR MEDIAN????? WHAT????? This is reasonable on behalf of the systematic missingness of the data, but each non-naive method attempted to mitigate this amount. The results indicate that the negative bias was significantly larger for non-oracle methods, meaning noisy parameters could contribute to mean under-estimation. For this reason, a researcher with some level of domain knowledge should hand-select features known to have a relationship to the label to be used as training data, rather than including all available features.
+All methods underestimated the population mean, described by the relative bias column of the results. EXCEPT FOR MEDIAN????? WHAT????? HOW IS MEDIAN IMPUTATION OVER ESTIMATING! This is reasonable on behalf of the systematic missingness of the data, but each non-naive method attempted to mitigate this amount. The results indicate that the negative bias was significantly larger for non-oracle methods, meaning noisy parameters could contribute to mean under-estimation. For this reason, a researcher with some level of domain knowledge should hand-select features known to have a relationship to the label to be used as training data, rather than including all available features.
 
 In the case of a nonlinear generative function with little noise, it should come as no surprise that most nonlinear neural network methods outperformed the linear.
 

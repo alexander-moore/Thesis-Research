@@ -50,7 +50,7 @@ adam_lr <- optimizer_adam(lr = 0.1, beta_1 = 0.9, beta_2 = 0.999,
 dat <- read_csv("Data/imputed_CE.csv")
 
 # Assuming data is in the correct shape, here's how the real testing goes down
-it <- 5
+it <- 20
 
 statistic_tracker <- data.frame(true_mean = numeric(it), 
                                 oracle_mean = numeric(it),
@@ -76,7 +76,7 @@ mu_y <- mean(df$FINCBTAX)
 mu_y # == mean american household income :)
 
 testing <- TRUE
-epo <- 200
+#epo <- 200
 
 for (i in 1:it) {
   
@@ -170,7 +170,7 @@ for (i in 1:it) {
       metrics = c("mae")
     )
     
-    #epo <- 70
+    epo <- 150
     history <- model %>% fit(
       partial_x_train,
       partial_y_train,
@@ -273,7 +273,7 @@ for (i in 1:it) {
       metrics = c("mae")
     )
     
-    #epo <- 50
+    epo <- 100
     history <- model %>% fit(
       partial_x_train,
       partial_y_train,
@@ -411,7 +411,7 @@ for (i in 1:it) {
       metrics = c("mae")
     )
     
-    #epo <- 50
+    epo <- 100
     history <- model %>% fit(
       partial_x_train,
       partial_y_train,
@@ -531,7 +531,7 @@ for (i in 1:it) {
       metrics = c("mae")
     )
     
-    #epo <- 100
+    epo <- 200
     history <- model %>% fit(
       partial_x_train,
       partial_y_train,
@@ -640,7 +640,7 @@ for (i in 1:it) {
       loss = "mse",
       metrics = c("mae"))
     
-    #epo <- 40
+    epo <- 100
     history <- model %>% fit(
       partial_x_train,
       partial_y_train,
@@ -713,7 +713,7 @@ for (i in 1:it) {
   print(i)
 }
 
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\LRepo_1.csv")
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\LRepo_3.csv")
 
 
 ################################################
@@ -780,37 +780,38 @@ test %>%
   kable() %>%
   kable_styling()
 
-# mean and SD ratios
-df <- read.csv("Data/AWS_running_short.csv")
-df <- df[,-1]
+if(FALSE){
+  # mean and SD ratios
+  df <- read.csv("Data/AWS_running_short.csv")
+  df <- df[,-1]
+  
+  means <- apply(df, FUN = mean, MARGIN = 2)
+  means
+  
+  sds <- apply(df, FUN = sd, MARGIN = 2)
+  sds
+  
+  mean_ratio <- means / means[2]
+  mean_ratio
+  
+  sd_ratio <- sds / sds[2]
+  sd_ratio
+  
+  # fULL
+  df <- read.csv("Data/AWS_running_full.csv")
+  df <- df[,-1]
+  
+  means <- apply(df, FUN = mean, MARGIN = 2)
+  means
+  
+  sds <- apply(df, FUN = sd, MARGIN = 2)
+  sds
+  
+  mean_ratio <- means / means[2]
+  mean_ratio
+  
+  sd_ratio <- sds / sds[2]
+  sd_ratio
 
-means <- apply(df, FUN = mean, MARGIN = 2)
-means
-
-sds <- apply(df, FUN = sd, MARGIN = 2)
-sds
-
-mean_ratio <- means / means[2]
-mean_ratio
-
-sd_ratio <- sds / sds[2]
-sd_ratio
-
-# fULL
-df <- read.csv("Data/AWS_running_full.csv")
-df <- df[,-1]
-
-means <- apply(df, FUN = mean, MARGIN = 2)
-means
-
-sds <- apply(df, FUN = sd, MARGIN = 2)
-sds
-
-mean_ratio <- means / means[2]
-mean_ratio
-
-sd_ratio <- sds / sds[2]
-sd_ratio
-
-
+}
 

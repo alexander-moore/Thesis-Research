@@ -306,26 +306,57 @@ for (i in 1:it) {
   statistic_tracker$nn_resamp_oracle[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
                                                                  + sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
   
-  # weighted MSE oracle
-  y_train <- o_reduced_df$y
-  reduced_df_nolab <- select(o_reduced_df, -c(y))  # NEED TO DROP PI LATER. CANT DROP NOW SINCE NEED TO EXTRACT PI FROM TRAINING DATA
+  # WSME NN 
+  #######
+  # New Split
+  # Inherit train and test
+  train <- reduced_df
+  test <- dropped_obs
   
-  y_test <- o_dropped_obs$y
-  dropped_obs_nolab <- select(o_dropped_obs, -c(y))
+  # record training data pi
+  pi_vec <- train$pi
   
-  reduced_df_nolab <- as.matrix(reduced_df_nolab)
-  dropped_obs_nolab <- as.matrix(dropped_obs_nolab)
+  # Inherit train and test
+  train <- reduced_df
+  y_train <- train$FINCBTAX
+  x_train <- select(train, -c(FINCBTAX))
   
-  x_train <- reduced_df_nolab
-  x_test <- dropped_obs_nolab
+  test <- dropped_obs
+  y_test <- test$FINCBTAX
+  x_test <- select(test, -c(FINCBTAX))
   
-  #normalize_data(x_train, x_test)
-  create_validation_split(x_train, y_train)
+  # Split train into train' and val
+  val_indices <- sample(1:nrow(train), .20*nrow(df))
   
-  obs_weights <- 1 / partial_x_train[,3]
-  partial_x_train <- partial_x_train[,-3]
-  x_train <- x_train[,-3]
-  x_val <- x_val[,-3]
+  x_val <- x_train[val_indices,]
+  partial_x_train <- x_train[-val_indices,]
+  
+  y_val <- y_train[val_indices]
+  partial_y_train <- y_train[-val_indices]
+  
+  
+  # Extract partial pi from full train x
+  #range01 <- function(x){(x-min(x))/(max(x)-min(x))}
+  
+  pi_prime <- pi_vec[-val_indices]
+  obs_weights <- 1 / pi_prime
+  
+  full_obs_weights <- 1 / pi_vec
+  
+  # remove pi from x_test and x_train, partial_x_train, x_val
+  x_test <- select(x_test, -c(pi))
+  x_train <- select(x_train, -c(pi))
+  x_val <- select(x_val, -c(pi))
+  partial_x_train <- select(partial_x_train, -c(pi))
+  
+  # Normalize all WRT train
+  mean <- apply(x_train, 2, mean)
+  std <- apply(x_train, 2, sd)
+  
+  x_train <- scale(x_train, center = mean, scale = std)
+  x_test <- scale(x_test, center = mean, scale = std)
+  x_val <- scale(x_val, center = mean, scale = std)
+  partial_x_train <- scale(partial_x_train, center = mean, scale = std)
   
   model <- keras_model_sequential() %>%
     layer_dense(units = 32, activation = "relu", 

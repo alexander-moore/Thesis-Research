@@ -11,14 +11,20 @@ If you feel it necessary to include an appendix, it goes here.
 
 This first appendix includes all of the R chunks of code that were hidden throughout the document (using the `include = FALSE` chunk tag) to help with readibility and/or setup.
 
-**In the main Rmd file**
+This appendix contains every line of code necessary to replicate the results of the two experiments detailed in this thesis. The bulk of each experiment is testing structures used to derive optimal runtime and epoch-time for each of the many methods, and evaluate their performance across a variety of standards, seen at the end of each iteration loop.
+
+## Data Processing {#sec:data_process}
 
 ```{r ref.label='include_packages', results='hide', echo = TRUE}
 ```
 
-**In Chapter \@ref(ref-labels):**
+## Simulated Data Experiment {sim_data_exp}
 
-```{r ref.label='include_packages_2', results='hide', echo = TRUE}
+```{r simulated_data_experiment, eval = FALSE, results='hide', echo = TRUE}
+
 ```
 
-# The Second Appendix, for Fun
+## CE Data Experiment {ce_data_exp}
+```{r ce_data_experiment, eval = FALSE, echo = TRUE}
+
+```

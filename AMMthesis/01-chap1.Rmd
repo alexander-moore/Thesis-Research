@@ -42,17 +42,22 @@ Data collected under a complex survey design have an additional layer of complex
 
 Often in real-world data, there is some degree of missingness. This can be for any number of reasons, illustrated below:
 
-```{r missingness, echo=FALSE, cache=TRUE, warning = FALSE, fig.cap = "Types of missingness"}
-## Make table
+```{r, warning = FALSE, echo = FALSE, include = FALSE}
+library(gridExtra)
 library(kableExtra)
 library(dplyr)
+library(ggplot2)
+```
+
+```{r missingness, echo=FALSE, cache=TRUE, warning = FALSE, fig.cap = "Types of missingness", out.width="80%"}
+## Make table
 
 df<- cbind(1:3)
 
 colnames(df) <- c("Description")
 rownames(df) <- c("Noncoverage", "Total Nonresponse", "Item Nonresponse")
 
-df[,1] <- c("An element in the target population is not included in the survey sampling frame", "A sampled element does not participate in the survey", "A responding sampled element fails to provide acceptable responses to one or more of the survey items")
+df[,1] <- c("An element in the target population is not included", "A sampled element does not participate in the survey", "A responder fails gives insatisfactory responses")
 
 knitr::kable(df, caption = "Types of missingess")
 ```
@@ -61,16 +66,12 @@ Item nonresponse is the focus of this thesis. Item nonresponse will be restricte
 In many statistical analyses, observations with any degree of missingness cannot be included. For example, how would one perform a linear regression with observations that have features but no label? Dropping these terms would remove potentially huge swathes of the data set, particularly in multivariate data sets, and would potentially create systematic bias. 
 
 Suppose for example a data set with information on roses had a feature with stem length and a label on flower size measured by a researcher. There might be missing values for flower size that are not randomly distributed: Before the researcher makes measurements, there has been systematic removal of the large-flowered roses by passersby. To ignore these observations would lead the analyst to draw false conclusions on the relationship of stem length to flower size, the distribution of flower sizes in the population, and estimations of the mean flower size in the population of all flowers, visualized in Example 1.1:
-```{r, warning = FALSE, echo = FALSE, include = FALSE}
-library(gridExtra)
-```
 
-```{r systematic, echo = FALSE, warning = FALSE}
+
+```{r systematic, echo = FALSE, warning = FALSE, out.width = "90%"}
 # Example 1: what happens when systematic bias is ignored, and missing values are dropped
 ## Should be using "gridExtra" package here
 set.seed(1)
-library(ggplot2)
-library(dplyr)
 
 stem_length <- seq(0, 8)
 noise <- rnorm(9, 1, 1)

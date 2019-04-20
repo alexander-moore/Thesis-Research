@@ -185,7 +185,17 @@ a glimpse
 \item
   conclusions about the implications of the project
 \end{itemize}
-abstract: ``Alex Alex Alex''
+Missing data is problematic and pervasive in real surveys. Complex
+survey imputation aims to replace missing data with approximations.
+Modified neural networks (weighted loss, weighted resample,
+\(\pi\)-feature, derived parameter) are compared to weighted linear
+regression for mean estimation in artificial and real data using Monte
+Carlo simulation on imputation of manually-induced missing data. The
+methods' population mean estimates are compared to the known true mean
+in both experiments. The results show the effectiveness of the neural
+network family in low-noise nonlinear generative functions, and XXXXX in
+Bureau of Labour Statistics Consumer Expenditure Survey data. Keras and
+tensorFlow are utilized for neural network models.
 }
 
 % End of CII addition
@@ -229,7 +239,17 @@ abstract: ``Alex Alex Alex''
     \item
       conclusions about the implications of the project
     \end{itemize}
-    abstract: ``Alex Alex Alex''
+    Missing data is problematic and pervasive in real surveys. Complex
+    survey imputation aims to replace missing data with approximations.
+    Modified neural networks (weighted loss, weighted resample,
+    \(\pi\)-feature, derived parameter) are compared to weighted linear
+    regression for mean estimation in artificial and real data using Monte
+    Carlo simulation on imputation of manually-induced missing data. The
+    methods' population mean estimates are compared to the known true mean
+    in both experiments. The results show the effectiveness of the neural
+    network family in low-noise nonlinear generative functions, and XXXXX in
+    Bureau of Labour Statistics Consumer Expenditure Survey data. Keras and
+    tensorFlow are utilized for neural network models.
   \end{abstract}
   \begin{dedication}
     You can have a dedication here if you wish.
@@ -240,50 +260,7 @@ abstract: ``Alex Alex Alex''
 \chapter*{Introduction}\label{introduction}
 \addcontentsline{toc}{chapter}{Introduction}
 
-Welcome to the \emph{R Markdown} thesis template. This template is based
-on (and in many places copied directly from) the Reed College LaTeX
-template, but hopefully it will provide a nicer interface for those that
-have never used TeX or LaTeX before. Using \emph{R Markdown} will also
-allow you to easily keep track of your analyses in \textbf{R} chunks of
-code, with the resulting plots and output included as well. The hope is
-this \emph{R Markdown} template gets you in the habit of doing
-reproducible research, which benefits you long-term as a researcher, but
-also will greatly help anyone that is trying to reproduce or build onto
-your results down the road.
-
-Hopefully, you won't have much of a learning period to go through and
-you will reap the benefits of a nicely formatted thesis. The use of
-LaTeX in combination with \emph{Markdown} is more consistent than the
-output of a word processor, much less prone to corruption or crashing,
-and the resulting file is smaller than a Word file. While you may have
-never had problems using Word in the past, your thesis is likely going
-to be about twice as large and complex as anything you've written
-before, taxing Word's capabilities. After working with \emph{Markdown}
-and \textbf{R} together for a few weeks, we are confident this will be
-your reporting style of choice going forward.
-
-\textbf{Why use it?}
-
-\emph{R Markdown} creates a simple and straightforward way to interface
-with the beauty of LaTeX. Packages have been written in \textbf{R} to
-work directly with LaTeX to produce nicely formatting tables and
-paragraphs. In addition to creating a user friendly interface to LaTeX,
-\emph{R Markdown} also allows you to read in your data, to analyze it
-and to visualize it using \textbf{R} functions, and also to provide the
-documentation and commentary on the results of your project. Further, it
-allows for \textbf{R} results to be passed inline to the commentary of
-your results. You'll see more on this later.
-
-\textbf{Who should use it?}
-
-Anyone who needs to use data analysis, math, tables, a lot of figures,
-complex cross-references, or who just cares about the final appearance
-of their document should use \emph{R Markdown}. Of particular use should
-be anyone in the sciences, but the user-friendly nature of
-\emph{Markdown} and its ability to keep track of and easily include
-figures, automatically generate a table of contents, index, references,
-table of figures, etc. should make it of great benefit to nearly anyone
-writing a thesis project.
+I deleted all of this
 
 \chapter{Complex Surveys}\label{complex-surveys}
 
@@ -381,15 +358,6 @@ design in neural network imputation.
 
 Often in real-world data, there is some degree of missingness. This can
 be for any number of reasons, illustrated below:
-\begin{verbatim}
-
-Attaching package: 'kableExtra'
-\end{verbatim}
-\begin{verbatim}
-The following object is masked from 'package:dplyr':
-
-    group_rows
-\end{verbatim}
 \begin{table}[t]
 
 \caption{\label{tab:missingness}Types of missingess}
@@ -398,11 +366,11 @@ The following object is masked from 'package:dplyr':
 \hline
   & Description\\
 \hline
-Noncoverage & An element in the target population is not included in the survey sampling frame\\
+Noncoverage & An element in the target population is not included\\
 \hline
 Total Nonresponse & A sampled element does not participate in the survey\\
 \hline
-Item Nonresponse & A responding sampled element fails to provide acceptable responses to one or more of the survey items\\
+Item Nonresponse & A responder fails gives insatisfactory responses\\
 \hline
 \end{tabular}
 \end{table}
@@ -433,7 +401,7 @@ the relationship of stem length to flower size, the distribution of
 flower sizes in the population, and estimations of the mean flower size
 in the population of all flowers, visualized in Example 1.1:
 
-\includegraphics{thesis_files/figure-latex/systematic-1.pdf}
+\includegraphics[width=0.9\linewidth]{thesis_files/figure-latex/systematic-1}
 
 Imputation attempts to address this common dilemma in real-world data.
 Imputation is the process of replacing missingness in data sets with
@@ -513,30 +481,33 @@ machine learning is learning the correct amount from training data in
 order to derive the underlying distribution of the observations without
 simply memorizing the labels of the training set. This memorizaion
 problem is called overfitting and is central to machine learning.
-
-\ref{fig:overfit} is an illustration of this pervasive principle in a
-regression example. An overfit (or too-flexible) model simply learns the
-observation's labels, rather than the underlying distribution (or
-generative function, in this case a second-degree polynomial). The
-overfit model fails to learn the underlying generative function, and
-instead learns the random noise of the training observations, and thus
-is a poor explanation of a new realization from the same generative
-function, seen in \ref{fig:overfit} and \ref{fig:overfitre}:
 \begin{figure}
 \centering
 \includegraphics{figure/overfit.png}
-\caption{\label{fig:overfit}The overfit model has extremely low error on the
-realization of the data on which it was trained.}
+\caption{\label{fig:overfit}The overfit model}
 \end{figure}
+\ref{fig:overfit} is an illustration of this pervasive principle in a
+regression example. An overfit (or too-flexible) model simply learns the
+observation's labels, rather than the underlying distribution (or
+generative function, in this case a second-degree polynomial).
+
+The overfit model \ref{fig:overfit} has extremely low error on the
+realization of the data on which it was trained, but fails to learn the
+underlying generative function, and instead learns the random noise of
+the training observations. Thus this model is a poor descriptor of new
+realization from the same generative function, seen in \ref{fig:overfit}
+and \ref{fig:overfitre}:
 \begin{figure}
 \centering
 \includegraphics{figure/badfit.png}
-\caption{\label{fig:overfitre}The overfit model does not accurately reflect
-the underlying distribution from which both datasets are drawn. Rather,
-it captures only the random noise of the data on which it was trained.
-It would be a mistake to assume the generative function is a degree 15
-polynomial just because the training error of such a function is low.}
+\caption{\label{fig:overfitre}Overfit model over new data}
 \end{figure}
+The overfit model does not accurately reflect the underlying
+distribution from which both datasets are drawn. Rather, it captures
+only the random noise of the data on which it was trained. It would be a
+mistake to assume the generative function is a degree 15 polynomial just
+because the training error of such a function is low.
+
 An underfit model, \ref{fig:underfit}, also fails to capture the
 underlying distribution, due to a lack of flexibility. A linear
 regression, though it minimizes its training MSE, clearly fails to
@@ -544,8 +515,7 @@ capture the underlying distribution of the data:
 \begin{figure}
 \centering
 \includegraphics{figure/underfit.png}
-\caption{\label{fig:underfit}An underfit model fails to capture the
-underlying distribution}
+\caption{\label{fig:underfit}An underfit model}
 \end{figure}
 \ref{fig:goodmod} displays a well-trained model which straddles these
 extrema and captures the apparent underlying distribution of the data in
@@ -554,26 +524,43 @@ are drawn, and remains fairly constant under different draws from the
 same distribution. The aptly-flexible model has consistent performance
 on new realizations of the data. The model performing well on data it
 was not trained on is called generalizability.
+\begin{figure}
+\centering
+\includegraphics{figure/true.png}
+\caption{\label{fig:goodmod}A well-fit model}
+\end{figure}
+\ref{fig:goodmod} has the correct level of flexibility, and accurately
+captures the underlying generative function while avoiding overtraining
+based on noise. This makes the model generalize well on a new
+realization in \ref{fig:newreal}:
 
-\includegraphics{figure/biasvariance.png} Fortmann, Scott. ``Bias and
-Variance.'' Understanding the Bias-Variance Tradeoff, June 2012,
-scott.fortmann-roe.com/docs/BiasVariance.html.
+\includegraphics{figure/stayGood.png}
 
-Figure \ref{fig:biasvar} demonstrates the involvement of model
-complexity (or flexibility) in terms of training error. Model complexity
-refers to the ability of the model to approximate complex generative
-functions. We see that as the flexibility of the model increases, the
-bias on the training set always decreases, representing the model's
-performance on observations with labels. However, complexity beyond the
-models optimal value implies over-flexibility, in which the model is
-able to memorize random noise rather than stopping at the trend of the
-data. This increases the total error of the model when exposed to data
-that comes from the same generative function that the model has not been
-exposed to, such as a testing data set or another observation from
-outside the training set. Higher flexibility models create more variable
-models, which though trained on data from the same generative function
-differ greatly in appearance due to the random sample of training data.
-These models are unstable for inference and generalize poorly.
+The relationship of the fit and complexity of the model is described by
+the bias-variance tradeoff phenomena.
+\begin{figure}
+\centering
+\includegraphics{figure/biasvariance.png}
+\caption{\label{fig:biasvar}The bias-variance tradeoff}
+\end{figure}
+Figure \ref{fig:biasvar}\footnote{Fortmann, Scott. ``Bias and
+  Variance.'' Understanding the Bias-Variance Tradeoff, June 2012,
+  scott.fortmann-roe.com/docs/BiasVariance.html.} demonstrates the
+involvement of model complexity (or flexibility) in terms of training
+error. Model complexity refers to the ability of the model to
+approximate complex generative functions. We see that as the flexibility
+of the model increases, the bias on the training set always decreases,
+representing the model's performance on observations with labels.
+However, complexity beyond the models optimal value implies
+over-flexibility, in which the model is able to memorize random noise
+rather than stopping at the trend of the data. This increases the total
+error of the model when exposed to data that comes from the same
+generative function that the model has not been exposed to, such as a
+testing data set or another observation from outside the training set.
+Higher flexibility models create more variable models, which though
+trained on data from the same generative function differ greatly in
+appearance due to the random sample of training data. These models are
+unstable for inference and generalize poorly.
 
 One key difference from statistical modelling and survey statistics
 methods is the point at which randomness is introduced into the data.
@@ -697,12 +684,11 @@ MSE, a typical loss function for regression applications, takes the mean
 squared difference of the predicted label \(\hat y\) and the true label
 \(y\) of the observations.
 \begin{figure}
-\includegraphics[width=0.7\linewidth]{figure/optimize} \caption{A convex loss function}\label{fig:optimize}
+\includegraphics[width=0.95\linewidth]{figure/optimize} \caption{A convex loss function}\label{fig:optimize}
 \end{figure}
-\url{https://medium.com/@ageitgey/machine-learning-is-fun-80ea3ec3c471}
-
-CITE ME
-
+In \ref{fig:optimize}\footnote{Geitgey, Adam. ``Machine Learning Is
+  Fun!'' Medium, Medium, 5 May 2014,
+  \href{mailto:medium.com/@ageitgey/machine-learning-is-fun-80ea3ec3c471}{\nolinkurl{medium.com/@ageitgey/machine-learning-is-fun-80ea3ec3c471}}.}
 We can see that the loss of a linear regression is a function of \(m\)
 and \(c\) given some data which is minimized at \(m = 0\) and \(c = 0\).
 The learning rate is the amount that the functions' coefficients are
@@ -730,19 +716,19 @@ image it has seen before, like a round bumper, a rectangular windshield,
 and a few circular tires with a certain spatial relationship to come to
 the conclusion that there is, in fact, a car in the photograph. It is
 this process of representation learning that prompted early researchers
-{[}{[}Citation Needed{]}{]} to create representation-based learning
-algorithms to extrapolate on information in the same way as the human
-mind. The emulation of human neural cells was the birth of deep
-learning, a class of machine learning algorithms which takes its name
-from multiple layers of connected nodes simulating a proposed structure
-of the neurons of the human mind. Representation learning takes
-observation's features as a first layer into a composition of functions,
-in which each layer (or function) transforms the data according to a
-learned representation transformation that the subsequent layer takes as
-an input. This composition allows for complex relationships of features
-to be learned in increasingly sophisticated ways, making neural networks
-ideal for large-dimensional datasets. For large-dimensional features,
-such as in Consumer Spending Data, images, or audio, these hierarchical
+to create representation-based learning algorithms to extrapolate on
+information relationships in the same way as the human mind. The
+emulation of human neural cells was the birth of neural networks, a
+class of machine learning algorithms which takes its name from multiple
+layers of connected nodes simulating a proposed structure of the neurons
+of the human mind. Representation learning takes observation's features
+as a first layer into a composition of functions, in which each layer
+(or function) transforms the data according to a learned representation
+transformation that the subsequent layer takes as an input. This
+composition allows for complex relationships of features to be learned
+in increasingly sophisticated ways, making neural networks ideal for
+large-dimensional datasets. For large-dimensional feature spaces such as
+in Consumer Expenditure Data, images, or audio, these hierarchical
 representations (or layered representations) are important for
 distilling human-like feature extraction and iterative predictor space
 transformation. To achieve hierarchical representation properties,
@@ -840,7 +826,7 @@ is how to choose the mapping \(\phi\):
   deep learning (Goodfellow et al., 2016).
 \item
   The strategy of neural networks comes from the learning of \(\phi\).
-  ``In this approach, we have a model
+  In this approach, we have a model
   \(y = f(\boldsymbol{x}; \theta, \omega)\) as specified in the neural
   network introduction. Due to the Universal Approximation Theorem, the
   nonparametric deep feedforward network can learn a functional
@@ -896,7 +882,7 @@ survey design where the features \(x_1,...x_n\) and inclusion
 probability \(\pi_i\) is known for all \(i\), though the label \(y_i\)
 may be missing due to item nonresponse. Sample observations with item
 response are the elements \(r \subseteq s\), of which there are \(n_r\),
-and there are \(n_{s-r}\) nonresponders \(s-r \subset s\). In order to
+and there are \(n_{s-r}\) nonrespondents \(s-r \subset s\). In order to
 create a data set with no missing values, the researcher may choose to
 adopt one of the following methods. These methods borrow notions from
 complex survey design about using design variables to model how
@@ -917,7 +903,7 @@ complete-case data set.
 
 \section{Mean Estimation Methods}\label{mean-estimation-methods}
 
-\subsection{Naive Mean:}\label{naive-mean}
+\subsection{Naive Mean}\label{naive-mean}
 
 A common statistic of interest to a researcher is an estimate of the
 population mean \(\mu_y = \frac{1}{N}\sum_{i \in N} y_i\) using the
@@ -931,12 +917,16 @@ population, as in an \emph{i.i.d.} sample.
 The naive mean estimator ignores survey design and allows equal
 contribution of all observations: \[
 \hat \mu_y = \frac{1}{r} \sum_{i \in r} y_i
-\] \#\#\# Pi-Corrected Naive Mean: We resolve this issue in the mean
-estimate formula by weighting contributions to the mean by
-\(\frac{1}{\pi_i}\), the approximate number of population members
-represented by observation \(i\). This value is the Horvitz-Thompson
-estimator of the true number of people who would respond in the
-population (Horvitz \& Thompson, 1952): \[
+\]
+
+\subsection{\texorpdfstring{\(\pi\)-Corrected Naive
+Mean}{\textbackslash{}pi-Corrected Naive Mean}}\label{pi-corrected-naive-mean}
+
+We resolve this issue in the mean estimate formula by weighting
+contributions to the mean by \(\frac{1}{\pi_i}\), the approximate number
+of population members represented by observation \(i\). This value is
+the Horvitz-Thompson estimator of the true number of people who would
+respond in the population (Horvitz \& Thompson, 1952): \[
 \hat \mu_y = \frac{1}{\hat N_r} \sum_{i \in r} y_i \frac{1}{\pi_i}
 \] Where \(\hat N_r = \sum_{i \in r} \frac{1}{\pi_i}\). This resolves
 the problem of ignoring the survey design in estimation, but does not
@@ -966,7 +956,7 @@ a complete-case dataset without dropping observations.
 \(\hat N = \sum_{i \in n} \frac{1}{\pi_i}\) is the Horvitz-Thompson
 estimator of the population size (Horvitz \& Thompson, 1952).
 
-\subsection{Drop.NA}\label{drop.na}
+\subsection{Drop NA}\label{drop-na}
 
 One option is to simply remove the observations with missing labels from
 the data set. This method is extremely easy to implement and serves as a
@@ -995,8 +985,7 @@ informative, as covariate relations dictate axis derivations. Median
 imputation is extremely fast to execute and implement, but creates
 noninformative observations in the same manner as the Drop.NA method.
 
-\subsection{Weighted Linear Regression
-Imputation}\label{weighted-linear-regression-imputation}
+\subsection{Weighted Linear Regression Imputation}\label{sec:linear_reg}
 
 Linear regression is a convex optimization problem of \(p+1\)
 parameters, where \(\hat f(x) = \hat y = (m_1x_1 + .+ m_px_p)+b\) is the
@@ -1007,7 +996,7 @@ set, weighted-MSE linear regression scales the squared error
 contribution of each observation by \(\frac{1}{\pi_i}\) to account for
 rare-case observations with potentially systematic missingess, and
 returns a scalar loss: \[
-\text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2
+\text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2 \label{eq:wmse}
 \] Significant to this algorithm, however, is the contribution of
 \(\pi\) regardless of whether it is informative. In data known to have
 systematic label missingness, this is not a problem. However, it is not
@@ -1044,9 +1033,10 @@ Imputation}\label{weighted-loss-neural-network-imputation}
 
 Weighted Loss Neural Network Imputation takes inspiration from the
 weighted linear regression algorithm. This neural network training uses
-the same \(\pi\)-weighted MSE, but sacrifices the convexity of the loss
-function, which means pervasive local minima which are distracting to
-the learning algorithm: \[
+the same \(\pi\)-weighted MSE of @ref(sec:linear\_reg), but sacrifices
+the convexity of the loss function of the linear model, which means
+pervasive local minima which are distracting to the learning algorithm:
+\[
 \text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2
 \] The existence of local minima from the high-dimensional model space
 comes from the flexibility of the many hidden neurons weight
@@ -1076,7 +1066,7 @@ network will not still weight the observations and will correctly ignore
 the feature to create more accurate predictions with no need for domain
 knowledge on the relationship of the missingness.
 
-\includegraphics[width=0.5\linewidth]{figure/network}
+\includegraphics[width=0.8\linewidth]{figure/network}
 
 \subsection{Weighted Resample Neural Network
 Imputation}\label{weighted-resample-neural-network-imputation}
@@ -1097,8 +1087,6 @@ elements. From this point the naive neural network method is applied
 (and directly compared to naive neural network estimates), since ideally
 this is \emph{i.i.d} data without need for survey design information
 tweaks on the algorithm.
-
-\includegraphics[width=0.5\linewidth]{figure/bs}
 
 \subsection{Derived Feature Neural Network
 Imputation}\label{derived-feature-neural-network-imputation}
@@ -1135,15 +1123,16 @@ response of the methods across any domain.
 Often in real-world data, there might be a large number of features, not
 all of which are necessarily correlated to the response label. For
 example in the Consumer Expenditure data, age, gender, ethnicity, and
-education might have a predictive relationship with income, while a
-number of others such as XXXXXXX do not. The ability for a model to
-discern which features are relevant and which are not is a significant
-benefit both for inference and predictive consistency. Inspired by
-research in best feature selection methods, non-correlated features are
-used in the model evaluation step in an attempt to more realistically
-simulate complex data (Hastie, Tibshirani, \& Tibshirani, 2017). The
-addition of these features contributes to the curse of dimensionality
-and variability of estimates.
+education might have a predictive relationship with household income,
+while a number of others such as state, reference person gender, and
+social security income may not. The ability for a model to discern which
+features are relevant and which are not is a significant benefit both
+for inference and predictive consistency. Inspired by research in best
+feature selection methods, non-correlated features are used in the model
+evaluation step in an attempt to more realistically simulate complex
+data (Hastie, Tibshirani, \& Tibshirani, 2017). The addition of these
+features contributes to the curse of dimensionality and variability of
+estimates.
 
 These additional ``noisy'' parameters are simulated by making the
 generative function of the labels \(y\) not a function of some of the
@@ -1169,7 +1158,9 @@ many iterations without user input are needed. Additionally, runtime
 becomes a vastly greater concern when networks must be over-trained
 through many epochs, more than doubling the execution time. If
 computation were no expense, the neural network methods could be
-expected to be more accurate than the below results.
+expected to be slightly more accurate than the below results. This is
+somewhat mitigated by a weighted sampling scheme with somewhat low
+observation variability and a strong signal between features and label.
 
 \section{Creating a Simulated
 Population}\label{creating-a-simulated-population}
@@ -1200,7 +1191,7 @@ y' = \left\{ \begin{array}{cc}
                 \end{array} \right.
 \]
 
-\includegraphics{figure/bowl.jpg}
+\includegraphics[width=0.7\linewidth]{figure/bowl}
 
 Random noise \(\epsilon\) with \(\sigma = 1\) is then added to the
 transformed labels: \[
@@ -1286,32 +1277,20 @@ methods do not, it is the ideal estimate of a population mean given a
 sample. The difference between the oracle and \(\pi\)-corrected
 estimates are indices \(n\) and \(r\) over which the sum is taken.
 
-\section{Results aaaaaaaaa}\label{results-aaaaaaaaa}
+\section{Results}\label{sim_results}
 
-\includegraphics{figure/newresults.png}
-
-Note to Kelly reviewing this: the resampling method and derived
-parameters method were left out of this for runtime concerns. I think I
-have to find some way to cloud-compute to be able to do some 100+
-iterations with all the methods.
-
-I'm hesitant to write too much about results given the situation. \#\#
-Results Not a place to list findings. Rather, convince that what I did
-is correct, worthy of study, and impactful. Be honest about the
+Not a place to list findings. Rather, convince that what I did is
+correct, worthy of study, and impactful. Be honest about the
 generalizability of the work. If the findings are negative, take care to
 explain why the results still matter (discussion of why linear
 regression is so dank at mean estimation). Cast the negative result as a
 useful insight, rather than a problem with the methodology.
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# a table of all results}
-\NormalTok{knitr}\OperatorTok{::}\KeywordTok{include_graphics}\NormalTok{(}\StringTok{"figure/AWS_results.png"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+
 \includegraphics{figure/AWS_results.png}
 
 The weighted-MSE and derived-parameter methods were left out of the
-simulation results for runtime concerns and unpromising results.
+simulation results for runtime concerns and unpromising results on this
+generative function.
 
 The oracle counterpart for each method outperforms the noisy-parameter
 method, as is expected. The discrepancy in the linear regression method
@@ -1325,14 +1304,14 @@ be ignored.
 
 All methods underestimated the population mean, described by the
 relative bias column of the results. EXCEPT FOR MEDIAN????? WHAT?????
-This is reasonable on behalf of the systematic missingness of the data,
-but each non-naive method attempted to mitigate this amount. The results
-indicate that the negative bias was significantly larger for non-oracle
-methods, meaning noisy parameters could contribute to mean
-under-estimation. For this reason, a researcher with some level of
-domain knowledge should hand-select features known to have a
-relationship to the label to be used as training data, rather than
-including all available features.
+HOW IS MEDIAN IMPUTATION OVER ESTIMATING! This is reasonable on behalf
+of the systematic missingness of the data, but each non-naive method
+attempted to mitigate this amount. The results indicate that the
+negative bias was significantly larger for non-oracle methods, meaning
+noisy parameters could contribute to mean under-estimation. For this
+reason, a researcher with some level of domain knowledge should
+hand-select features known to have a relationship to the label to be
+used as training data, rather than including all available features.
 
 In the case of a nonlinear generative function with little noise, it
 should come as no surprise that most nonlinear neural network methods
@@ -1342,30 +1321,63 @@ The \(\pi\)-feature neural network's fantastic performance can be
 largely attributed to the significant relationship of \(\pi\) to the
 label \(y\): \(\pi = \sqrt{y} + \epsilon\). This strong relationship is
 not unreasonable, however, as the positive correlation of inclusion
-probability to label is known to occur in real-world data on incomes
-across BLS surveys.
-\begin{itemize}
-\tightlist
-\item
-  kelly: research usally shows that:
-\item
-  BLS usually surveys businesses: businesses with larger salaries tend
-  to have systemaic missingness
-\end{itemize}
+probability to label is known to occur in real-world data on
+salary-related data across BLS business surveys.
+
+Despite a highly nonlinear generative function, the nature of weighted
+linear regression is highly successful for mean estimation. In the
+context of the bowl-with-lip shape generative function, the linear
+regression looks like a flat plane relative to the \(x_1, x_2\) axes
+slightly above halfway up the bowl. This is an unfortunate side effect
+of the parabola-shaped true function, as the label predictions of the
+linear model are bound to this plane. A more realistic nonparabola
+context would lend itself to considerably more successful linear
+imputation estimates, as the weighted high-label outliers would be
+properly represented by the plane's extrema on the domain.
+
+When estimating the population mean, accurate imputation results do not
+factor into the score. Rather, the mean of the distribution of imputed
+labels solely defines the score of the algorithm. In the case of mean
+estimation, linear regression provides an extremely lightweight
+estimation method in terms of computational time and implementation that
+cannot overfit to the respondent data. Though among the largest MSE
+ratios, linear regression should be considered a success in this
+experiment and taken seriously as the imputation method to beat.
+
 \chapter{Consumer Expenditure
 Surveys}\label{consumer-expenditure-surveys}
 
 \section{Data}\label{data}
 
-The Consumer Expenditure (CE) Surveys provide data on ``expenditures,
-income, and demographic characteristics of consumers in the United
-States (cite CE
-\url{https://www.bls.gov/cex/pumd-getting-started-guide.htm}). CE data
-are collected by the Census Bureau for the Bureau of Labor Statistics
-(BLS). The data are primary used to revise the relative importance of
-goods and services in the market basket of the Consumer Price Index''.
+The Consumer Expenditure (CE) Surveys\footnote{\url{https://www.bls.gov/cex/pumd-getting-started-guide.htm}}
+provide data on ``expenditures, income, and demographic characteristics
+of consumers in the United States. The CE data are collected by the
+Census Bureau for the Bureau of Labor Statistics (BLS). The data are
+primary used to revise the relative importance of goods and services in
+the market basket of the Consumer Price Index''.
 
-The data will be the \texttt{fmli171x} survey data
+The data will be the \texttt{fmli171x} survey data, one of the quarterly
+surveys for 2017 which contains household information such as specific
+incomes, expenditures, home description, and family description. The
+data has a low degree of missingness as quarterly information is
+propagated between surveys to create complete observations.
+
+The mean estimation methods from chapter 3 will be used to estimate the
+population mean household income before tax, \texttt{FINCBTAX}. Like all
+data gathered by BLS \texttt{FINCBTAX} is subject to missingness, but
+has been imputed in their data sets. This means for the purpose of our
+experiment on method imputation quality, we must artifically impose
+missingness then compare our imputation results to a combination of true
+labels and BLS-derived labels. This is an unavoidable pitfall of working
+with real data, as we paradoxically require ``truly missing'' labels to
+impute, but need the true label to compare the quality of our imputation
+to.
+
+According IRS Statistics of Income, the average household adjusted gross
+income (AGI) was \$67,565 in 2015. This is the last year the population
+mean household income is available. This numbercould be considered the
+true population mean \(\mu_y\), but is derived differently than the BLS
+CE data.
 
 \section{Procedure}\label{procedure}
 
@@ -1385,7 +1397,8 @@ response household before taxes. This label has no missingness as it is
 BLS-derived (already imputed).
 
 This process returns a complete-case data set of 6208 family samples
-across 607 variables. There are 127 million households in the US.
+across 607 variables. There are 127 million households in the US, whcih
+can be used as an approximate population size \(N\).
 
 The problem of assessing model performance in real-world data is the
 paradox of missing labels: ideally, we would impute a missing label,
@@ -1407,13 +1420,43 @@ first model. 4. The results are compared using MSE, oracle ratio, and
 PRB.
 
 The dimension of the neural networks has changed somewhat to account for
-the new data. Still working on the specifics of this \#\# Results Not a
-place to list findings. Rather, convince that what I did is correct,
-worthy of study, and impactful. Be honest about the generalizability of
-the work. If the findings are negative, take care to explain why the
-results still matter (discussion of why linear regression is so dank at
-mean estimation). Cast the negative result as a useful insight, rather
-than a problem with the methodology
+the new data. Since the number of informative parameters has increased
+along with the complexity of the generative function transforming them
+to the label, the size of the model has increased. The standard
+real-data neural network uses the same two hidden layers activated by
+\texttt{relu} and a linear output layer, but now has 64 hidden units per
+layer. This describes a significantly higher dimension model as the
+input vector \(\boldsymbol{x}\) undergoes multiple high dimension linear
+transformations wrapped in the \texttt{relu} activation: \[
+\boldsymbol{x} \in \mathbb{R}^6 \\
+\rightarrow \mathbb{R}^{64} \\
+\rightarrow \mathbb{R}^{64} \rightarrow \mathbb{R}
+\] Parameterized by matrices of dimension \(6 \times 64\),
+\(64 \times 64\), \(64 \times 1\), instead of \(6 \times 32\),
+\(32 \times 32\), \(32 \times 1\) as in the 32 hidden unit simulation.
+
+To accomidate the significantly higher number of trainable features in
+this network the hyperparameter \(\omega\), the learning rate, must be
+initialized higher in the \texttt{adam} optimization algorithm. This can
+expedite the number of epochs (training data exposures) needed for the
+algorithm to converge, but can sacrifice predictive fidelty, a
+constraint imposed by computational demand. This tradeoff is made in the
+name of a more statistically informative monte carlo simulation.
+
+\section{Results}\label{results}
+
+Not a place to list findings. Rather, convince that what I did is
+correct, worthy of study, and impactful. Be honest about the
+generalizability of the work. If the findings are negative, take care to
+explain why the results still matter. Cast the negative result as a
+useful insight, rather than a problem with the methodology
+
+From an ultra-early glimpse (iterations = 5), resample is best. Really
+cool stuff, especially considering 1. resample was terrible in
+simulation and 2. resampling to n didnt seem like a good idea. But its
+performing great so far. super cool. all the methods are really, really
+far off. estimating 50k when true is 62k. But NN seem to be on-par or
+slightly outperforming linear sometimes. we'll see how it shapes up
 
 \chapter*{Conclusion}\label{conclusion}
 \addcontentsline{toc}{chapter}{Conclusion}
@@ -1446,40 +1489,62 @@ chance to make an impression, and say everything I want to say.
 \item
   What should someone work on next, building off of your work?
 \end{enumerate}
+conclsuion can talk a lot about the TONS of hyperparameters, all the
+caveats - can slap a basic version of NN on without domain knowledge,
+but can incorporate knowledge in tons of tweaks on all the
+hyperparameters
+
 \section{Conclusion}\label{conclusion-1}
 
 A conclusion should not introduce new material. Conclusion brief, and
 only contain main points of paper. It will be redundant: that is the
 point.
 
+If a researcher is interested in an easy to implement, computationally
+inexpensive heuristic algorithm to impute complex survey data for mean
+estimation, weighted linear regression is the most appealing method. The
+reality of real data is that it is more likely noisy than functional.
+
+The performance of linear regression in noisy-feature simulation shows
+the robustness of the algorithm to heuristic implementation. The lack of
+domain knowledge necessary to select variables in order to implement an
+effective linear regression makes the model highly appealing for stable
+results regardless of feature space size.
+
+Neural network methods are promising, however, because of their many
+degrees flexibility. The nonparametric models are adaptable to more
+complex intervariable relationships of the data. If a domain expert
+hypothesized a sophisticated function on a subset of variables which
+make an excellent label predictor without knowing its specific form,
+there is room for that structure in the neural network architecture.
+
+Likewise, the massive space of hyperparameters for even a simple
+feedforward neural network gives immeasurable potential to a savvy
+designer. Understanding of the shape of the loss function, necessary
+load of the model, and relationship of features are all examples of
+knowledge lending itself to specific selections of model load,
+activations, optimizers, losses, weightings, connectivity, and countless
+other tweaks letting a knowledgable designer maximize predictive
+performance.
+
+However, as mentioned in @ref(sec:sim\_results), the task is population
+mean estimation, not predictive accuracy. {[}{[}{[}{[}{[}{[}{[}Talk to
+kelly about this. obviously predicting values near true label is good,
+but that need not be the case to get extremely accurate population
+estimates{]}{]}{]}{]}{]}{]}{]}
+
 \section{Future Work}\label{future-work}
-
-There are so many exciting unexplored methods and tweaks that would be
-worth investigating for the improvement of neural network complex survey
-imputation methods for mean estimation.
-
-Many I don't know how to implement, couldn't find a good use, don't
-understand enough, or was computationally restricted, especially during
-monte carlo simulation!
-
-Can do a paragraph on the most important things here:
 \begin{itemize}
-\tightlist
 \item
-  something better than linear regression: local polynomial, etc
-\item
-  training neural networks correctly: finding the validation minima then
-  re-training every time. I was prevented by computational intensity
-\item
-  tweaks on neural networks: \textbf{reinforcement learning}, dropout
-  layers, noise layers, pre-trained networks
+  something better than linear regression as comparison: local
+  polynomial, etc. some other very-stable heuristic method
 \item
   re-visiting weighted resampling by trying bootstrapping methods,
   bigger resample. bootstrapping many datasets, training on each, and
   taking mean of estimates. somethign like this to stabilize predictions
   and sampling variability.
 \end{itemize}
-Multiple imputation: since hopefully NN preserve intervarabhle
+Multiple imputation: since hopefully NN preserve intervariable
 relationships better than linear or median etc
 
 \appendix
