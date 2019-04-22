@@ -41,9 +41,13 @@ Median imputation is another easy way to get complete cases in data for analysis
 
 ### Weighted Linear Regression Imputation {#sec:linear_reg}
 Linear regression is a convex optimization problem of $p+1$ parameters, where $\hat f(x) = \hat y = (m_1x_1 + .+ m_px_p)+b$ is the estimate of $y$ for observation $i$ given features $\boldsymbol{x} = [x_1, \dots ,x_p]$. Using the mean of the squared difference between the predicted and actual responses of a training data set, weighted-MSE linear regression scales the squared error contribution of each observation by $\frac{1}{\pi_i}$ to account for rare-case observations with potentially systematic missingess, and returns a scalar loss:
-$$
+
+\begin{align}
 \text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2 (\#eq:wmse)
-$$
+\end{align}
+
+THIS IS EQUATION \@ref(eq:wmse)
+
 Significant to this algorithm, however, is the contribution of $\pi$ regardless of whether it is informative. In data known to have systematic label missingness, this is not a problem. However, it is not always the case that $\pi$ is informative, and including this scaling term would be harmful to cases in which $\pi$ and $y$ are uncorrelated.
 
 ### Naive Neural Network Imputation

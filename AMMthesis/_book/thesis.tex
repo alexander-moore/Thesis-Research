@@ -497,11 +497,9 @@ underlying generative function, and instead learns the random noise of
 the training observations. Thus this model is a poor descriptor of new
 realization from the same generative function, seen in \ref{fig:overfit}
 and \ref{fig:overfitre}:
-\begin{figure}
-\centering
-\includegraphics{figure/badfit.png}
-\caption{\label{fig:overfitre}Overfit model over new data}
-\end{figure}
+
+\includegraphics{figure/badfit.png} \clearpage
+
 The overfit model does not accurately reflect the underlying
 distribution from which both datasets are drawn. Rather, it captures
 only the random noise of the data on which it was trained. It would be a
@@ -531,8 +529,7 @@ was not trained on is called generalizability.
 \end{figure}
 \ref{fig:goodmod} has the correct level of flexibility, and accurately
 captures the underlying generative function while avoiding overtraining
-based on noise. This makes the model generalize well on a new
-realization in \ref{fig:newreal}:
+based on noise. This makes the model generalize well on a new data draw:
 
 \includegraphics{figure/stayGood.png}
 
@@ -995,10 +992,14 @@ difference between the predicted and actual responses of a training data
 set, weighted-MSE linear regression scales the squared error
 contribution of each observation by \(\frac{1}{\pi_i}\) to account for
 rare-case observations with potentially systematic missingess, and
-returns a scalar loss: \[
+returns a scalar loss:
+\begin{align}
 \text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2 \label{eq:wmse}
-\] Significant to this algorithm, however, is the contribution of
-\(\pi\) regardless of whether it is informative. In data known to have
+\end{align}
+THIS IS EQUATION \eqref{eq:wmse}
+
+Significant to this algorithm, however, is the contribution of \(\pi\)
+regardless of whether it is informative. In data known to have
 systematic label missingness, this is not a problem. However, it is not
 always the case that \(\pi\) is informative, and including this scaling
 term would be harmful to cases in which \(\pi\) and \(y\) are
@@ -1451,12 +1452,15 @@ generalizability of the work. If the findings are negative, take care to
 explain why the results still matter. Cast the negative result as a
 useful insight, rather than a problem with the methodology
 
-From an ultra-early glimpse (iterations = 5), resample is best. Really
-cool stuff, especially considering 1. resample was terrible in
-simulation and 2. resampling to n didnt seem like a good idea. But its
-performing great so far. super cool. all the methods are really, really
-far off. estimating 50k when true is 62k. But NN seem to be on-par or
-slightly outperforming linear sometimes. we'll see how it shapes up
+\includegraphics[width=0.7\linewidth]{figure/vline_fig}
+
+\includegraphics[width=0.7\linewidth]{figure/new_bar_results} From an
+ultra-early glimpse (iterations = 5), resample is best. Really cool
+stuff, especially considering 1. resample was terrible in simulation and
+2. resampling to n didnt seem like a good idea. But its performing great
+so far. super cool. all the methods are really, really far off.
+estimating 50k when true is 62k. But NN seem to be on-par or slightly
+outperforming linear sometimes. we'll see how it shapes up
 
 \chapter*{Conclusion}\label{conclusion}
 \addcontentsline{toc}{chapter}{Conclusion}
@@ -1555,7 +1559,13 @@ This first appendix includes all of the R chunks of code that were
 hidden throughout the document (using the \texttt{include\ =\ FALSE}
 chunk tag) to help with readibility and/or setup.
 
-\textbf{In the main Rmd file}
+This appendix contains every line of code necessary to replicate the
+results of the two experiments detailed in this thesis. The bulk of each
+experiment is testing structures used to derive optimal runtime and
+epoch-time for each of the many methods, and evaluate their performance
+across a variety of standards, seen at the end of each iteration loop.
+
+\section{Data Processing}\label{sec:data_process}
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# This chunk ensures that the thesisdown package is}
@@ -1568,10 +1578,11 @@ chunk tag) to help with readibility and/or setup.
 \KeywordTok{library}\NormalTok{(thesisdown)}
 \end{Highlighting}
 \end{Shaded}
-\textbf{In Chapter \ref{ref-labels}:}
+\section{Simulated Data Experiment
+\{sim\_data\_exp\}}\label{simulated-data-experiment-sim_data_exp}
 
-\chapter{The Second Appendix, for
-Fun}\label{the-second-appendix-for-fun}
+\section{CE Data Experiment
+\{ce\_data\_exp\}}\label{ce-data-experiment-ce_data_exp}
 
 \backmatter
 
