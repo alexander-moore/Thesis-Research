@@ -713,7 +713,7 @@ for (i in 1:it) {
   print(i)
 }
 
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\LRepo_3.csv")
+write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\LRepo_8.csv")
 
 
 ################################################

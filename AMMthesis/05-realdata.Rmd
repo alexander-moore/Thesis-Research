@@ -40,4 +40,11 @@ To accomidate the significantly higher number of trainable features in this netw
 ## Results
 Not a place to list findings. Rather, convince that what I did is correct, worthy of study, and impactful. Be honest about the generalizability of the work. If the findings are negative, take care to explain why the results still matter. Cast the negative result as a useful insight, rather than a problem with the methodology
 
+```{r ce_results_hist, echo = FALSE, out.width = "70%"}
+knitr::include_graphics("figure/vline_fig.png")
+```
+
+```{r bar_oracle_ratio, echo = FALSE, out.width="70%"}
+knitr::include_graphics("figure/new_bar_results")
+```
 From an ultra-early glimpse (iterations = 5), resample is best. Really cool stuff, especially considering 1. resample was terrible in simulation and 2. resampling to n didnt seem like a good idea. But its performing great so far. super cool. all the methods are really, really far off. estimating 50k when true is 62k. But NN seem to be on-par or slightly outperforming linear sometimes. we'll see how it shapes up
