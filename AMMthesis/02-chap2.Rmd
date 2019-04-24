@@ -15,7 +15,9 @@ The capacity to derive patterns from raw data is known as machine learning, a br
 
 Machine learning is intended to elucidate or predict patterns in data. These algorithms handle anything from linear regression for predicting a numerical response based on a number of features, to clustering for visualization and assignment of untaught observation classes. Machine learning models are trained by minimizing error during exposure to labelled "training" data with some underlying distribution and random noise. After training, models are passed unlabelled "test" data to predict the corresponding unknown class or value. Predictive (supervised) machine learning algorithms seek to emulate and elucidate a true unknown generative function from which the data were drawn.
 
-For imputation purposes, our goal will be to accurately estimate missing values by approximating the generative function from which they are drawn. Generative functions are of the form
+One key difference from statistical modelling and survey statistics methods is the point at which randomness is introduced into the data. Machine learning attempts to approximate the function from which the data was randomly generated, while survey statistics imply that randomness in data comes from the survey design. The paradox of where randomness is introduced into the data is resolved with the existence of a superpopulation $U$, where each observation has label $y = f(x) + \epsilon$, some generative function. From this superpopulation, a population $u$ is created through *i.i.d.* realizations from $U$. From this population $u$, the survey is taken. Thus there still exists a generative function from which the population is drawn, but the features and label of the observations are fixed by the time the complex survey is taken on the population, reconciling the two methodologies.
+
+For imputation purposes, the goal of machine learning methods will be to accurately estimate missing values by approximating the generative function from which they are drawn. Generative functions are of the form
 $$
 y = f(x_1, x_2, \dots, x_n) + \epsilon
 $$
@@ -23,48 +25,59 @@ where the true label $y$ of the observation is a function of the features $x_1, 
 
 The estimating model will be trained via exposure to labelled observations, called the training data, then used to predict observations with missing labels, called testing data. The challenge in machine learning is learning the correct amount from training data in order to derive the underlying distribution of the observations without simply memorizing the labels of the training set. This memorizaion problem is called overfitting and is central to machine learning.
 
-```{r overfit, echo = FALSE, fig.cap = "The overfit model"}
-knitr::include_graphics("figure/overfit.png")
+```{r setup, echo = FALSE}
+set.seed(1)
+
+x <- 1:15
+y <- -.5*(x-7.5)^2 + 50
+true_model <- lm(y~poly(x,2))
+
+noise <- rnorm(length(x), 0, 3)
+noise_y <- y+noise
 ```
 
-\@ref(fig:overfit) is an illustration of this pervasive principle in a regression example. An overfit (or too-flexible) model simply learns the observation's labels, rather than the underlying distribution (or generative function, in this case a second-degree polynomial). 
-
-The overfit model \@ref(fig:overfit) has extremely low error on the realization of the data on which it was trained, but fails to learn the underlying generative function, and instead learns the random noise of the training observations. Thus this model is a poor descriptor of new realization from the same generative function, seen in \@ref(fig:overfit) and \@ref(fig:overfitre):
-
-```{r overfitre, echo = FALSE, fig.cap = "Overfit model over new data"}
-knitr::include_graphics("figure/badfit.png")
-```
-\clearpage
-
-The overfit model does not accurately reflect the underlying distribution from which both datasets are drawn. Rather, it captures only the random noise of the data on which it was trained. It would be a mistake to assume the generative function is a degree 15 polynomial just because the training error of such a function is low.
-
-An underfit model, \@ref(fig:underfit), also fails to capture the underlying distribution, due to a lack of flexibility. A linear regression, though it minimizes its training MSE, clearly fails to capture the underlying distribution of the data:
-
-```{r underfit, echo = FALSE, fig.cap = "An underfit model"}
-knitr::include_graphics("figure/underfit.png")
+```{r overfit, fig.cap = "The red model has better training accuracy than the green model", echo = FALSE}
+over_model <- lm(noise_y ~ poly(x,14))
+predicted <- predict(over_model, data.frame(x=x))
+plot(x,noise_y)
+lines(x,predicted, col = 'red', lwd = 2) #overfit model
+lines(x,y, col = 'green', lwd = 2) # goodfit (+ overfit lingering, can remove)
 ```
 
-\@ref(fig:goodmod) displays a well-trained model which straddles these extrema and captures the apparent underlying distribution of the data in a general sense by approximating the generative function from which they are drawn, and remains fairly constant under different draws from the same distribution. The aptly-flexible model has consistent performance on new realizations of the data. The model performing well on data it was not trained on is called generalizability.
+```{r second, fig.cap = "Both models on a new realization of the data", echo = FALSE}
+new_noise <- rnorm(length(x), 0, 2)
+new_noise_y <- y + new_noise
 
-```{r goodmod, echo = FALSE, fig.cap = "A well-fit model"}
-knitr::include_graphics("figure/true.png")
+plot(x,new_noise_y)
+lines(x,predicted, col = 'red', lwd = 2) #(overfit on new data)
+lines(x,y, col = 'green', lwd = 2) # adds stayGood fit
 ```
 
-\@ref(fig:goodmod) has the correct level of flexibility, and accurately captures the underlying generative function while avoiding overtraining based on noise. This makes the model generalize well on a new data draw:
+\@ref(fig:overfit) is an illustration of this pervasive principle in a regression example. An overfit (too flexible) model simply memorizes the training observation's labels, rather than the underlying distribution, which in this case is a second-degree polynomial.
 
-```{r newreal, echo = FALSE}
-knitr::include_graphics("figure/stayGood.png")
+The overfit red model does not accurately reflect the underlying distribution from which both datasets are drawn. Rather, it captures only the random noise of the data on which it was trained. It would be a mistake to assume the generative function is a degree 15 polynomial just because the training error of such a function is low.
+
+The overfit red model has extremely low error on the realization of the data on which it was trained, but fails to learn the underlying generative function, and instead learns the random noise of the training observations (\@ref(fig:overfit)). Thus this model is a poor descriptor of a new data realization from the same generative function, seen in \@ref(fig:second).
+
+The same green regression seen in \@ref(fig:overfit) and \@ref(fig:second) shows a well-trained model which straddles these extrema and captures the apparent underlying distribution of the data in a general sense by approximating the generative function from which they are drawn and remains fairly constant under different draws from the same distribution. The aptly-flexible green model has consistent performance on new realizations of the data. The ability for a model to perform well on data it was not trained on is called generalizability, and is the goal of predictive models.
+
+```{r underfit, fig.cap = "An underfit model", echo = FALSE}
+under_model <- lm(noise_y ~ x)
+under_pred <- predict(under_model, data.frame(x=x))
+
+plot(x,noise_y)
+lines(x,under_pred,col = 'red', lwd = 2) #Underfit model
 ```
 
-The relationship of the fit and complexity of the model is described by the bias-variance tradeoff phenomena.
+An underfit model, \@ref(fig:underfit) , also fails to capture the underlying distribution, due to a lack of flexibility. A linear regression, though it minimizes its training MSE, clearly fails to capture the underlying distribution of the data.
+
+The relationship of the fitness to the complexity of the model is described by the bias-variance tradeoff phenomena.
 
 ```{r biasvar, echo = FALSE, fig.cap = "The bias-variance tradeoff"}
 knitr::include_graphics("figure/biasvariance.png")
 ```
 
-Figure \@ref(fig:biasvar)^[Fortmann, Scott. “Bias and Variance.” Understanding the Bias-Variance Tradeoff, June 2012, scott.fortmann-roe.com/docs/BiasVariance.html.] demonstrates the involvement of model complexity (or flexibility) in terms of training error. Model complexity refers to the ability of the model to approximate complex generative functions. We see that as the flexibility of the model increases, the bias on the training set always decreases, representing the model's performance on observations with labels. However, complexity beyond the models optimal value implies over-flexibility, in which the model is able to memorize random noise rather than stopping at the trend of the data. This increases the total error of the model when exposed to data that comes from the same generative function that the model has not been exposed to, such as a testing data set or another observation from outside the training set. Higher flexibility models create more variable models, which though trained on data from the same generative function differ greatly in appearance due to the random sample of training data. These models are unstable for inference and generalize poorly. 
-
-One key difference from statistical modelling and survey statistics methods is the point at which randomness is introduced into the data. Machine learning attempts to approximate the function from which the data was randomly generated, while survey statistics imply that randomness in data comes from the survey design. The paradox of where randomness is introduced into the data is resolved with the existence of a superpopulation $U$, where each observation has label $y = f(x) + \epsilon$, some generative function. From this superpopulation, a population $u$ is created through *i.i.d.* realizations from $U$. From this population $u$, the survey is taken. Thus there still exists a generative function from which the population is drawn, but the features and label of the observations are fixed by the time the complex survey is taken on the population, reconciling the two methodologies.
+Figure \@ref(fig:biasvar)^[Fortmann, Scott. “Bias and Variance.” Understanding the Bias-Variance Tradeoff, June 2012, scott.fortmann-roe.com/docs/BiasVariance.html.] demonstrates the relationship of model complexity (or flexibility) to variability in terms of total error. Model complexity refers to the ability of the model to approximate complex generative functions. We see that as the flexibility of the model increases, the bias on the training set always decreases, representing the model's improving performance on observations with labels with increasing load capability. However, complexity beyond the models optimal value implies over-flexibility, in which the model is able to memorize random noise rather than stopping at the trend of the data. This increases the total error of the model when exposed to data that comes from the same generative function that the model has not been exposed to, such as a testing data set or another observation from outside the training set. Higher flexibility models are more variable models, which though trained on data from the same generative function differ greatly in appearance due to the random sample of training data. These models are unstable for inference and generalize poorly. 
 
 ## Neural Networks
 ### Background and Context
@@ -86,28 +99,20 @@ f^i = \max ( 0 , {\boldsymbol{W}_i}^T \boldsymbol{x} + c_i)
 $$
 Where $\boldsymbol{W}_i^T \boldsymbol{x} + c_i$ is the interior linear function for $\boldsymbol{W}_i^T \in \mathbb{R}^n$, $c_i \in \mathbb{R}$.
 
-The activation function shown above is the rectified linear unit, or $\max(0,a)$. Activation functions are significant as they introduce nonlinearity into what would otherwise be a linear function (a composition of linear functions).
-${W_i}^T$ and $c$ in $f_i$ dictate a linear transformation on the input to the layer. An ordered list of all elements of $W_i$ and $c_i$ for all $i \in n$ would give the full description of the network, called $\theta$. So the output of a  1-layer network can be expressed as
+The activation function shown above is the rectified linear unit (relu), $\max(0,a)$. Activation functions are significant as they introduce nonlinearity into what would otherwise be a linear function (a composition of linear functions).
+${\boldsymbol{W}_i}^T$ and $c$ in $f_i$ dictate a linear transformation on the input to the layer. An ordered list of all elements of $\boldsymbol{W}_i$ and $c_i$ for all $i \in n$ would give the full description of the network, called $\theta$. So the output of a  1-layer network can be expressed as
 
 $$
-f(x; W, c, w, b) = w^T \max( 0 , \boldsymbol{W}^T \boldsymbol{x} +c ) +b
+f(\boldsymbol{x}; \boldsymbol{W}, c, w, b) = w^T \max( 0 , \boldsymbol{W}^T \boldsymbol{x} +c ) +b
 $$
 
-The final activation function is another structural parameter left to the designer of the network, but differs from interior activation functions as the output of the network is restricted to the codomain of the function, limiting the number of reasonable choices. The typical output layer for scalar regression is a linear unit, on behalf of the codomain $(-\infty,\infty)$ of the activation:
-$$
-f^n(\boldsymbol{x}) = 1*(\boldsymbol{W}_n^T \boldsymbol{x} + c_n)
-$$
+The final activation function is another structural parameter left to the designer of the network, but differs from interior activation functions as the output of the network is restricted to the codomain of the function, limiting the number of reasonable choices. The typical output layer for scalar regression is a linear unit, on behalf of the codomain $(-\infty, \infty)$ of the activation.
 
 The learning rate $\omega$ and a loss function are meta-parameters, given by the user creating the neural network. These two parameters are used during the training of the network. During training, gradient descent is used to descend the loss function in order to find the optimal parameters for the network.
 
-Loss functions are ways of describing the performance of a model when predicting labels of a data set. The loss function takes the model and data as inputs, and outputs a real number. Loss functions can be minimized in training by optimization which leads the network to find improvements in weights yielding accurate predictions. Loss functions allow for another degree of customization in the training of a network, such as in Ridge and LASSO regression. These algorithms add a weighting to the typical mean squared error loss function which penalizes the weights on predictors in polynomial regression. These methods introduce bias into otherwise unbiased algorithms, but reduce the variability of the model across different draws of data from the same distribution, aiming to reduce the real test loss and improve the model. The cross entropy between the data distribution and the model distribution is the typical choice [@goodfellow2016deep].
+Loss functions are ways of describing the performance of a model when predicting labels of a data set. The loss function takes the model and data as inputs, and outputs a real number. Loss functions can be minimized in training by optimization which leads the network to find improvements in weights yielding accurate predictions. Loss functions allow for another degree of customization in the training of a network, such as in Ridge and LASSO regression. These algorithms add a weighting to the typical mean squared error loss function which penalizes the weights on predictors in polynomial regression. These methods introduce bias into otherwise unbiased algorithms, but reduce the variability of the model across different draws of data from the same distribution, aiming to reduce the real test loss and improve the model. The cross entropy between the data distribution and the model distribution is the typical choice for modern neural network optimizers [@goodfellow2016deep].
 
-Cross Entropy:
-$$
-\int_\chi P(x) \log Q (x) dr(x) = E_p [- \log Q]
-$$
-
-Take for example the Mean Squared Error cost function:
+Take as an example loss function the Mean Squared Error (MSE) function:
 $$
 MSE = \frac{1}{n} \sum_{k=1}^n  (y - \hat y)
 $$
@@ -118,9 +123,9 @@ MSE, a typical loss function for regression applications, takes the mean squared
 knitr::include_graphics("figure/optimize.png")
 ```
 
-In \@ref(fig:optimize) ^[Geitgey, Adam. “Machine Learning Is Fun!” Medium, Medium, 5 May 2014, medium.com/@ageitgey/machine-learning-is-fun-80ea3ec3c471.] We can see that the loss of a linear regression is a function of $m$ and $c$ given some data which is minimized at $m = 0$ and $c = 0$. The learning rate is the amount that the functions' coefficients are updated as the loss function is optimized from some initial coordinates in search of the minimum loss.
+In \@ref(fig:optimize) ^[Geitgey, Adam. “Machine Learning Is Fun!” Medium, Medium, 5 May 2014, medium.com/@ageitgey/machine-learning-is-fun-80ea3ec3c471.] We can see that the loss of a linear regression is a function of $m$ and $c$ given some data which is minimized at $m = 0$ and $c = 0$. The learning rate is the amount that the functions' coefficients are updated as the loss function is optimized from some initial coordinates in search of the minimum loss. Here, a global minima is the unique minimum, making optimization very simple.
 
-Much like training a linear regression, the training of the neural network aims to drive the approximating function to the underlying function. The important difference induced by nonparametric models, however, is the nonconvexity of the loss. The large amount of coefficients which define even a relatively small network complicate the optimization problem and make local minima a demanding distraction. Optimization is typically done with gradient learning using a loss function, or maximum likelihood estimation. Most modern neural networks are trained using maximum likelihood, in  which the cost function is the negative log-likelihood between the training data and model distribution [@goodfellow2016deep].
+Much like training a linear regression, the training of the neural network aims to drive the approximating function to the underlying function. The important difference induced by nonparametric models, however, is the nonconvexity of the loss. The large amount of coefficients which define even a relatively small network complicate the optimization problem and make local minima a problematic distraction to model learning. Optimization is typically done with gradient learning using a loss function, or maximum likelihood estimation. Most modern neural networks are trained using maximum likelihood, in  which the cost function is the negative log-likelihood between the training data and model distribution [@goodfellow2016deep].
 
 ### Representation Learning
 If you were handed a photograph and were asked if it contained a car, there's a good chance you would immediately know the answer. But how are you coming to this conclusion? The human mind recognizes patterns of the image it has seen before, like a round bumper, a rectangular windshield, and a few circular tires with a certain spatial relationship to come to the conclusion that there is, in fact, a car in the photograph. It is this process of representation learning that prompted early researchers to create representation-based learning algorithms to extrapolate on information relationships in the same way as the human mind. The emulation of human neural cells was the birth of neural networks, a class of machine learning algorithms which takes its name from multiple layers of connected nodes simulating a proposed structure of the neurons of the human mind. Representation learning takes observation's features as a first layer into a composition of functions, in which each layer (or function) transforms the data according to a learned representation transformation that the subsequent layer takes as an input. This composition allows for complex relationships of features to be learned in increasingly sophisticated ways, making neural networks ideal for large-dimensional datasets. For large-dimensional feature spaces such as in Consumer Expenditure Data, images, or audio, these hierarchical representations (or layered representations) are important for distilling human-like feature extraction and iterative predictor space transformation. To achieve hierarchical representation properties, subsequent layers understand more complex functions of input variables as each layer transforms inputs and and weight relationships that minimize the overall loss of the network. As each layer receives the transformed output of the previous layer, more complex relationships of features can be derived.

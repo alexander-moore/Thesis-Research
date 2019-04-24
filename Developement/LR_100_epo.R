@@ -50,7 +50,7 @@ adam_lr <- optimizer_adam(lr = 0.1, beta_1 = 0.9, beta_2 = 0.999,
 dat <- read_csv("Data/imputed_CE.csv")
 
 # Assuming data is in the correct shape, here's how the real testing goes down
-it <- 20
+it <- 50
 
 statistic_tracker <- data.frame(true_mean = numeric(it), 
                                 oracle_mean = numeric(it),

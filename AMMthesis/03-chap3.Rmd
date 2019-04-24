@@ -16,10 +16,12 @@ $$
 $$
 
 ### $\pi$-Corrected Naive Mean
-We resolve this issue in the mean estimate formula by weighting contributions to the mean by $\frac{1}{\pi_i}$, the approximate number of population members represented by observation $i$. This value is the Horvitz-Thompson estimator of the true number of people who would respond in the population [@horvitz1952generalization]:
-$$
-\hat \mu_y = \frac{1}{\hat N_r} \sum_{i \in r} y_i \frac{1}{\pi_i}
-$$
+The mean estimate formula weighted problem is resolved by weighting (scaling) contributions to the mean by $\frac{1}{\pi_i}$, the approximate number of population members represented by observation $i$. This value is the Horvitz-Thompson estimator of the true number of people who would respond in the population [@horvitz1952generalization]:
+
+\begin{align}
+\hat \mu_y = \frac{1}{\hat N_r} \sum_{i \in r} y_i \frac{1}{\pi_i} (\#eq:HTE)
+\end{align}
+
 Where $\hat N_r = \sum_{i \in r} \frac{1}{\pi_i}$. This resolves the problem of ignoring the survey design in estimation, but does not account for systematic bias resulting from missingness. For example, the $\pi$-corrected naive mean estimate of the population mean will be an under-estimate of the true population mean in the presence of systematic missingess of large observations.
 
 Let $\hat \mu_y$ be the sample estimate of the population mean $\mu_y$. The oracle mean can be considered the "best estimate" of $\mu_y$, but it is only available in simulation. The oracle mean uses information that the simulation manually drops so as to create an ideal population estimate given a survey sample:
@@ -31,7 +33,7 @@ In order to combat the presence of systematic missing values, we utilize imputat
 $$
 \hat \mu_y(\text{method}) = \frac{1}{\hat N} (\sum_{i \in r} \frac{y_i}{\pi_i} + \sum_{i \in s-r} \frac{\hat y_i}{\pi_i})
 $$
-Where $s-r$ are the missing cases, $r$ are the respondents, and $\hat N = \sum_{i \in n} \frac{1}{\pi_i}$ is the Horvitz-Thompson estimator of the population size [@horvitz1952generalization].
+Where $s-r$ are the missing cases, $r$ are the respondents, and $\hat N = \sum_{i \in n} \frac{1}{\pi_i}$ is the Horvitz-Thompson estimator \@ref(eq:HTE) of the population size [@horvitz1952generalization].
 
 ### Drop NA
 One option is to simply remove the observations with missing labels from the data set. This method is extremely easy to implement and serves as a sure-fire way to end up with a data set with no missing values. There are two downsides to this method: The first is that removing observations with missingness obviously decreases the size of the data set and can nontrivially reduce the fidelity of models aiming to understand the population from which the data was taken. The second problem is the assumption of random missingness. If there is any correlation of label to amount of missingness, systematic bias is introduced into the data set, as discussed in Chapter 1. For example, if there is a possibility that larger values are more likely to be dropped, then as a result the sample mean would underestimate the population mean.
@@ -40,13 +42,11 @@ One option is to simply remove the observations with missing labels from the dat
 Median imputation is another easy way to get complete cases in data for analysis or estimation. Median imputation simply fills in the missing labels with the median of the respondent labels. Median imputation has multiple problems for analysis or estimation. The median offers equal weighting to all observations in a data set, meaning it destroys the informativity of the inclusion probability $\pi$. It also removes correlation of feature and label, making analyses such as PCA less informative, as covariate relations dictate axis derivations. Median imputation is extremely fast to execute and implement, but creates noninformative observations in the same manner as the Drop.NA method.
 
 ### Weighted Linear Regression Imputation {#sec:linear_reg}
-Linear regression is a convex optimization problem of $p+1$ parameters, where $\hat f(x) = \hat y = (m_1x_1 + .+ m_px_p)+b$ is the estimate of $y$ for observation $i$ given features $\boldsymbol{x} = [x_1, \dots ,x_p]$. Using the mean of the squared difference between the predicted and actual responses of a training data set, weighted-MSE linear regression scales the squared error contribution of each observation by $\frac{1}{\pi_i}$ to account for rare-case observations with potentially systematic missingess, and returns a scalar loss:
+Linear regression is a convex optimization problem of $p+1$ parameters, where $\hat f(x) = \hat y = (m_1x_1 + .+ m_px_p)+b$ is the estimate of $y$ for observation $i$ given features $\boldsymbol{x} = [x_1, \dots ,x_p]$. Using the mean of the squared difference between the predicted and actual responses of a training data set, weighted-MSE linear regression uses the loss function \@ref(eq:wmse) which scales the squared error contribution of each observation by $\frac{1}{\pi_i}$ to account for rare-case observations with potentially systematic missingess, and returns a scalar loss:
 
 \begin{align}
 \text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2 (\#eq:wmse)
 \end{align}
-
-THIS IS EQUATION \@ref(eq:wmse)
 
 Significant to this algorithm, however, is the contribution of $\pi$ regardless of whether it is informative. In data known to have systematic label missingness, this is not a problem. However, it is not always the case that $\pi$ is informative, and including this scaling term would be harmful to cases in which $\pi$ and $y$ are uncorrelated.
 
@@ -54,10 +54,8 @@ Significant to this algorithm, however, is the contribution of $\pi$ regardless 
 Neural Network Imputation is our baseline model for imputation for estimating a population mean. The number of hidden layers, nodes, and loss is left to the user, which would be an incorporation of domain knowledge or exploratory modelling to derive a reasonable model load for learning the data's generative function. In the context of the researcher having minimal knowledge of the data, a neural network with 2 hidden layers of 32 units activated by `relu` functions is a reasonable starting point. Overtraining due to overflexible models can be stimied with a validation set, assuming the data is not so small as to create unrepresentative data by subsetting the training data further ($n > 10^3$). "Naive" neural network imputation refers to this model not having access to the $\pi$ feature of the observations as a predictor or incorporate it in any way. This model uses the assumption that the data is *i.i.d* as a representative for ignoring the survey design, an assumption which is known to be a significant problem. Regardless, the neural network should approximate the generative function with some nonparametric fit, but underestimate the population mean as a result of systematic missingness and observation equity. This baseline model will be the pacemaker for the other neural network methods to improve upon by incorporating survey design information.
 
 ### Weighted Loss Neural Network Imputation
-Weighted Loss Neural Network Imputation takes inspiration from the weighted linear regression algorithm. This neural network training uses the same $\pi$-weighted MSE of \@ref(sec:linear_reg), but sacrifices the convexity of the loss function of the linear model, which means pervasive local minima which are distracting to the learning algorithm:
-$$
-\text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2
-$$
+Weighted Loss Neural Network Imputation takes inspiration from the weighted linear regression algorithm. This neural network training uses the same $\pi$-weighted MSE of \@ref(eq:wmse), but sacrifices the convexity of the loss function of the linear model, which induces problematic local minima in the loss.
+
 The existence of local minima from the high-dimensional model space comes from the flexibility of the many hidden neurons weight transformations within the model. A loss-weighted neural network hopes to account for systematic missingness in the data by heavily punishing the loss term generated from rarer observations. Since rare observations are more likely to be missing, they must be given more weight since they appear less in the training data then the population. Thus a weighting scheme attempts to un-do systematic missingness by making the rarer observations as "heavy" as they would be in the true population by making outliers be worth multiple observations to the loss contribution.
 
 ### $\pi$-Feature Neural Network Imputation

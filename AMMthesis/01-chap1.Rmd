@@ -12,7 +12,7 @@ The {#rmd-basics} text after the chapter declaration will allow us to link throu
 
 > Researchers in the social science and health sciences are increasingly interested in using data from complex surveys to conduct the same sorts of analyses that they traditionally conduct with more straightforward data. - Lumley 1969
 
-The implicit pervasiveness of survey statistics in all data motivates our exploration into its significance in imputation.
+The implicit pervasiveness of survey statistics in all data motivates our exploration into its significance in imputation. Imputation is the act of replacing missing data with estimated values.
 
 Survey statistics differ from statistics modelling in the specification of the random process that generates the data. In model-based statistics, some underlying generative model from which observations are drawn is assumed to exist. By understanding or approximating this model from data, one may draw conclusions on the nature of the generative function provided no meaningful changes to the data are made.
 
@@ -20,19 +20,19 @@ Contrary to model-based statistics, the analysis of complex survey samples are d
 
 The probability sample design is the fundamental concept of design-based inference. Taking a random sample of 36,000 people from Oregon is an example of a survey design which implies independent and equal probability sampling of all humans in the state. The Law of Large Numbers is invoked to assume the distribution of sampled observations represents the population from which they are drawn according to any features of interest to the researcher, such as height, weight, or age.
 
-This type of surveying can be complicated by adding unequal inclusion probability to the features to oversample from minority groups. The data created by such a design would likely not be representative of the population, since people with higher inclusion probabilities would be more likely to be sampled. However, since the probability of each person in the sample being randomly selected is known (since the population total is known), this is still a probability sample. The key point of this process is that a probability sample is the procedure for taking samples from a population, not a data set [@lumley2011complex].
+This type of surveying can be further complicated by adding unequal inclusion probability to the features to oversample from minority groups. The data created by such a design would likely not be representative of the population, since people with higher inclusion probabilities would be more likely to be sampled. However, since the probability of each person in the sample being randomly selected is known (since the population total is known), this is still a probability sample. The key point of this process is that a probability sample is the procedure for taking samples from a population, not a data set [@lumley2011complex].
 
 There are four requirements for a data set to be a probability sample:
 
 1. Every individual in the population must have a non-zero probability of ending up in the sample.
 
-2. The probability of inclusion must be known for every individual who does end up in the sample.
+2. The probability of inclusion $\pi_i$ must be known for every individual who does end up in the sample.
 
 3. Every pair of individuals in the sample must have a non-zero probability of both ending up in the sample.
 
 4. The probability of every pair of individuals being included in the sample must be known for every pair of individuals in the sample.
 
-1 and 2 are necessary in order to get valid population estimates, 3 and 4 are necessary to work out the accuracy of the estimates. If individuals were sampled independently of each other the first two properties would guarantee the last two [@lumley2011complex]. Though 3 and 4 are requirements of a probability sample, they are often not included in datasets as they require an $n \times n$ matrix of probabilities, where $n$ is the number of observations in the data set.
+1 and 2 are necessary in order to get valid population estimates, 3 and 4 are necessary to work out the accuracy of the estimates. If individuals were sampled independently of each other the first two properties would guarantee the last two [@lumley2011complex]. Though 3 and 4 are requirements of a probability sample, they are often not included in datasets as they require an $n \times n$ matrix of probabilities, where $n$ is the number of observations in the data set. This information is not incorporated into the methods of this thesis.
 
 The fundamental statistical idea behind all of design-based inference is that an individual sampled with a sampling probability $\pi_i$ represents $\frac{1}{\pi_i}$ individuals in the population. The value $\frac{1}{\pi_i}$ is called the sampling weight [@lumley2011complex]. Since observations represent different proportions of the population, the inclusion probability must be accounted for in modeling and estimation procedures.
 
@@ -40,7 +40,7 @@ Data collected under a complex survey design have an additional layer of complex
 
 ## Imputation
 
-Often in real-world data, there is some degree of missingness. This can be for any number of reasons, illustrated below:
+Often in real-world data, there is some degree of missingness. This can be for any number of reasons, illustrated in \@ref(fig:missingness).
 
 ```{r, warning = FALSE, echo = FALSE, include = FALSE}
 library(gridExtra)
@@ -61,9 +61,7 @@ df[,1] <- c("An element in the target population is not included", "A sampled el
 
 knitr::kable(df, caption = "Types of missingess")
 ```
-Item nonresponse is the focus of this thesis. Item nonresponse will be restricted to a response value of interest called a label and will be present in some of the observations. The other variables of the observation, called features, will be fully present. The usual form of handling item nonresponse is imputation, which fills in missing values with usable information [@brick1996handling]. Common algorithms such as Principal Component Analysis and regression require no missingness in the data set, so replacing NA values with useable information is vital for analysis.
-
-In many statistical analyses, observations with any degree of missingness cannot be included. For example, how would one perform a linear regression with observations that have features but no label? Dropping these terms would remove potentially huge swathes of the data set, particularly in multivariate data sets, and would potentially create systematic bias. 
+Item nonresponse is the focus of this thesis. Item nonresponse will be restricted to a response value of interest called a label and will be present in some of the observations. The other variables of the observation, called features, will be fully present. The usual form of handling item nonresponse is imputation, which fills in missing values with usable information [@brick1996handling]. Common algorithms such as Principal Component Analysis and regression require no missingness in the data set, so replacing NA values with useable information is vital for analysis. Linear regression for example cannot incorporate observations lacking a label. Simply dropping these observations would remove potentially huge swathes of the data set, particularly in multivariate data sets, and would potentially create systematic bias. 
 
 Suppose for example a data set with information on roses had a feature with stem length and a label on flower size measured by a researcher. There might be missing values for flower size that are not randomly distributed: Before the researcher makes measurements, there has been systematic removal of the large-flowered roses by passersby. To ignore these observations would lead the analyst to draw false conclusions on the relationship of stem length to flower size, the distribution of flower sizes in the population, and estimations of the mean flower size in the population of all flowers, visualized in Example 1.1:
 
@@ -103,6 +101,6 @@ Imputation attempts to address this common dilemma in real-world data. Imputatio
 
 There are stochastic and deterministic methods for imputation. Deterministic regression imputation is the predicted value from a regression trained on complete-case data. Stochastic imputation differs due to an additional residual added term to the predicted value, taken either from a random respondent or comparable observation, and is usually preferred due to the importance of shape parameters in many analyses [@brick1996handling].
 
-One traditional method of imputation is the "Hot-Deck Method", which was generally favorable when computation was less efficient. Hot Deck Imputation  requires extensive knowledge of the survey variables in order to optimize performance since explicit model-based imputation needs a valid model for every survey variable [@maiti2008neural]. This thesis proposes naive artificial neural networks as a solution which requires minimal domain knowledge and resists the curse of dimensionality which other nonparametric methods are susceptible to, such as local polynomial regression [@maiti2008neural].
+One traditional method of imputation is the "Hot-Deck Method", which was generally favorable when computation was less efficient. Hot Deck Imputation  requires extensive knowledge of the survey variables in order to optimize performance since explicit model-based imputation needs a valid model for every survey variable [@maiti2008neural]. This thesis proposes artificial neural networks with heuristic hyperparameters as a solution which requires minimal domain knowledge and resists the curse of dimensionality which other nonparametric methods are susceptible to, such as local polynomial regression [@maiti2008neural].
 
 Due to the difficulties imposed by working with high-dimensional, complex survey data with varying degrees of domain knowledge, we turn to neural networks and their structural benefits to reliably perform these challenging imputation problems.

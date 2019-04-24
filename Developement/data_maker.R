@@ -52,9 +52,4 @@ count_nas(df)
 idf <- median_impute(df)
 count_nas(idf)
 
-# not sure what this is for, selects "not all NA" cols
-#not_all_na <- function(x) {!all(is.na(x))}
-#didf <- idf %>% select_if(not_all_na)
-#count_nas(didf)
-
 write.csv(idf, file = "Data/imputed_CE.csv")

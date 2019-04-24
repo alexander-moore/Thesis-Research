@@ -75,7 +75,3 @@ and 00-abstract.Rmd since they are handled in the YAML above differently for the
 <!-- The {.unnumbered} option here means that the introduction will be "Chapter 0." You can also use {-} for no numbers
 on chapters.
 -->
-
-# Introduction {.unnumbered}
-
-I deleted all of this

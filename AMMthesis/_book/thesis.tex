@@ -187,15 +187,20 @@ a glimpse
 \end{itemize}
 Missing data is problematic and pervasive in real surveys. Complex
 survey imputation aims to replace missing data with approximations.
-Modified neural networks (weighted loss, weighted resample,
+Modified neural networks (naive, weighted loss, weighted resample,
 \(\pi\)-feature, derived parameter) are compared to weighted linear
-regression for mean estimation in artificial and real data using Monte
-Carlo simulation on imputation of manually-induced missing data. The
-methods' population mean estimates are compared to the known true mean
-in both experiments. The results show the effectiveness of the neural
-network family in low-noise nonlinear generative functions, and XXXXX in
-Bureau of Labour Statistics Consumer Expenditure Survey data. Keras and
-tensorFlow are utilized for neural network models.
+regression for mean estimation in artificial and real data experiements
+using Monte Carlo simulation on imputation of manually-induced missing
+data. The methods' population mean estimates are compared to the known
+true mean and Horvitz-Thompson estimator in both experiments. The
+results show the effectiveness of the neural network family in low-noise
+nonlinear generative functions, and superior outlier prediction in
+Bureau of Labour Statistics Consumer Expenditure Survey data. All neural
+network methods outperformed weighted linear regression for mean
+estimation on real data. Keras and TensorFlow are utilized for neural
+network models.
+
+Key Words: Imputation, Neural Networks, Survey Statistics
 }
 
 % End of CII addition
@@ -241,26 +246,26 @@ tensorFlow are utilized for neural network models.
     \end{itemize}
     Missing data is problematic and pervasive in real surveys. Complex
     survey imputation aims to replace missing data with approximations.
-    Modified neural networks (weighted loss, weighted resample,
+    Modified neural networks (naive, weighted loss, weighted resample,
     \(\pi\)-feature, derived parameter) are compared to weighted linear
-    regression for mean estimation in artificial and real data using Monte
-    Carlo simulation on imputation of manually-induced missing data. The
-    methods' population mean estimates are compared to the known true mean
-    in both experiments. The results show the effectiveness of the neural
-    network family in low-noise nonlinear generative functions, and XXXXX in
-    Bureau of Labour Statistics Consumer Expenditure Survey data. Keras and
-    tensorFlow are utilized for neural network models.
+    regression for mean estimation in artificial and real data experiements
+    using Monte Carlo simulation on imputation of manually-induced missing
+    data. The methods' population mean estimates are compared to the known
+    true mean and Horvitz-Thompson estimator in both experiments. The
+    results show the effectiveness of the neural network family in low-noise
+    nonlinear generative functions, and superior outlier prediction in
+    Bureau of Labour Statistics Consumer Expenditure Survey data. All neural
+    network methods outperformed weighted linear regression for mean
+    estimation on real data. Keras and TensorFlow are utilized for neural
+    network models.
+    
+    Key Words: Imputation, Neural Networks, Survey Statistics
   \end{abstract}
   \begin{dedication}
     You can have a dedication here if you wish.
   \end{dedication}
 \mainmatter % here the regular arabic numbering starts
 \pagestyle{fancyplain} % turns page numbering back on
-
-\chapter*{Introduction}\label{introduction}
-\addcontentsline{toc}{chapter}{Introduction}
-
-I deleted all of this
 
 \chapter{Complex Surveys}\label{complex-surveys}
 
@@ -467,9 +472,25 @@ predict the corresponding unknown class or value. Predictive
 (supervised) machine learning algorithms seek to emulate and elucidate a
 true unknown generative function from which the data were drawn.
 
-For imputation purposes, our goal will be to accurately estimate missing
-values by approximating the generative function from which they are
-drawn. Generative functions are of the form \[
+One key difference from statistical modelling and survey statistics
+methods is the point at which randomness is introduced into the data.
+Machine learning attempts to approximate the function from which the
+data was randomly generated, while survey statistics imply that
+randomness in data comes from the survey design. The paradox of where
+randomness is introduced into the data is resolved with the existence of
+a superpopulation \(U\), where each observation has label
+\(y = f(x) + \epsilon\), some generative function. From this
+superpopulation, a population \(u\) is created through \emph{i.i.d.}
+realizations from \(U\). From this population \(u\), the survey is
+taken. Thus there still exists a generative function from which the
+population is drawn, but the features and label of the observations are
+fixed by the time the complex survey is taken on the population,
+reconciling the two methodologies.
+
+For imputation purposes, the goal of machine learning methods will be to
+accurately estimate missing values by approximating the generative
+function from which they are drawn. Generative functions are of the form
+\[
 y = f(x_1, x_2, \dots, x_n) + \epsilon
 \] where the true label \(y\) of the observation is a function of the
 features \(x_1, ..., x_n\) perturbed by some random noise \(\epsilon\).
@@ -483,58 +504,54 @@ simply memorizing the labels of the training set. This memorizaion
 problem is called overfitting and is central to machine learning.
 \begin{figure}
 \centering
-\includegraphics{figure/overfit.png}
-\caption{\label{fig:overfit}The overfit model}
+\includegraphics{thesis_files/figure-latex/overfit-1.pdf}
+\caption{\label{fig:overfit}The red model has better training accuracy than
+the green model}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics{thesis_files/figure-latex/second-1.pdf}
+\caption{\label{fig:second}Both models on a new realization of the data}
 \end{figure}
 \ref{fig:overfit} is an illustration of this pervasive principle in a
-regression example. An overfit (or too-flexible) model simply learns the
-observation's labels, rather than the underlying distribution (or
-generative function, in this case a second-degree polynomial).
+regression example. An overfit (too flexible) model simply memorizes the
+training observation's labels, rather than the underlying distribution,
+in this case a second-degree polynomial.
 
-The overfit model \ref{fig:overfit} has extremely low error on the
-realization of the data on which it was trained, but fails to learn the
-underlying generative function, and instead learns the random noise of
-the training observations. Thus this model is a poor descriptor of new
-realization from the same generative function, seen in \ref{fig:overfit}
-and \ref{fig:overfitre}:
-
-\includegraphics{figure/badfit.png} \clearpage
-
-The overfit model does not accurately reflect the underlying
+The overfit red model does not accurately reflect the underlying
 distribution from which both datasets are drawn. Rather, it captures
 only the random noise of the data on which it was trained. It would be a
 mistake to assume the generative function is a degree 15 polynomial just
 because the training error of such a function is low.
 
-An underfit model, \ref{fig:underfit}, also fails to capture the
-underlying distribution, due to a lack of flexibility. A linear
-regression, though it minimizes its training MSE, clearly fails to
-capture the underlying distribution of the data:
+The overfit red model has extremely low error on the realization of the
+data on which it was trained, but fails to learn the underlying
+generative function, and instead learns the random noise of the training
+observations ( \ref{fig:overfit} ). Thus this model is a poor descriptor
+of a new data realization from the same generative function, seen in
+\ref{fig:second}.
+
+The green line in \ref{fig:overfit} and \ref{fig:second} shows a
+well-trained model which straddles these extrema and captures the
+apparent underlying distribution of the data in a general sense by
+approximating the generative function from which they are drawn, and
+remains fairly constant under different draws from the same
+distribution. The aptly-flexible model has consistent performance on new
+realizations of the data. The ability for a model to perform well on
+data it was not trained on is called generalizability, and is the goal
+of predictive models.
 \begin{figure}
 \centering
-\includegraphics{figure/underfit.png}
+\includegraphics{thesis_files/figure-latex/underfit-1.pdf}
 \caption{\label{fig:underfit}An underfit model}
 \end{figure}
-\ref{fig:goodmod} displays a well-trained model which straddles these
-extrema and captures the apparent underlying distribution of the data in
-a general sense by approximating the generative function from which they
-are drawn, and remains fairly constant under different draws from the
-same distribution. The aptly-flexible model has consistent performance
-on new realizations of the data. The model performing well on data it
-was not trained on is called generalizability.
-\begin{figure}
-\centering
-\includegraphics{figure/true.png}
-\caption{\label{fig:goodmod}A well-fit model}
-\end{figure}
-\ref{fig:goodmod} has the correct level of flexibility, and accurately
-captures the underlying generative function while avoiding overtraining
-based on noise. This makes the model generalize well on a new data draw:
+An underfit model, \ref{fig:underfit} , also fails to capture the
+underlying distribution, due to a lack of flexibility. A linear
+regression, though it minimizes its training MSE, clearly fails to
+capture the underlying distribution of the data.
 
-\includegraphics{figure/stayGood.png}
-
-The relationship of the fit and complexity of the model is described by
-the bias-variance tradeoff phenomena.
+The relationship of the fitness to the complexity of the model is
+described by the bias-variance tradeoff phenomena.
 \begin{figure}
 \centering
 \includegraphics{figure/biasvariance.png}
@@ -558,21 +575,6 @@ Higher flexibility models create more variable models, which though
 trained on data from the same generative function differ greatly in
 appearance due to the random sample of training data. These models are
 unstable for inference and generalize poorly.
-
-One key difference from statistical modelling and survey statistics
-methods is the point at which randomness is introduced into the data.
-Machine learning attempts to approximate the function from which the
-data was randomly generated, while survey statistics imply that
-randomness in data comes from the survey design. The paradox of where
-randomness is introduced into the data is resolved with the existence of
-a superpopulation \(U\), where each observation has label
-\(y = f(x) + \epsilon\), some generative function. From this
-superpopulation, a population \(u\) is created through \emph{i.i.d.}
-realizations from \(U\). From this population \(u\), the survey is
-taken. Thus there still exists a generative function from which the
-population is drawn, but the features and label of the observations are
-fixed by the time the complex survey is taken on the population,
-reconciling the two methodologies.
 
 \section{Neural Networks}\label{neural-networks}
 
@@ -919,14 +921,17 @@ contribution of all observations: \[
 \subsection{\texorpdfstring{\(\pi\)-Corrected Naive
 Mean}{\textbackslash{}pi-Corrected Naive Mean}}\label{pi-corrected-naive-mean}
 
-We resolve this issue in the mean estimate formula by weighting
-contributions to the mean by \(\frac{1}{\pi_i}\), the approximate number
-of population members represented by observation \(i\). This value is
-the Horvitz-Thompson estimator of the true number of people who would
-respond in the population (Horvitz \& Thompson, 1952): \[
-\hat \mu_y = \frac{1}{\hat N_r} \sum_{i \in r} y_i \frac{1}{\pi_i}
-\] Where \(\hat N_r = \sum_{i \in r} \frac{1}{\pi_i}\). This resolves
-the problem of ignoring the survey design in estimation, but does not
+The mean estimate formula weighted problem is resolved by weighting
+(scaling) contributions to the mean by \(\frac{1}{\pi_i}\), the
+approximate number of population members represented by observation
+\(i\). This value is the Horvitz-Thompson estimator of the true number
+of people who would respond in the population (Horvitz \& Thompson,
+1952):
+\begin{align}
+\hat \mu_y = \frac{1}{\hat N_r} \sum_{i \in r} y_i \frac{1}{\pi_i} \label{eq:HTE}
+\end{align}
+Where \(\hat N_r = \sum_{i \in r} \frac{1}{\pi_i}\). This resolves the
+problem of ignoring the survey design in estimation, but does not
 account for systematic bias resulting from missingness. For example, the
 \(\pi\)-corrected naive mean estimate of the population mean will be an
 under-estimate of the true population mean in the presence of systematic
@@ -951,7 +956,8 @@ a complete-case dataset without dropping observations.
 \hat \mu_y(\text{method}) = \frac{1}{\hat N} (\sum_{i \in r} \frac{y_i}{\pi_i} + \sum_{i \in s-r} \frac{\hat y_i}{\pi_i})
 \] Where \(s-r\) are the missing cases, \(r\) are the respondents, and
 \(\hat N = \sum_{i \in n} \frac{1}{\pi_i}\) is the Horvitz-Thompson
-estimator of the population size (Horvitz \& Thompson, 1952).
+estimator \eqref{eq:HTE} of the population size (Horvitz \& Thompson,
+1952).
 
 \subsection{Drop NA}\label{drop-na}
 
@@ -989,15 +995,13 @@ parameters, where \(\hat f(x) = \hat y = (m_1x_1 + .+ m_px_p)+b\) is the
 estimate of \(y\) for observation \(i\) given features
 \(\boldsymbol{x} = [x_1, \dots ,x_p]\). Using the mean of the squared
 difference between the predicted and actual responses of a training data
-set, weighted-MSE linear regression scales the squared error
-contribution of each observation by \(\frac{1}{\pi_i}\) to account for
-rare-case observations with potentially systematic missingess, and
-returns a scalar loss:
+set, weighted-MSE linear regression uses the loss function \eqref{eq:wmse}
+which scales the squared error contribution of each observation by
+\(\frac{1}{\pi_i}\) to account for rare-case observations with
+potentially systematic missingess, and returns a scalar loss:
 \begin{align}
 \text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2 \label{eq:wmse}
 \end{align}
-THIS IS EQUATION \eqref{eq:wmse}
-
 Significant to this algorithm, however, is the contribution of \(\pi\)
 regardless of whether it is informative. In data known to have
 systematic label missingness, this is not a problem. However, it is not
@@ -1034,12 +1038,11 @@ Imputation}\label{weighted-loss-neural-network-imputation}
 
 Weighted Loss Neural Network Imputation takes inspiration from the
 weighted linear regression algorithm. This neural network training uses
-the same \(\pi\)-weighted MSE of @ref(sec:linear\_reg), but sacrifices
-the convexity of the loss function of the linear model, which means
-pervasive local minima which are distracting to the learning algorithm:
-\[
-\text{MSE}(f) = \frac{1}{\hat N} \sum_{i \in r} (\frac{1}{\pi}(\hat{y} - y))^2
-\] The existence of local minima from the high-dimensional model space
+the same \(\pi\)-weighted MSE of \eqref{eq:wmse}, but sacrifices the
+convexity of the loss function of the linear model, which induces
+problematic local minima in the loss.
+
+The existence of local minima from the high-dimensional model space
 comes from the flexibility of the many hidden neurons weight
 transformations within the model. A loss-weighted neural network hopes
 to account for systematic missingness in the data by heavily punishing
@@ -1304,15 +1307,15 @@ number of epochs may have dropped the weights of the noisy parameters to
 be ignored.
 
 All methods underestimated the population mean, described by the
-relative bias column of the results. EXCEPT FOR MEDIAN????? WHAT?????
-HOW IS MEDIAN IMPUTATION OVER ESTIMATING! This is reasonable on behalf
-of the systematic missingness of the data, but each non-naive method
-attempted to mitigate this amount. The results indicate that the
-negative bias was significantly larger for non-oracle methods, meaning
-noisy parameters could contribute to mean under-estimation. For this
-reason, a researcher with some level of domain knowledge should
-hand-select features known to have a relationship to the label to be
-used as training data, rather than including all available features.
+relative bias column of the results. EXCEPT FOR MEDIAN? HOW IS MEDIAN
+IMPUTATION OVER ESTIMATING! This is reasonable on behalf of the
+systematic missingness of the data, but each non-naive method attempted
+to mitigate this amount. The results indicate that the negative bias was
+significantly larger for non-oracle methods, meaning noisy parameters
+could contribute to mean under-estimation. For this reason, a researcher
+with some level of domain knowledge should hand-select features known to
+have a relationship to the label to be used as training data, rather
+than including all available features.
 
 In the case of a nonlinear generative function with little noise, it
 should come as no surprise that most nonlinear neural network methods
@@ -1364,21 +1367,32 @@ data has a low degree of missingness as quarterly information is
 propagated between surveys to create complete observations.
 
 The mean estimation methods from chapter 3 will be used to estimate the
-population mean household income before tax, \texttt{FINCBTAX}. Like all
-data gathered by BLS \texttt{FINCBTAX} is subject to missingness, but
-has been imputed in their data sets. This means for the purpose of our
-experiment on method imputation quality, we must artifically impose
-missingness then compare our imputation results to a combination of true
-labels and BLS-derived labels. This is an unavoidable pitfall of working
-with real data, as we paradoxically require ``truly missing'' labels to
-impute, but need the true label to compare the quality of our imputation
-to.
+population mean household income before tax, \texttt{FINCBTAX}. The
+features used to predict this label are: - \texttt{pi}, the inclusion
+probability (1 / \texttt{FINLWT21}, the survey weight provided by BLS) -
+\texttt{AGE\_REF}, the age of the reference person (the person who
+answered the survey) - \texttt{BATHRMQ}, the number of bathrooms in the
+home - \texttt{BEDROOMQ}, the number of bedrooms in the home -
+\texttt{EDUC\_REF}, the education of the reference person (some
+highschool, etc) - \texttt{FAM\_SIZE}, the number of family members in
+the home - \texttt{TOTEXPCQ}, the total household expenditures last
+quarter
+
+Like all data gathered by BLS \texttt{FINCBTAX} and some features are
+subject to missingness, but have been in the data sets. This means for
+the purpose of the experiment on method imputation quality, we must
+artifically impose missingness then compare the imputation results to a
+combination of true labels and BLS-derived labels. This is an
+unavoidable pitfall of working with real data, as we paradoxically
+require ``truly missing'' labels to impute, but need the true label to
+compare the quality of the imputation to.
 
 According IRS Statistics of Income, the average household adjusted gross
 income (AGI) was \$67,565 in 2015. This is the last year the population
 mean household income is available. This numbercould be considered the
 true population mean \(\mu_y\), but is derived differently than the BLS
-CE data.
+CE data and is slightly different than the Horvitz-Thompson estimator
+for the sample on \texttt{FINCBTAX}.
 
 \section{Procedure}\label{procedure}
 
@@ -1410,16 +1424,26 @@ by inducing missingness in the known labels, imputing, and comparing
 results via MSE to the true mean.
 
 The following process is repeated a number of times to create a
-distribution of mean estimates for each method: 1. Record the true
-(sample) mean and Horvitz-Thompson mean estimate 2. Induce missingness
-on 20\% of the labels, weighted to larger labels 3. Perform and record
-each model's mean estimate + For the real data, a more accurate neural
-network method is adopted in which each network undergoes two trainings:
-the first finds the ideal train duration by overtraining on the training
-data, the second re-trains the model to the validation minimum of the
-first model. 4. The results are compared using MSE, oracle ratio, and
-PRB.
-
+distribution of mean estimates for each method:
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Record the true (sample) mean and Horvitz-Thompson mean estimate
+\item
+  Induce missingness on 20\% of the labels, weighted to larger labels
+\item
+  Perform and record each model's mean estimate. For this experiment, a
+  more accurate neural network training method is adopted in which each
+  network undergoes two trainings: the first finds the ideal train
+  duration by overtraining on the training data, the second re-trains
+  the model to the validation minimum of the first model. This is the
+  correct training method which was eschewed from Chapter 4 due to the
+  computational intensity of double-training.
+\item
+  The results are compared using mean squared error to \('mu_y\), oracle
+  ratio, and percent relative bias.
+\end{enumerate}
 The dimension of the neural networks has changed somewhat to account for
 the new data. Since the number of informative parameters has increased
 along with the complexity of the generative function transforming them
@@ -1446,74 +1470,62 @@ name of a more statistically informative monte carlo simulation.
 
 \section{Results}\label{results}
 
-Not a place to list findings. Rather, convince that what I did is
-correct, worthy of study, and impactful. Be honest about the
-generalizability of the work. If the findings are negative, take care to
-explain why the results still matter. Cast the negative result as a
-useful insight, rather than a problem with the methodology
+\includegraphics[width=0.8\linewidth]{figure/vline_fig}
 
-\includegraphics[width=0.7\linewidth]{figure/vline_fig}
+\includegraphics[width=0.8\linewidth]{figure/clean_results_histogram}
 
-\includegraphics[width=0.7\linewidth]{figure/new_bar_results} From an
-ultra-early glimpse (iterations = 5), resample is best. Really cool
-stuff, especially considering 1. resample was terrible in simulation and
-2. resampling to n didnt seem like a good idea. But its performing great
-so far. super cool. all the methods are really, really far off.
-estimating 50k when true is 62k. But NN seem to be on-par or slightly
-outperforming linear sometimes. we'll see how it shapes up
-
-\chapter*{Conclusion}\label{conclusion}
-\addcontentsline{toc}{chapter}{Conclusion}
-
-If we don't want Conclusion to have a chapter number next to it, we can
-add the \texttt{\{-\}} attribute.
-
-\section{The End}\label{the-end}
-
-the end of the paper should summarize your main finginds, interpret what
-your results mean in context, discuss limitations, and point to where
-there is room for4 improvement or further analaysis. This is your last
-chance to make an impression, and say everything I want to say.
+\chapter{Conclusion}\label{conclusion}
 
 \section{Discussion}\label{discussion}
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  What are the key features of your analysis and results?
-\item
-  Do your results confirm or contradict your initial expectations or
-  earlier work?
-\item
-  What problems did you run into, and if still unsolved, wgat are
-  suggestions for addressing
-\item
-  Knowing what you know now, what reccomendations in context do you
-  have?
-\item
-  What should someone work on next, building off of your work?
-\end{enumerate}
-conclsuion can talk a lot about the TONS of hyperparameters, all the
-caveats - can slap a basic version of NN on without domain knowledge,
-but can incorporate knowledge in tons of tweaks on all the
-hyperparameters
 
-\section{Conclusion}\label{conclusion-1}
+Early simulation results showed neural networks struggling to compete
+with the stability of weighted linear regression mean estimation. The
+highly nonlinear relationship of the simulation is a product of
+extensive neural network testing to produce a positive result indicative
+of potential for neural network capability. The CE results are suprising
+in this manner: though more variable, neural networks consistently
+outperform the parametric linear model for outlier prediction,
+contributing to accuracy and, consequentially, mean estimations.
 
-A conclusion should not introduce new material. Conclusion brief, and
-only contain main points of paper. It will be redundant: that is the
-point.
+These results show clear promise to the capability of neural network
+imputation for systematic missingness in labels with \(\pi\)
+correlation. The significant improvement of each neural network method
+from weighted linear regression is a positive finding, but one that is
+slightly undermined due to the total success of neural networks. When
+all nonlinear methods outperform the linear regression, it is clear that
+there is a strong nonlinearity between the features and label for the CE
+data given the selected features.
+
+However, that does not mean these results are unimpactful. The success
+of the neural network methods is that they thrived in the same
+minimal-knowledge enviroment that linear regression does. The only
+change from the simulated neural networks to real-data experiments was a
+larger network breadth and learning rate, both hyperparameters changed
+for computational time, not superior accuracy. This is highly promising
+as the assumptions of NN success were derived from the nonparametric
+benefits of a more flexible model which is highly adaptable to data
+relationships. The hypotheses on the advantages of this properly trained
+family of algorithms are demonstratably upgrades for mean estimation and
+imputation accuracy, even when ignoring survey design.
+
+The lower scores of the \(\pi\)-feature and derived-parameter methods
+compared to naive neural network imputation is a suprising result. This
+outcome is at odds with the hypotheses on the feature-selection property
+outlined in Chapter 2. If the \(\pi\) feature and its derivatives were
+informative to the label, the methods should have superior accuracy, and
+if the \(\pi\) feature was uninformative, the weighted-MSE should have
+underperformed.
+
+These results altogether show the benefits of neural networks in minimal
+domain knowledge imputation: using heuristic feedforward networks and a
+validation set, the models unilaterally outperformed a typical weighted
+regression for mean imputation.
 
 If a researcher is interested in an easy to implement, computationally
 inexpensive heuristic algorithm to impute complex survey data for mean
-estimation, weighted linear regression is the most appealing method. The
-reality of real data is that it is more likely noisy than functional.
-
-The performance of linear regression in noisy-feature simulation shows
-the robustness of the algorithm to heuristic implementation. The lack of
-domain knowledge necessary to select variables in order to implement an
-effective linear regression makes the model highly appealing for stable
-results regardless of feature space size.
+estimation, weighted linear regression is likely the most appealing
+method. The reality of real data is that it is more likely noisy than
+functional.
 
 Neural network methods are promising, however, because of their many
 degrees flexibility. The nonparametric models are adaptable to more
@@ -1529,27 +1541,57 @@ load of the model, and relationship of features are all examples of
 knowledge lending itself to specific selections of model load,
 activations, optimizers, losses, weightings, connectivity, and countless
 other tweaks letting a knowledgable designer maximize predictive
-performance.
+performance. Weighted linear regression on real data has shown
+demonstratable inferiorty to the parametric family, and lacks this
+degree of tuning potential. The results of the CE experiment could
+diverge even further given algorithmic tweaks optimized to validaiton
+data.
 
-However, as mentioned in @ref(sec:sim\_results), the task is population
-mean estimation, not predictive accuracy. {[}{[}{[}{[}{[}{[}{[}Talk to
-kelly about this. obviously predicting values near true label is good,
-but that need not be the case to get extremely accurate population
-estimates{]}{]}{]}{]}{]}{]}{]}
+\section{Conclusion}\label{conclusion-1}
 
-\section{Future Work}\label{future-work}
-\begin{itemize}
-\item
-  something better than linear regression as comparison: local
-  polynomial, etc. some other very-stable heuristic method
-\item
-  re-visiting weighted resampling by trying bootstrapping methods,
-  bigger resample. bootstrapping many datasets, training on each, and
-  taking mean of estimates. somethign like this to stabilize predictions
-  and sampling variability.
-\end{itemize}
-Multiple imputation: since hopefully NN preserve intervariable
-relationships better than linear or median etc
+Neural networks are extremely promising in the realm of imputation. Each
+neural network method using only heuristic default parameters
+outperformed the weighted linear regression model significantly in the
+simulation and Consumer Expenditure mean estimation experiments.
+
+Nonparametric modelling with validation data should outperform linear
+models, even when survey design information is not incorporated.
+Weighted resample neural networks outperformed all other algorithms
+despite sampling and resampling variability, lending them great promise
+for further investigation, discussed in \ref{sec:work} .
+
+\section{Future Work}\label{work}
+
+There is massive potential in exploring the applications of neural
+networks to complex survey imputation. A more competitive model such as
+local polynomial smoothing using a validation set could be a superior
+general model for unknown generative functions. The linear regression
+proved limiting and underfitting in both simulation and CE applications.
+Any stable heuristic method with some potential to encode survey weights
+is worth investigating.
+
+Multiple imputation is a world worth exploring due to the superior
+predictive capability of neural networks and their intervarriable
+relationship preservation property. Weighted lienar regression is an
+excellent mean estimator due to the stability of its predictions to
+extrema, but lacks in predictive accuracy. Neural networks, however,
+could offer superior multiple imputations as relationships are
+nonlinearized through successive predictions.
+
+Though it performed very well on real data with the algorithm outlined
+in Chapter 3, the weighted resample neural network method could be
+improved in various ways. The method struggled in low-\(n\) simulations
+due to highly variable resampling. This would be somewhat alleviated by
+resampling to \(N\) weighted by \(\frac{1}{\pi}\), but was cut for
+computational concerns. In addition to \(N\)-observation resampling,
+bootstrapping methods inspired by random forests are a promising
+exploration. There would be many tweaks herewithin, but the simple
+algorithm is to create \(k\) data frames using the weighted resample
+\texttt{sample\_n(sample,\ weight\ =\ 1\textbackslash{}pi)}, then train
+a naive neural network to each of these datasets, and take the mean or
+median of the resulting imputed labels from testing data as the output
+prediction. This would alleviate both network and resample variability
+of the already-dominant algorithm.
 
 \appendix
 
@@ -1580,10 +1622,1344 @@ across a variety of standards, seen at the end of each iteration loop.
 \end{Shaded}
 \section{Simulated Data Experiment
 \{sim\_data\_exp\}}\label{simulated-data-experiment-sim_data_exp}
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# model selection 2}
+\NormalTok{## Adding noise features, new generative function, and }
+\CommentTok{# model selection oracle}
 
+\CommentTok{# Compare distributions of mean via different imputation methods on artifical data}
+
+\KeywordTok{library}\NormalTok{(keras)}
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\KeywordTok{library}\NormalTok{(tensorflow)}
+
+\NormalTok{N =}\StringTok{ }\DecValTok{10}\OperatorTok{^}\DecValTok{5}
+\NormalTok{n =}\StringTok{ }\DecValTok{10}\OperatorTok{^}\DecValTok{3}
+\NormalTok{it <-}\StringTok{ }\DecValTok{100}
+
+\NormalTok{p_y_ep_control <-}\StringTok{ }\DecValTok{1}
+
+\NormalTok{rescale <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(vec) \{ }\CommentTok{# rescale to 0,1}
+\NormalTok{  (vec }\OperatorTok{-}\StringTok{ }\KeywordTok{min}\NormalTok{(vec)) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{max}\NormalTok{(vec) }\OperatorTok{-}\StringTok{ }\KeywordTok{min}\NormalTok{(vec))}
+\NormalTok{\}}
+
+\NormalTok{create_validation_split <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x_train, y_train) \{}
+  \CommentTok{# Validation Set}
+  \CommentTok{# THIS HAS BEEN UPDATED TO SAMPLE 20% OF X_TRAIN ROWS AS INDECES }
+\NormalTok{  val_indices <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(x_train), .}\DecValTok{15}\OperatorTok{*}\KeywordTok{nrow}\NormalTok{(df))}
+  
+\NormalTok{  x_val <<-}\StringTok{ }\NormalTok{x_train[val_indices,]}
+\NormalTok{  partial_x_train <<-}\StringTok{ }\NormalTok{x_train[}\OperatorTok{-}\NormalTok{val_indices,]}
+  
+\NormalTok{  y_val <<-}\StringTok{ }\NormalTok{y_train[val_indices]}
+\NormalTok{  partial_y_train <<-}\StringTok{ }\NormalTok{y_train[}\OperatorTok{-}\NormalTok{val_indices]}
+\NormalTok{\}}
+
+\NormalTok{normalize_data <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(train_data, test_data) \{}
+\NormalTok{  mean <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(train_data, }\DecValTok{2}\NormalTok{, mean)}
+\NormalTok{  std <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(train_data, }\DecValTok{2}\NormalTok{, sd)}
+  
+\NormalTok{  x_train <<-}\StringTok{ }\KeywordTok{scale}\NormalTok{(train_data, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+\NormalTok{  x_test <<-}\StringTok{ }\KeywordTok{scale}\NormalTok{(test_data, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+\NormalTok{\}}
+
+\NormalTok{p_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\KeywordTok{runif}\NormalTok{(N, }\OperatorTok{-}\DecValTok{30}\NormalTok{, }\DecValTok{30}\NormalTok{)}
+\NormalTok{p_}\DecValTok{2}\NormalTok{ <-}\StringTok{ }\KeywordTok{runif}\NormalTok{(N, }\OperatorTok{-}\DecValTok{30}\NormalTok{, }\DecValTok{30}\NormalTok{)}
+
+\NormalTok{nulls <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{rnorm}\NormalTok{(}\DecValTok{20}\OperatorTok{*}\NormalTok{N, }\DecValTok{0}\NormalTok{, }\DecValTok{8}\NormalTok{), }\DataTypeTok{ncol =} \DecValTok{20}\NormalTok{)}
+
+\NormalTok{p_y_ep <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(N, }\DataTypeTok{mean =} \DecValTok{0}\NormalTok{, }\DataTypeTok{sd =}\NormalTok{ p_y_ep_control)}
+\CommentTok{#p_y <- p_1*p_2 + p_3 + p_y_ep}
+
+\NormalTok{p_y <-}\StringTok{ }\NormalTok{p_}\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{abs}\NormalTok{(p_}\DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{p_y_ep }\CommentTok{#added noise for reasonability}
+\CommentTok{#mpy <- mean(p_y)}
+\CommentTok{#p_y[p_y > mpy] <- p_y[p_y > mpy] + mpy}
+
+\NormalTok{p_y[p_y }\OperatorTok{>}\StringTok{ }\KeywordTok{mean}\NormalTok{(p_y)] <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(p_y)}
+
+\NormalTok{p_y <-}\StringTok{ }\NormalTok{p_y }\OperatorTok{+}\StringTok{ }\NormalTok{p_y_ep}
+\NormalTok{p_y <-}\StringTok{ }\KeywordTok{abs}\NormalTok{(p_y)}
+
+\NormalTok{p_pi_ep <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(N, }\DataTypeTok{mean =} \DecValTok{0}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{temp_pi <-}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(p_y) }\OperatorTok{+}\StringTok{ }\NormalTok{p_pi_ep}
+\NormalTok{temp_pi <-}\StringTok{ }\KeywordTok{rescale}\NormalTok{(temp_pi)}
+\NormalTok{p_pi <-}\StringTok{ }\NormalTok{temp_pi }\OperatorTok{*}\StringTok{ }\NormalTok{(n }\OperatorTok{/}\StringTok{ }\KeywordTok{sum}\NormalTok{(temp_pi))}
+
+\NormalTok{p_df <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(p_}\DecValTok{1}\NormalTok{, p_}\DecValTok{2}\NormalTok{, p_y, p_pi, nulls)}
+\NormalTok{p_tbl <-}\StringTok{ }\KeywordTok{as_tibble}\NormalTok{(p_df)}
+
+\CommentTok{# Verify sum of pi over population approx n}
+\KeywordTok{sum}\NormalTok{(p_tbl}\OperatorTok{$}\NormalTok{p_pi) }\OperatorTok{==}\StringTok{ }\NormalTok{n}\CommentTok{#= 10000 = n}
+
+\NormalTok{statistic_tracker <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{true_mean =} \KeywordTok{numeric}\NormalTok{(it), }
+                                \DataTypeTok{oracle_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{pi_naive_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{median_imp_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{lin_imp_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{lin_oracle =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{nn_oracle =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{nn_pi_oracle =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{nn_resamp_oracle =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{nn_wmse_oracle =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{nn_deriv_oracle =} \KeywordTok{numeric}\NormalTok{(it))}
+\CommentTok{# Want to estimate:}
+\NormalTok{mu_y <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{N) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{(p_tbl}\OperatorTok{$}\NormalTok{p_y)}
+\NormalTok{mu_y}
+\CommentTok{# monte carlo simulation of draws from population with comparison methods}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{it) \{}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{true_mean[i] <-}\StringTok{ }\NormalTok{mu_y}
+  
+\NormalTok{  sample_population_by_pi <-}\StringTok{ }\KeywordTok{sample_n}\NormalTok{(}\DataTypeTok{tbl =}\NormalTok{ p_tbl, }\DataTypeTok{size =}\NormalTok{ n, }\DataTypeTok{replace =} \OtherTok{FALSE}\NormalTok{, }
+                                      \DataTypeTok{weight =}\NormalTok{ p_pi)}
+  
+\NormalTok{  df <-}\StringTok{ }\NormalTok{sample_population_by_pi }\OperatorTok{%>%}\StringTok{ }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{x_1 =}\NormalTok{ p_}\DecValTok{1}\NormalTok{, }\CommentTok{#Since we are not dealing with population p_ anymore}
+                                           \DataTypeTok{x_2 =}\NormalTok{ p_}\DecValTok{2}\NormalTok{,}
+                                           \DataTypeTok{pi =}\NormalTok{ p_pi,}
+                                           \DataTypeTok{y =}\NormalTok{ p_y)}
+  
+\NormalTok{  #########}
+  \CommentTok{# Oracle mean}
+  \CommentTok{# this is a standard estimator which is done on the full (nonmissing) data to compare}
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{oracle_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{y)}
+  
+\NormalTok{  #########}
+  \CommentTok{# Drop some labels - weighted to high y}
+  
+\NormalTok{  indices <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(df), .}\DecValTok{2}\OperatorTok{*}\KeywordTok{nrow}\NormalTok{(df), }\DataTypeTok{prob =}\NormalTok{ df}\OperatorTok{$}\NormalTok{y) }\CommentTok{#weights are stdized to 1 by sample()}
+\NormalTok{  dropped_obs <-}\StringTok{ }\NormalTok{df[indices,]}
+\NormalTok{  reduced_df <-}\StringTok{ }\NormalTok{df[}\OperatorTok{-}\NormalTok{indices,] }\CommentTok{# These have a large differnce: 296 for dropped and 276 for reduced df}
+  
+  \CommentTok{# Make oracle df without noisy parameters}
+\NormalTok{  odf <-}\StringTok{ }\NormalTok{df[,}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{]}
+\NormalTok{  o_dropped_obs <-}\StringTok{ }\NormalTok{odf[indices,]}
+\NormalTok{  o_reduced_df <-}\StringTok{ }\NormalTok{odf[}\OperatorTok{-}\NormalTok{indices,]}
+  
+\NormalTok{  #########}
+  \CommentTok{# pi-corrected naive mean}
+  \CommentTok{# should be unbiased but very large variance. should come forward when gen func change}
+\NormalTok{  ## }\AlertTok{NOTE}\NormalTok{ DIFFERENCE OF HAT N RESPOND AND HAT N SAMPLE}
+\NormalTok{  hat_N_respondent <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{pi)) }\CommentTok{# largely underestimates the true N}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{pi_naive_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_respondent)}\OperatorTok{*}\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }
+\StringTok{                                                                     }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{y)}
+  
+\NormalTok{  #########}
+  \CommentTok{# Median imputation: fill missing values with median}
+\NormalTok{  len <-}\StringTok{ }\KeywordTok{dim}\NormalTok{(dropped_obs)[}\DecValTok{1}\NormalTok{]}
+\NormalTok{  median_list <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\KeywordTok{median}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y), len)}
+\NormalTok{  labels <-}\StringTok{ }\KeywordTok{as.vector}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y)}
+\NormalTok{  median_list <-}\StringTok{ }\KeywordTok{as.vector}\NormalTok{(median_list)}
+  
+\NormalTok{  imputed_list <-}\StringTok{ }\KeywordTok{c}\NormalTok{(labels,median_list)}
+  
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{median_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }
+\StringTok{                                                                     }\NormalTok{imputed_list)}
+  
+\NormalTok{  #########}
+  \CommentTok{# mean according to imputed data via linear regression (1/pi-weighted)}
+\NormalTok{  red_weight <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi}
+\NormalTok{  lin_dat <-}\StringTok{ }\KeywordTok{select}\NormalTok{(reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+\NormalTok{  lin_dropped <-}\StringTok{ }\KeywordTok{select}\NormalTok{(dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+  
+\NormalTok{  linear_model <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data =}\NormalTok{ lin_dat, }\DataTypeTok{weights =}\NormalTok{ red_weight)}
+  
+\NormalTok{  lm_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(linear_model, lin_dropped)}
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{lin_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                           \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(lm_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  \CommentTok{# Linear Regression Oracle Method}
+\NormalTok{  red_weight <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi}
+\NormalTok{  lin_dat <-}\StringTok{ }\KeywordTok{select}\NormalTok{(o_reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+\NormalTok{  lin_dropped <-}\StringTok{ }\KeywordTok{select}\NormalTok{(o_dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+  
+\NormalTok{  linear_model <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data =}\NormalTok{ lin_dat, }\DataTypeTok{weights =}\NormalTok{ red_weight)}
+  
+\NormalTok{  lm_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(linear_model, lin_dropped)}
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{odf}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{lin_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                         \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(lm_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  
+  \CommentTok{# nn oracle}
+\NormalTok{  y_train <-}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{y}
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(o_reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi, y))}
+  
+\NormalTok{  y_test <-}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{y}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(o_dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi,y))}
+  
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(reduced_df_nolab)}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(dropped_obs_nolab)}
+  
+\NormalTok{  x_train <-}\StringTok{ }\NormalTok{reduced_df_nolab}
+\NormalTok{  x_test <-}\StringTok{ }\NormalTok{dropped_obs_nolab}
+  
+  \KeywordTok{normalize_data}\NormalTok{(x_train, x_test)}
+  \KeywordTok{create_validation_split}\NormalTok{(x_train, y_train)}
+  
+\NormalTok{  model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{32}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{32}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+  
+\NormalTok{  model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+    \DataTypeTok{optimizer =} \StringTok{"adam"}\NormalTok{,}
+    \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+    \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{  )}
+  
+\NormalTok{  history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{    partial_x_train,}
+\NormalTok{    partial_y_train,}
+    \DataTypeTok{epochs =} \DecValTok{170}\NormalTok{, }
+    \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+    \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)}
+\NormalTok{  )}
+  
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(x_test)}
+\NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
+  
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                        \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  
+  \CommentTok{#oracle nn pi feature}
+\NormalTok{  y_train <-}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{y}
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(o_reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(y))}
+\NormalTok{  reduced_df_nolab}\OperatorTok{$}\NormalTok{pi <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{reduced_df_nolab}\OperatorTok{$}\NormalTok{pi}
+  
+\NormalTok{  y_test <-}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{y}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(o_dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(y))}
+\NormalTok{  dropped_obs_nolab}\OperatorTok{$}\NormalTok{pi <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs_nolab}\OperatorTok{$}\NormalTok{pi}
+  
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(reduced_df_nolab)}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(dropped_obs_nolab)}
+  
+\NormalTok{  x_train <-}\StringTok{ }\NormalTok{reduced_df_nolab}
+\NormalTok{  x_test <-}\StringTok{ }\NormalTok{dropped_obs_nolab}
+  
+  \KeywordTok{normalize_data}\NormalTok{(x_train, x_test)}
+  \KeywordTok{create_validation_split}\NormalTok{(x_train, y_train)}
+  
+\NormalTok{  model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{32}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{32}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+  
+\NormalTok{  model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+    \DataTypeTok{optimizer =} \StringTok{"adam"}\NormalTok{,}
+    \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+    \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{  )}
+  
+\NormalTok{  history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{    partial_x_train,}
+\NormalTok{    partial_y_train,}
+    \DataTypeTok{epochs =} \DecValTok{300}\NormalTok{,}
+    \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+    \DataTypeTok{batch_size =} \DecValTok{32}\NormalTok{,}
+    \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)}
+\NormalTok{  )}
+  
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(x_test)}
+\NormalTok{  nn_pi_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
+  
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_pi_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                           \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_pi_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  \CommentTok{# oracle resample}
+\NormalTok{  dropped_obs_NA_lab <-}\StringTok{ }\NormalTok{o_dropped_obs}
+\NormalTok{  dropped_obs_NA_lab}\OperatorTok{$}\NormalTok{y <-}\StringTok{ }\OtherTok{NA}
+  
+\NormalTok{  orig_df <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(o_reduced_df, dropped_obs_NA_lab)}
+  
+\NormalTok{  weight_vec <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(orig_df}\OperatorTok{$}\NormalTok{pi)  }
+  
+\NormalTok{  orig_tbl <-}\StringTok{ }\KeywordTok{as_tibble}\NormalTok{(orig_df)}
+  
+  \CommentTok{# RESAMPLE ON DF NOT REDUCED_DF}
+\NormalTok{  resamp_df <-}\StringTok{ }\KeywordTok{sample_n}\NormalTok{(}\DataTypeTok{tbl =}\NormalTok{ orig_tbl, }\DataTypeTok{size =} \KeywordTok{nrow}\NormalTok{(orig_tbl), }\DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{weight =}\NormalTok{ weight_vec)}
+  
+  \CommentTok{# re-partition into complete cases, and cases to be imputed}
+\NormalTok{  resamp_reduced_df <-}\StringTok{ }\NormalTok{resamp_df[}\OperatorTok{-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(resamp_df}\OperatorTok{$}\NormalTok{y)),]}
+\NormalTok{  resamp_dropped_obs <-}\StringTok{ }\NormalTok{resamp_df[}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(resamp_df}\OperatorTok{$}\NormalTok{y)),]}
+  
+\NormalTok{  y_train <-}\StringTok{ }\NormalTok{resamp_reduced_df}\OperatorTok{$}\NormalTok{y}
+\NormalTok{  resamp_reduced_df_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(resamp_reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(y))}
+  
+\NormalTok{  y_test <-}\StringTok{ }\NormalTok{resamp_dropped_obs}\OperatorTok{$}\NormalTok{y}
+\NormalTok{  resamp_dropped_obs_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(resamp_dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(y))}
+  
+\NormalTok{  resamp_reduced_df_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(resamp_reduced_df_nolab)}
+\NormalTok{  resamp_dropped_obs_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(resamp_dropped_obs_nolab)}
+  
+\NormalTok{  x_train <-}\StringTok{ }\NormalTok{resamp_reduced_df_nolab}
+\NormalTok{  x_test <-}\StringTok{ }\NormalTok{resamp_dropped_obs_nolab}
+  
+  \KeywordTok{create_validation_split}\NormalTok{(x_train, y_train)}
+  
+\NormalTok{  model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{32}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{32}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+  
+\NormalTok{  model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+    \DataTypeTok{optimizer =} \StringTok{"adam"}\NormalTok{,}
+    \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+    \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{  )}
+  
+\NormalTok{  history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{    partial_x_train,}
+\NormalTok{    partial_y_train,}
+    \DataTypeTok{epochs =} \DecValTok{200}\NormalTok{,}
+    \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+    \DataTypeTok{batch_size =} \DecValTok{32}\NormalTok{,}
+    \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)}
+\NormalTok{  )}
+  
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(x_test)}
+\NormalTok{  nn_resamp_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
+  
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_resamp_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                                 \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_resamp_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{resamp_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  \CommentTok{# WSME NN }
+\NormalTok{  #######}
+  \CommentTok{# New Split}
+  \CommentTok{# Inherit train and test}
+\NormalTok{  train <-}\StringTok{ }\NormalTok{reduced_df}
+\NormalTok{  test <-}\StringTok{ }\NormalTok{dropped_obs}
+  
+  \CommentTok{# record training data pi}
+\NormalTok{  pi_vec <-}\StringTok{ }\NormalTok{train}\OperatorTok{$}\NormalTok{pi}
+  
+  \CommentTok{# Inherit train and test}
+\NormalTok{  train <-}\StringTok{ }\NormalTok{reduced_df}
+\NormalTok{  y_train <-}\StringTok{ }\NormalTok{train}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  x_train <-}\StringTok{ }\KeywordTok{select}\NormalTok{(train, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(FINCBTAX))}
+  
+\NormalTok{  test <-}\StringTok{ }\NormalTok{dropped_obs}
+\NormalTok{  y_test <-}\StringTok{ }\NormalTok{test}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{select}\NormalTok{(test, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(FINCBTAX))}
+  
+  \CommentTok{# Split train into train' and val}
+\NormalTok{  val_indices <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(train), .}\DecValTok{20}\OperatorTok{*}\KeywordTok{nrow}\NormalTok{(df))}
+  
+\NormalTok{  x_val <-}\StringTok{ }\NormalTok{x_train[val_indices,]}
+\NormalTok{  partial_x_train <-}\StringTok{ }\NormalTok{x_train[}\OperatorTok{-}\NormalTok{val_indices,]}
+  
+\NormalTok{  y_val <-}\StringTok{ }\NormalTok{y_train[val_indices]}
+\NormalTok{  partial_y_train <-}\StringTok{ }\NormalTok{y_train[}\OperatorTok{-}\NormalTok{val_indices]}
+  
+  
+  \CommentTok{# Extract partial pi from full train x}
+  \CommentTok{#range01 <- function(x)\{(x-min(x))/(max(x)-min(x))\}}
+  
+\NormalTok{  pi_prime <-}\StringTok{ }\NormalTok{pi_vec[}\OperatorTok{-}\NormalTok{val_indices]}
+\NormalTok{  obs_weights <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{pi_prime}
+  
+\NormalTok{  full_obs_weights <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{pi_vec}
+  
+  \CommentTok{# remove pi from x_test and x_train, partial_x_train, x_val}
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{select}\NormalTok{(x_test, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+\NormalTok{  x_train <-}\StringTok{ }\KeywordTok{select}\NormalTok{(x_train, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+\NormalTok{  x_val <-}\StringTok{ }\KeywordTok{select}\NormalTok{(x_val, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+\NormalTok{  partial_x_train <-}\StringTok{ }\KeywordTok{select}\NormalTok{(partial_x_train, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+  
+  \CommentTok{# Normalize all WRT train}
+\NormalTok{  mean <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(x_train, }\DecValTok{2}\NormalTok{, mean)}
+\NormalTok{  std <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(x_train, }\DecValTok{2}\NormalTok{, sd)}
+  
+\NormalTok{  x_train <-}\StringTok{ }\KeywordTok{scale}\NormalTok{(x_train, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{scale}\NormalTok{(x_test, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+\NormalTok{  x_val <-}\StringTok{ }\KeywordTok{scale}\NormalTok{(x_val, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+\NormalTok{  partial_x_train <-}\StringTok{ }\KeywordTok{scale}\NormalTok{(partial_x_train, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+  
+\NormalTok{  model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{32}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{32}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+  
+\NormalTok{  model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+    \DataTypeTok{optimizer =} \StringTok{"adam"}\NormalTok{,}
+    \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+    \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{  )}
+  
+\NormalTok{  history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{    partial_x_train,}
+\NormalTok{    partial_y_train,}
+    \DataTypeTok{sample_weight =}\NormalTok{ obs_weights,}
+    \DataTypeTok{epochs =} \DecValTok{250}\NormalTok{,}
+    \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+    \DataTypeTok{batch_size =} \DecValTok{32}\NormalTok{,}
+    \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)}
+\NormalTok{  )}
+  
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(x_test)}
+\NormalTok{  x_test <-}\StringTok{ }\NormalTok{x_test[,}\OperatorTok{-}\DecValTok{3}\NormalTok{]}
+\NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
+  
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_wmse_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                             \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  
+  \CommentTok{# Oracle derived params}
+\NormalTok{  y_train <-}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{y}
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(o_reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(y))}
+  
+\NormalTok{  y_test <-}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{y}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(o_dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(y))}
+  
+\NormalTok{  x1pi <-}\StringTok{ }\NormalTok{(reduced_df_nolab}\OperatorTok{$}\NormalTok{x_}\DecValTok{1}\NormalTok{)}\OperatorTok{*}\NormalTok{(reduced_df_nolab}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  x2pi <-}\StringTok{ }\NormalTok{(reduced_df_nolab}\OperatorTok{$}\NormalTok{x_}\DecValTok{2}\NormalTok{)}\OperatorTok{*}\NormalTok{(reduced_df_nolab}\OperatorTok{$}\NormalTok{pi)}
+  
+\NormalTok{  dx1pi <-}\StringTok{ }\NormalTok{(dropped_obs_nolab}\OperatorTok{$}\NormalTok{x_}\DecValTok{1}\NormalTok{)}\OperatorTok{*}\NormalTok{(dropped_obs_nolab}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  dx2pi <-}\StringTok{ }\NormalTok{(dropped_obs_nolab}\OperatorTok{$}\NormalTok{x_}\DecValTok{2}\NormalTok{)}\OperatorTok{*}\NormalTok{(dropped_obs_nolab}\OperatorTok{$}\NormalTok{pi)}
+  
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(reduced_df_nolab, x1pi, x2pi)}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(dropped_obs_nolab, dx1pi, dx2pi)}
+  
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(reduced_df_nolab)}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(dropped_obs_nolab)}
+  
+\NormalTok{  x_train <-}\StringTok{ }\NormalTok{reduced_df_nolab}
+\NormalTok{  x_test <-}\StringTok{ }\NormalTok{dropped_obs_nolab}
+  
+  \KeywordTok{normalize_data}\NormalTok{(x_train, x_test)}
+  \KeywordTok{create_validation_split}\NormalTok{(x_train, y_train)}
+  
+\NormalTok{  model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{32}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{32}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+  
+\NormalTok{  model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+    \DataTypeTok{optimizer =} \StringTok{"adam"}\NormalTok{,}
+    \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+    \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{))}
+  
+\NormalTok{  history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{    partial_x_train,}
+\NormalTok{    partial_y_train,}
+    \DataTypeTok{epochs =} \DecValTok{300}\NormalTok{, }\CommentTok{#high variance; study further}
+    \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+    \DataTypeTok{batch_size =} \DecValTok{32}\NormalTok{,  }\CommentTok{#what should this be}
+    \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)  }
+\NormalTok{  )}
+  
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(x_test)}
+\NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
+  
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_deriv_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                                \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  
+  \KeywordTok{print}\NormalTok{(i)}
+\NormalTok{\}}
+
+\CommentTok{# Save the mean table so that we don't have to always re-run it}
+\KeywordTok{write.csv}\NormalTok{(statistic_tracker, }\DataTypeTok{file =} \StringTok{"C:}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Users}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Alexander}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Documents}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{thesis stat tracker}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{AWS_ALEXHERE_2.csv"}\NormalTok{)}
+\NormalTok{dat <-}\StringTok{ }\NormalTok{statistic_tracker}
+
+\CommentTok{#dat <- read.csv("c:/Users/Alexander/Documents/thesis stat tracker/10_full.csv")}
+\CommentTok{#dat <- dat[,-1]}
+
+\NormalTok{#### COMPUTING MSE (and making table)}
+\CommentTok{# MSE against TRUE mean for each method:}
+\CommentTok{# take dif of each with true. square each. sum all. divide by iterations}
+
+\NormalTok{mse_table <-}\StringTok{ }\NormalTok{dat[}\DecValTok{1}\NormalTok{,]}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{dim}\NormalTok{(dat)[}\DecValTok{2}\NormalTok{]) \{}
+  
+\NormalTok{  matdat <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(dat)}
+  
+\NormalTok{  mse_table[i] <-}\StringTok{ }\KeywordTok{mean}\NormalTok{( (matdat[,i] }\OperatorTok{-}\StringTok{ }\NormalTok{matdat[,}\DecValTok{1}\NormalTok{])}\OperatorTok{^}\DecValTok{2}\NormalTok{ )}
+\NormalTok{\}}
+
+\NormalTok{mse_table}
+
+\CommentTok{# then do MSE of method divided by MSE of oracle to get measure of goodness}
+\CommentTok{# (closer to 1 means closer to oracle means good)}
+
+\NormalTok{oracle_ratio_table <-}\StringTok{ }\NormalTok{dat[}\DecValTok{1}\NormalTok{,]}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{dim}\NormalTok{(dat)[}\DecValTok{2}\NormalTok{]) \{}
+  
+\NormalTok{  oracle_ratio_table[i] <-}\StringTok{ }\NormalTok{mse_table[i] }\OperatorTok{/}\StringTok{ }\NormalTok{mse_table[}\DecValTok{2}\NormalTok{]}
+\NormalTok{\}}
+
+\NormalTok{oracle_ratio_table}
+
+\CommentTok{# compute bias:}
+\CommentTok{# mean of statistic vector - true mean}
+\CommentTok{# divide this differnce by true mean}
+\CommentTok{# multiple by 100 to get "percent relative bais", a normalized bias measure}
+
+\NormalTok{prb_table <-}\StringTok{ }\NormalTok{dat[}\DecValTok{1}\NormalTok{,]}
+\NormalTok{mu_y <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(dat[,}\DecValTok{1}\NormalTok{])}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{dim}\NormalTok{(dat)[}\DecValTok{2}\NormalTok{]) \{}
+  
+\NormalTok{  prb_table[i] <-}\StringTok{ }\DecValTok{100} \OperatorTok{*}\StringTok{ }\NormalTok{((}\KeywordTok{mean}\NormalTok{(dat[,i]) }\OperatorTok{-}\StringTok{ }\NormalTok{mu_y) }\OperatorTok{/}\StringTok{ }\NormalTok{mu_y)}
+\NormalTok{\}}
+
+\NormalTok{prb_table}
+
+\KeywordTok{library}\NormalTok{(kableExtra)}
+\KeywordTok{library}\NormalTok{(knitr)}
+
+\NormalTok{mse_t <-}\StringTok{ }\KeywordTok{transpose}\NormalTok{(mse_table)}
+\NormalTok{oracle_t <-}\StringTok{ }\KeywordTok{transpose}\NormalTok{(oracle_ratio_table)}
+\NormalTok{prb_t <-}\StringTok{ }\KeywordTok{transpose}\NormalTok{(prb_table)}
+
+\NormalTok{binded <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(mse_t, oracle_t, prb_t)}
+\KeywordTok{colnames}\NormalTok{(binded) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"MSE"}\NormalTok{, }\StringTok{"Oracle Ratio"}\NormalTok{, }\StringTok{"Relative Bias"}\NormalTok{)}
+\KeywordTok{rownames}\NormalTok{(binded) <-}\StringTok{ }\KeywordTok{colnames}\NormalTok{(statistic_tracker)}
+
+\NormalTok{test <-}\StringTok{ }\NormalTok{binded}
+\NormalTok{test <-}\StringTok{ }\KeywordTok{signif}\NormalTok{(test, }\DataTypeTok{digits =} \DecValTok{3}\NormalTok{)}
+
+\NormalTok{test }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{kable}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{kable_styling}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
 \section{CE Data Experiment
 \{ce\_data\_exp\}}\label{ce-data-experiment-ce_data_exp}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{## Real Experiments in CE Data}
+\CommentTok{# Documentation:}
+\CommentTok{# https://www.bls.gov/cex/2017/csxintvwdata.pdf}
 
+\KeywordTok{library}\NormalTok{(readr)}
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(keras)}
+\KeywordTok{library}\NormalTok{(kableExtra)}
+\KeywordTok{library}\NormalTok{(knitr)}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\KeywordTok{library}\NormalTok{(tensorflow)}
+\KeywordTok{library}\NormalTok{(data.table)}
+
+\CommentTok{# Relevant functions}
+\NormalTok{count_nas <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(df) \{}
+\NormalTok{  isna <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(df, }\DecValTok{2}\NormalTok{, is.na)}
+\NormalTok{  tots <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(isna, }\DecValTok{2}\NormalTok{, sum)}
+\NormalTok{  tots}
+\NormalTok{\}}
+
+\NormalTok{rescale <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(vec) \{ }\CommentTok{# rescale to 0,1}
+\NormalTok{  (vec }\OperatorTok{-}\StringTok{ }\KeywordTok{min}\NormalTok{(vec)) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{max}\NormalTok{(vec) }\OperatorTok{-}\StringTok{ }\KeywordTok{min}\NormalTok{(vec))}
+\NormalTok{\}}
+
+\NormalTok{create_validation_split <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x_train, y_train) \{}
+  \CommentTok{# Validation Set}
+\NormalTok{  val_indices <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(x_train), .}\DecValTok{2}\OperatorTok{*}\KeywordTok{nrow}\NormalTok{(df))}
+  
+\NormalTok{  x_val <<-}\StringTok{ }\NormalTok{x_train[val_indices,]}
+\NormalTok{  partial_x_train <<-}\StringTok{ }\NormalTok{x_train[}\OperatorTok{-}\NormalTok{val_indices,]}
+  
+\NormalTok{  y_val <<-}\StringTok{ }\NormalTok{y_train[val_indices]}
+\NormalTok{  partial_y_train <<-}\StringTok{ }\NormalTok{y_train[}\OperatorTok{-}\NormalTok{val_indices]}
+\NormalTok{\}}
+
+\NormalTok{normalize_data <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(train_data, test_data) \{}
+\NormalTok{  mean <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(train_data, }\DecValTok{2}\NormalTok{, mean)}
+\NormalTok{  std <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(train_data, }\DecValTok{2}\NormalTok{, sd)}
+  
+\NormalTok{  x_train <<-}\StringTok{ }\KeywordTok{scale}\NormalTok{(train_data, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+\NormalTok{  x_test <<-}\StringTok{ }\KeywordTok{scale}\NormalTok{(test_data, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+\NormalTok{\}}
+
+\CommentTok{# custom `adam` optimizer, learning rate up for grabs}
+\CommentTok{# .001 default, .005 testing (methods were using 600 epo)}
+\NormalTok{adam_lr <-}\StringTok{ }\KeywordTok{optimizer_adam}\NormalTok{(}\DataTypeTok{lr =} \FloatTok{0.1}\NormalTok{, }\DataTypeTok{beta_1 =} \FloatTok{0.9}\NormalTok{, }\DataTypeTok{beta_2 =} \FloatTok{0.999}\NormalTok{,}
+                          \DataTypeTok{epsilon =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{decay =} \DecValTok{0}\NormalTok{, }\DataTypeTok{amsgrad =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{clipnorm =} \OtherTok{NULL}\NormalTok{,}
+                          \DataTypeTok{clipvalue =} \OtherTok{NULL}\NormalTok{)}
+
+\NormalTok{dat <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\StringTok{"Data/imputed_CE.csv"}\NormalTok{)}
+
+\CommentTok{# Assuming data is in the correct shape, here's how the real testing goes down}
+\NormalTok{it <-}\StringTok{ }\DecValTok{20}
+
+\NormalTok{statistic_tracker <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{true_mean =} \KeywordTok{numeric}\NormalTok{(it), }
+                                \DataTypeTok{oracle_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{pi_naive_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{median_imp_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{lin_imp_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{nn_imp_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{nn_pi_imp_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{nn_resamp_imp_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{nn_wmse_imp_mean =} \KeywordTok{numeric}\NormalTok{(it),}
+                                \DataTypeTok{nn_deriv_imp_mean =} \KeywordTok{numeric}\NormalTok{(it))}
+
+\CommentTok{# Prep label}
+\NormalTok{df <-}\StringTok{ }\KeywordTok{select}\NormalTok{(dat, }\KeywordTok{c}\NormalTok{(FINCBTAX, pi, AGE_REF, BATHRMQ, BEDROOMQ, EDUC_REF, FAM_SIZE,}
+\NormalTok{                    TOTEXPCQ))}
+
+\CommentTok{#df <- df[1:1000,]}
+
+\CommentTok{#label <- "FINCBTAX"}
+\CommentTok{#label_index <- which(colnames(df) == label)}
+
+\NormalTok{mu_y <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(df}\OperatorTok{$}\NormalTok{FINCBTAX)}
+\NormalTok{mu_y }\CommentTok{# == mean american household income :)}
+
+\NormalTok{testing <-}\StringTok{ }\OtherTok{TRUE}
+\CommentTok{#epo <- 200}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{it) \{}
+  
+  \CommentTok{# Split the CE data into training and testing. Might want some kind of scheme to }
+  \CommentTok{# get the right amount of high-pi and low-pi observations in each}
+  \CommentTok{# (testing is unlabelled, but we know the right answer)}
+  
+\NormalTok{  #########}
+  \CommentTok{# True mean}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{true_mean[i] <-}\StringTok{ }\NormalTok{mu_y}
+  
+\NormalTok{  #########}
+  \CommentTok{# Oracle mean}
+  \CommentTok{# this is a standard estimator which is done on the full (nonmissing) data to compare}
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{oracle_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{FINCBTAX)}
+  
+\NormalTok{  #########}
+  \CommentTok{# Drop some labels - weighted to high y}
+\NormalTok{  zeros <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, }\KeywordTok{nrow}\NormalTok{(df))}
+\NormalTok{  rec <-}\StringTok{ }\KeywordTok{pmax}\NormalTok{(zeros, df}\OperatorTok{$}\NormalTok{FINCBTAX)}
+  
+\NormalTok{  indices <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(df), .}\DecValTok{20}\OperatorTok{*}\KeywordTok{nrow}\NormalTok{(df), }\DataTypeTok{prob =}\NormalTok{ rec)}
+  
+  \CommentTok{# Make df with all features (noisy)}
+\NormalTok{  dropped_obs <-}\StringTok{ }\NormalTok{df[indices,]}
+\NormalTok{  reduced_df <-}\StringTok{ }\NormalTok{df[}\OperatorTok{-}\NormalTok{indices,] }
+  
+\NormalTok{  #########}
+  \CommentTok{# pi-weighted naive mean}
+  \CommentTok{# non-imputation of estimate which accounts for complex design but ignores systematic}
+\NormalTok{  hat_N_respondent <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{pi_naive_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_respondent)}\OperatorTok{*}\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }
+\StringTok{                                                                     }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX)}
+  
+  \CommentTok{# Compute median imputation mean estimate}
+  
+\NormalTok{  #########}
+  \CommentTok{# Median imputation: fill missing values with median}
+\NormalTok{  len <-}\StringTok{ }\KeywordTok{dim}\NormalTok{(dropped_obs)[}\DecValTok{1}\NormalTok{]}
+\NormalTok{  median_list <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\KeywordTok{median}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX), len)}
+\NormalTok{  labels <-}\StringTok{ }\KeywordTok{as.vector}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX)}
+\NormalTok{  median_list <-}\StringTok{ }\KeywordTok{as.vector}\NormalTok{(median_list)}
+  
+\NormalTok{  imputed_list <-}\StringTok{ }\KeywordTok{c}\NormalTok{(labels,median_list)}
+  
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{median_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }
+\StringTok{                                                                     }\NormalTok{imputed_list)}
+  
+\NormalTok{  #########}
+  \CommentTok{# Linear regression imputation: MSE 1/pi weighted}
+\NormalTok{  red_weight <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi}
+\NormalTok{  lin_dat <-}\StringTok{ }\KeywordTok{select}\NormalTok{(reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+\NormalTok{  lin_dropped <-}\StringTok{ }\KeywordTok{select}\NormalTok{(dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+  
+\NormalTok{  linear_model <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(lin_dat}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data =}\NormalTok{ lin_dat, }\DataTypeTok{weights =}\NormalTok{ red_weight)}
+  
+\NormalTok{  lm_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(linear_model, lin_dropped) }\CommentTok{# THROWS WARN}
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{lin_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                           \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(lm_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+\NormalTok{  #########}
+  \CommentTok{# Mean accoridng to imputed data via naive neural network (ignore complex design)}
+\NormalTok{  y_train <-}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi, FINCBTAX))}
+  
+\NormalTok{  y_test <-}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi, FINCBTAX))}
+  
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(reduced_df_nolab)}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(dropped_obs_nolab)}
+  
+\NormalTok{  x_train <-}\StringTok{ }\NormalTok{reduced_df_nolab}
+\NormalTok{  x_test <-}\StringTok{ }\NormalTok{dropped_obs_nolab}
+  
+  \KeywordTok{normalize_data}\NormalTok{(x_train, x_test)}
+  \KeywordTok{create_validation_split}\NormalTok{(x_train, y_train)}
+  
+  \ControlFlowTok{if}\NormalTok{(testing)\{}
+    \CommentTok{# Intentionally over-train on the training data to find the validation minimum}
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    epo <-}\StringTok{ }\DecValTok{150}
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      partial_x_train,}
+\NormalTok{      partial_y_train,}
+      \DataTypeTok{epochs =}\NormalTok{ epo, }
+      \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+      \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)}
+\NormalTok{    )}
+    
+\NormalTok{    goodtrain <-}\StringTok{ }\KeywordTok{which.min}\NormalTok{(history}\OperatorTok{$}\NormalTok{metrics}\OperatorTok{$}\NormalTok{val_loss)}
+    \KeywordTok{print}\NormalTok{(goodtrain)}
+    \KeywordTok{print}\NormalTok{(}\StringTok{"of"}\NormalTok{)}
+    \KeywordTok{print}\NormalTok{(epo)}
+    
+    \CommentTok{# Train a new model for the validation-minimizing number of epochs}
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      x_train,}
+\NormalTok{      y_train,}
+      \DataTypeTok{epochs =}\NormalTok{ goodtrain, }
+      \DataTypeTok{verbose =} \DecValTok{0}
+      \CommentTok{#batch_size = 32,}
+      \CommentTok{#validation_data = list(x_val, y_val)}
+\NormalTok{    )}
+    \KeywordTok{plot}\NormalTok{(history)}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+  
+    \CommentTok{# Train a new model for the validation-minimizing number of epochs}
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      x_train,}
+\NormalTok{      y_train,}
+      \DataTypeTok{epochs =} \DecValTok{419}\NormalTok{, }
+      \DataTypeTok{verbose =} \DecValTok{0}
+      \CommentTok{#callbacks = EarlyStopping()}
+      \CommentTok{#batch_size = 32,}
+      \CommentTok{#validation_data = list(x_val, y_val)}
+\NormalTok{    )}
+\NormalTok{  \}}
+  
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(x_test)}
+\NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
+  
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                          \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  \KeywordTok{print}\NormalTok{(}\StringTok{"Finished nn imp mean"}\NormalTok{)}
+  
+\NormalTok{  #########}
+  \CommentTok{# Mean according to imputed data via neural network w pi feature}
+\NormalTok{  y_train <-}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(FINCBTAX))}
+  
+\NormalTok{  y_test <-}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(FINCBTAX))}
+  
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(reduced_df_nolab)}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(dropped_obs_nolab)}
+  
+\NormalTok{  x_train <-}\StringTok{ }\NormalTok{reduced_df_nolab}
+\NormalTok{  x_test <-}\StringTok{ }\NormalTok{dropped_obs_nolab}
+  
+  \KeywordTok{normalize_data}\NormalTok{(x_train, x_test)}
+  \KeywordTok{create_validation_split}\NormalTok{(x_train, y_train)}
+  
+  \ControlFlowTok{if}\NormalTok{(testing)\{}
+    \CommentTok{# intentionally over-train the model}
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    epo <-}\StringTok{ }\DecValTok{100}
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      partial_x_train,}
+\NormalTok{      partial_y_train,}
+      \DataTypeTok{epochs =}\NormalTok{ epo,}
+      \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+      \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)}
+\NormalTok{    )}
+    
+\NormalTok{    goodtrain <-}\StringTok{ }\KeywordTok{which.min}\NormalTok{(history}\OperatorTok{$}\NormalTok{metrics}\OperatorTok{$}\NormalTok{val_loss)}
+    \KeywordTok{print}\NormalTok{(goodtrain)}
+    \KeywordTok{print}\NormalTok{(}\StringTok{"of"}\NormalTok{)}
+    \KeywordTok{print}\NormalTok{(epo)}
+    
+    \CommentTok{# re-train the new model to the val-min}
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      x_train,}
+\NormalTok{      y_train,}
+      \DataTypeTok{epochs =}\NormalTok{ goodtrain, }
+      \DataTypeTok{verbose =} \DecValTok{0}
+\NormalTok{    )}
+    \KeywordTok{plot}\NormalTok{(history)}
+    
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+  
+    \CommentTok{# re-train the new model to the val-min}
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      x_train,}
+\NormalTok{      y_train,}
+      \DataTypeTok{epochs =} \DecValTok{218}\NormalTok{, }
+      \DataTypeTok{verbose =} \DecValTok{0}
+      \CommentTok{#batch_size = 32,}
+      \CommentTok{#validation_data = list(x_val, y_val)}
+\NormalTok{    )}
+\NormalTok{  \}}
+  
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(x_test)}
+\NormalTok{  nn_pi_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
+  
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_pi_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                             \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_pi_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  \KeywordTok{print}\NormalTok{(}\StringTok{"Finished nn pi imp mean"}\NormalTok{)}
+  
+  
+  \CommentTok{# WSME NN }
+\NormalTok{  #######}
+  \CommentTok{# New Split}
+  \CommentTok{# Inherit train and test}
+\NormalTok{  train <-}\StringTok{ }\NormalTok{reduced_df}
+\NormalTok{  test <-}\StringTok{ }\NormalTok{dropped_obs}
+  
+  \CommentTok{# record training data pi}
+\NormalTok{  pi_vec <-}\StringTok{ }\NormalTok{train}\OperatorTok{$}\NormalTok{pi}
+  
+  \CommentTok{# Inherit train and test}
+\NormalTok{  train <-}\StringTok{ }\NormalTok{reduced_df}
+\NormalTok{  y_train <-}\StringTok{ }\NormalTok{train}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  x_train <-}\StringTok{ }\KeywordTok{select}\NormalTok{(train, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(FINCBTAX))}
+  
+\NormalTok{  test <-}\StringTok{ }\NormalTok{dropped_obs}
+\NormalTok{  y_test <-}\StringTok{ }\NormalTok{test}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{select}\NormalTok{(test, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(FINCBTAX))}
+  
+  \CommentTok{# Split train into train' and val}
+\NormalTok{  val_indices <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(train), .}\DecValTok{20}\OperatorTok{*}\KeywordTok{nrow}\NormalTok{(df))}
+  
+\NormalTok{  x_val <-}\StringTok{ }\NormalTok{x_train[val_indices,]}
+\NormalTok{  partial_x_train <-}\StringTok{ }\NormalTok{x_train[}\OperatorTok{-}\NormalTok{val_indices,]}
+  
+\NormalTok{  y_val <-}\StringTok{ }\NormalTok{y_train[val_indices]}
+\NormalTok{  partial_y_train <-}\StringTok{ }\NormalTok{y_train[}\OperatorTok{-}\NormalTok{val_indices]}
+  
+  
+  \CommentTok{# Extract partial pi from full train x}
+  \CommentTok{#range01 <- function(x)\{(x-min(x))/(max(x)-min(x))\}}
+  
+\NormalTok{  pi_prime <-}\StringTok{ }\NormalTok{pi_vec[}\OperatorTok{-}\NormalTok{val_indices]}
+\NormalTok{  obs_weights <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{pi_prime}
+
+\NormalTok{  full_obs_weights <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{pi_vec}
+
+  \CommentTok{# remove pi from x_test and x_train, partial_x_train, x_val}
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{select}\NormalTok{(x_test, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+\NormalTok{  x_train <-}\StringTok{ }\KeywordTok{select}\NormalTok{(x_train, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+\NormalTok{  x_val <-}\StringTok{ }\KeywordTok{select}\NormalTok{(x_val, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+\NormalTok{  partial_x_train <-}\StringTok{ }\KeywordTok{select}\NormalTok{(partial_x_train, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(pi))}
+  
+  \CommentTok{# Normalize all WRT train}
+\NormalTok{  mean <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(x_train, }\DecValTok{2}\NormalTok{, mean)}
+\NormalTok{  std <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(x_train, }\DecValTok{2}\NormalTok{, sd)}
+  
+\NormalTok{  x_train <-}\StringTok{ }\KeywordTok{scale}\NormalTok{(x_train, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{scale}\NormalTok{(x_test, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+\NormalTok{  x_val <-}\StringTok{ }\KeywordTok{scale}\NormalTok{(x_val, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+\NormalTok{  partial_x_train <-}\StringTok{ }\KeywordTok{scale}\NormalTok{(partial_x_train, }\DataTypeTok{center =}\NormalTok{ mean, }\DataTypeTok{scale =}\NormalTok{ std)}
+  
+\NormalTok{  #######}
+  
+  \ControlFlowTok{if}\NormalTok{(testing)\{}
+    \CommentTok{# intentionally overtrain}
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(partial_x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    epo <-}\StringTok{ }\DecValTok{100}
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      partial_x_train,}
+\NormalTok{      partial_y_train,}
+      \DataTypeTok{sample_weight =}\NormalTok{ obs_weights,}
+      \DataTypeTok{epochs =}\NormalTok{ epo,}
+      \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+      \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)}
+\NormalTok{    )}
+    
+\NormalTok{    goodtrain <-}\StringTok{ }\KeywordTok{which.min}\NormalTok{(history}\OperatorTok{$}\NormalTok{metrics}\OperatorTok{$}\NormalTok{val_loss)}
+    \KeywordTok{print}\NormalTok{(goodtrain)}
+    \KeywordTok{print}\NormalTok{(}\StringTok{"of"}\NormalTok{)}
+    \KeywordTok{print}\NormalTok{(epo)}
+    
+    \CommentTok{# retrain }
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      x_train,}
+\NormalTok{      y_train,}
+      \DataTypeTok{epochs =}\NormalTok{ goodtrain, }
+      \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+      \DataTypeTok{sample_weight =}\NormalTok{ full_obs_weights}
+\NormalTok{    )}
+    \KeywordTok{plot}\NormalTok{(history)}
+    
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+  
+    \CommentTok{# retrain }
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      x_train,}
+\NormalTok{      y_train,}
+      \DataTypeTok{epochs =} \DecValTok{209}\NormalTok{, }
+      \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+      \DataTypeTok{sample_weight =}\NormalTok{ full_obs_weights}
+\NormalTok{    )}
+\NormalTok{  \}}
+  
+\NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
+  
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_wmse_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                               \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  \KeywordTok{print}\NormalTok{(}\StringTok{"Finished nn wmse mean"}\NormalTok{)}
+  
+  
+\NormalTok{  ##########}
+  \CommentTok{# Mean according to imputed dataset via neural network with weighted resample}
+  \CommentTok{# on the full sample. the missing values in the resample are then imputed and }
+  \CommentTok{# the imputation mean is taken on the new data set}
+  \CommentTok{# (without pi feature)}
+\NormalTok{  dropped_obs_NA_lab <-}\StringTok{ }\NormalTok{dropped_obs}
+\NormalTok{  dropped_obs_NA_lab}\OperatorTok{$}\NormalTok{FINCBTAX <-}\StringTok{ }\OtherTok{NA}
+  
+\NormalTok{  orig_df <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(reduced_df, dropped_obs_NA_lab)}
+  
+  \CommentTok{# re-sample by inclusion probability }
+\NormalTok{  weight_vec <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(orig_df}\OperatorTok{$}\NormalTok{pi)  }
+  
+\NormalTok{  orig_tbl <-}\StringTok{ }\KeywordTok{as_tibble}\NormalTok{(orig_df)}
+  
+  \CommentTok{# RESAMPLE ON DF NOT REDUCED_DF}
+\NormalTok{  resamp_df <-}\StringTok{ }\KeywordTok{sample_n}\NormalTok{(}\DataTypeTok{tbl =}\NormalTok{ orig_tbl, }\DataTypeTok{size =} \KeywordTok{nrow}\NormalTok{(orig_tbl), }\DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{weight =}\NormalTok{ weight_vec)}
+  
+  \CommentTok{# re-partition into complete cases, and cases to be imputed}
+\NormalTok{  resamp_reduced_df <-}\StringTok{ }\NormalTok{resamp_df[}\OperatorTok{-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(resamp_df}\OperatorTok{$}\NormalTok{FINCBTAX)),]}
+\NormalTok{  resamp_dropped_obs <-}\StringTok{ }\NormalTok{resamp_df[}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(resamp_df}\OperatorTok{$}\NormalTok{FINCBTAX)),]}
+  
+\NormalTok{  y_train <-}\StringTok{ }\NormalTok{resamp_reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  resamp_reduced_df_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(resamp_reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(FINCBTAX))}
+  
+\NormalTok{  y_test <-}\StringTok{ }\NormalTok{resamp_dropped_obs}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  resamp_dropped_obs_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(resamp_dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(FINCBTAX))}
+  
+\NormalTok{  resamp_reduced_df_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(resamp_reduced_df_nolab)}
+\NormalTok{  resamp_dropped_obs_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(resamp_dropped_obs_nolab)}
+  
+\NormalTok{  x_train <-}\StringTok{ }\NormalTok{resamp_reduced_df_nolab}
+\NormalTok{  x_test <-}\StringTok{ }\NormalTok{resamp_dropped_obs_nolab}
+  
+  \KeywordTok{normalize_data}\NormalTok{(x_train, x_test)}
+  \KeywordTok{create_validation_split}\NormalTok{(x_train, y_train)}
+  
+  \ControlFlowTok{if}\NormalTok{(testing)\{}
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    epo <-}\StringTok{ }\DecValTok{200}
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      partial_x_train,}
+\NormalTok{      partial_y_train,}
+      \DataTypeTok{epochs =}\NormalTok{ epo,}
+      \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+      \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)}
+\NormalTok{    )}
+    
+\NormalTok{    goodtrain <-}\StringTok{ }\KeywordTok{which.min}\NormalTok{(history}\OperatorTok{$}\NormalTok{metrics}\OperatorTok{$}\NormalTok{val_loss)}
+    \KeywordTok{print}\NormalTok{(goodtrain)}
+    \KeywordTok{print}\NormalTok{(}\StringTok{"of"}\NormalTok{)}
+    \KeywordTok{print}\NormalTok{(epo)}
+    
+    \CommentTok{# retrain }
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      x_train,}
+\NormalTok{      y_train,}
+      \DataTypeTok{epochs =}\NormalTok{ goodtrain, }
+      \DataTypeTok{verbose =} \DecValTok{0}
+\NormalTok{    )}
+    \KeywordTok{plot}\NormalTok{(history)}
+    
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+  
+    \CommentTok{# retrain }
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      x_train,}
+\NormalTok{      y_train,}
+      \DataTypeTok{epochs =} \DecValTok{800}\NormalTok{, }
+      \DataTypeTok{verbose =} \DecValTok{0}
+      \CommentTok{#batch_size = 32,}
+      \CommentTok{#validation_data = list(x_val, y_val)}
+\NormalTok{    )}
+\NormalTok{  \}}
+  
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(x_test)}
+\NormalTok{  nn_resamp_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
+  
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_resamp_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                                 \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_resamp_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{resamp_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  
+  \KeywordTok{print}\NormalTok{(}\StringTok{"Finished resamp imp mean"}\NormalTok{)}
+  
+  
+\NormalTok{  ########}
+  \CommentTok{# Derived-parameter NN imputation, where derived parameters are ??}
+  
+\NormalTok{  y_train <-}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(reduced_df, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(FINCBTAX))}
+  
+\NormalTok{  y_test <-}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{FINCBTAX}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{select}\NormalTok{(dropped_obs, }\OperatorTok{-}\KeywordTok{c}\NormalTok{(FINCBTAX))}
+  
+\NormalTok{  x1pi <-}\StringTok{ }\NormalTok{(reduced_df_nolab}\OperatorTok{$}\NormalTok{TOTEXPCQ)}\OperatorTok{*}\NormalTok{(reduced_df_nolab}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  x2pi <-}\StringTok{ }\NormalTok{(reduced_df_nolab}\OperatorTok{$}\NormalTok{AGE_REF)}\OperatorTok{*}\NormalTok{(reduced_df_nolab}\OperatorTok{$}\NormalTok{pi)}
+  
+\NormalTok{  dx1pi <-}\StringTok{ }\NormalTok{(dropped_obs_nolab}\OperatorTok{$}\NormalTok{TOTEXPCQ)}\OperatorTok{*}\NormalTok{(dropped_obs_nolab}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  dx2pi <-}\StringTok{ }\NormalTok{(dropped_obs_nolab}\OperatorTok{$}\NormalTok{AGE_REF)}\OperatorTok{*}\NormalTok{(dropped_obs_nolab}\OperatorTok{$}\NormalTok{pi)}
+  
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(reduced_df_nolab, x1pi, x2pi)}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(dropped_obs_nolab, dx1pi, dx2pi)}
+  
+\NormalTok{  reduced_df_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(reduced_df_nolab)}
+\NormalTok{  dropped_obs_nolab <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(dropped_obs_nolab)}
+  
+\NormalTok{  x_train <-}\StringTok{ }\NormalTok{reduced_df_nolab}
+\NormalTok{  x_test <-}\StringTok{ }\NormalTok{dropped_obs_nolab}
+  
+  \KeywordTok{normalize_data}\NormalTok{(x_train, x_test)}
+  \KeywordTok{create_validation_split}\NormalTok{(x_train, y_train)}
+  
+  \ControlFlowTok{if}\NormalTok{(testing)\{}
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{))}
+    
+\NormalTok{    epo <-}\StringTok{ }\DecValTok{100}
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      partial_x_train,}
+\NormalTok{      partial_y_train,}
+      \DataTypeTok{epochs =}\NormalTok{ epo,}
+      \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
+      \CommentTok{#batch_size = 32, }
+      \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)  }
+\NormalTok{    )}
+    
+\NormalTok{    goodtrain <-}\StringTok{ }\KeywordTok{which.min}\NormalTok{(history}\OperatorTok{$}\NormalTok{metrics}\OperatorTok{$}\NormalTok{val_loss)}
+    \KeywordTok{print}\NormalTok{(goodtrain)}
+    \KeywordTok{print}\NormalTok{(}\StringTok{"of"}\NormalTok{)}
+    \KeywordTok{print}\NormalTok{(epo)}
+    
+    \CommentTok{# retrain }
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      x_train,}
+\NormalTok{      y_train,}
+      \DataTypeTok{epochs =}\NormalTok{ goodtrain, }
+      \DataTypeTok{verbose =} \DecValTok{0}
+      \CommentTok{#batch_size = 32,}
+      \CommentTok{#validation_data = list(x_val, y_val) }
+\NormalTok{    )}
+    \KeywordTok{plot}\NormalTok{(history)}
+    
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \CommentTok{# retrain }
+\NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
+                  \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{compile}\NormalTok{(}
+      \DataTypeTok{optimizer =}\NormalTok{ adam_lr,}
+      \DataTypeTok{loss =} \StringTok{"mse"}\NormalTok{,}
+      \DataTypeTok{metrics =} \KeywordTok{c}\NormalTok{(}\StringTok{"mae"}\NormalTok{)}
+\NormalTok{    )}
+    
+\NormalTok{    history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
+\NormalTok{      x_train,}
+\NormalTok{      y_train,}
+      \DataTypeTok{epochs =} \DecValTok{165}\NormalTok{, }
+      \DataTypeTok{verbose =} \DecValTok{0}
+      \CommentTok{#batch_size = 32,}
+      \CommentTok{#validation_data = list(x_val, y_val) }
+\NormalTok{    )}
+\NormalTok{  \}}
+  
+\NormalTok{  x_test <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(x_test)}
+\NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
+  
+\NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_deriv_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                                                                \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+  \KeywordTok{print}\NormalTok{(}\StringTok{"Finished derived param imp mean"}\NormalTok{)}
+  
+  \KeywordTok{print}\NormalTok{(i)}
+\NormalTok{\}}
+
+\KeywordTok{write.csv}\NormalTok{(statistic_tracker, }\DataTypeTok{file =} \StringTok{"C:}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Users}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Alexander}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Documents}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{thesis stat tracker}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{LRepo_8.csv"}\NormalTok{)}
+
+
+\NormalTok{################################################}
+\CommentTok{# Compare results}
+\CommentTok{# oracle only}
+
+
+
+
+
+
+\NormalTok{dat <-}\StringTok{ }\NormalTok{statistic_tracker}
+
+\NormalTok{mse_table <-}\StringTok{ }\NormalTok{dat[}\DecValTok{1}\NormalTok{,]}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{dim}\NormalTok{(dat)[}\DecValTok{2}\NormalTok{]) \{}
+  
+\NormalTok{  matdat <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(dat)}
+  
+\NormalTok{  mse_table[i] <-}\StringTok{ }\KeywordTok{mean}\NormalTok{( (matdat[,i] }\OperatorTok{-}\StringTok{ }\NormalTok{matdat[,}\DecValTok{1}\NormalTok{])}\OperatorTok{^}\DecValTok{2}\NormalTok{ )}
+\NormalTok{\}}
+
+\NormalTok{mse_table}
+
+\CommentTok{# then do MSE of method divided by MSE of oracle to get measure of goodness}
+\CommentTok{# (closer to 1 means closer to oracle means good)}
+
+\NormalTok{oracle_ratio_table <-}\StringTok{ }\NormalTok{dat[}\DecValTok{1}\NormalTok{,]}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{dim}\NormalTok{(dat)[}\DecValTok{2}\NormalTok{]) \{}
+  
+\NormalTok{  oracle_ratio_table[i] <-}\StringTok{ }\NormalTok{mse_table[i] }\OperatorTok{/}\StringTok{ }\NormalTok{mse_table[}\DecValTok{2}\NormalTok{]}
+\NormalTok{\}}
+
+\NormalTok{oracle_ratio_table}
+
+
+\CommentTok{# compute bias:}
+\CommentTok{# mean of statistic vector - true mean}
+\CommentTok{# divide this differnce by true mean}
+\CommentTok{# multiple by 100 to get "percent relative bais", a normalized bias measure}
+
+\NormalTok{prb_table <-}\StringTok{ }\NormalTok{dat[}\DecValTok{1}\NormalTok{,]}
+\NormalTok{mu_y <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(dat[,}\DecValTok{1}\NormalTok{])}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{dim}\NormalTok{(dat)[}\DecValTok{2}\NormalTok{]) \{}
+  
+\NormalTok{  prb_table[i] <-}\StringTok{ }\DecValTok{100} \OperatorTok{*}\StringTok{ }\NormalTok{((}\KeywordTok{mean}\NormalTok{(dat[,i]) }\OperatorTok{-}\StringTok{ }\NormalTok{mu_y) }\OperatorTok{/}\StringTok{ }\NormalTok{mu_y)}
+\NormalTok{\}}
+
+\NormalTok{prb_table}
+
+\NormalTok{mse_t <-}\StringTok{ }\KeywordTok{transpose}\NormalTok{(mse_table)}
+\NormalTok{oracle_t <-}\StringTok{ }\KeywordTok{transpose}\NormalTok{(oracle_ratio_table)}
+\NormalTok{prb_t <-}\StringTok{ }\KeywordTok{transpose}\NormalTok{(prb_table)}
+
+\NormalTok{binded <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(mse_t, oracle_t, prb_t)}
+\KeywordTok{colnames}\NormalTok{(binded) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"MSE"}\NormalTok{, }\StringTok{"Oracle Ratio"}\NormalTok{, }\StringTok{"Relative Bias"}\NormalTok{)}
+\KeywordTok{rownames}\NormalTok{(binded) <-}\StringTok{ }\KeywordTok{colnames}\NormalTok{(statistic_tracker)}
+
+\NormalTok{test <-}\StringTok{ }\NormalTok{binded}
+\NormalTok{test <-}\StringTok{ }\KeywordTok{signif}\NormalTok{(test, }\DataTypeTok{digits =} \DecValTok{3}\NormalTok{)}
+
+\NormalTok{test }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{kable}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{kable_styling}\NormalTok{()}
+
+\ControlFlowTok{if}\NormalTok{(}\OtherTok{FALSE}\NormalTok{)\{}
+  \CommentTok{# mean and SD ratios}
+\NormalTok{  df <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"Data/AWS_running_short.csv"}\NormalTok{)}
+\NormalTok{  df <-}\StringTok{ }\NormalTok{df[,}\OperatorTok{-}\DecValTok{1}\NormalTok{]}
+  
+\NormalTok{  means <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(df, }\DataTypeTok{FUN =}\NormalTok{ mean, }\DataTypeTok{MARGIN =} \DecValTok{2}\NormalTok{)}
+\NormalTok{  means}
+  
+\NormalTok{  sds <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(df, }\DataTypeTok{FUN =}\NormalTok{ sd, }\DataTypeTok{MARGIN =} \DecValTok{2}\NormalTok{)}
+\NormalTok{  sds}
+  
+\NormalTok{  mean_ratio <-}\StringTok{ }\NormalTok{means }\OperatorTok{/}\StringTok{ }\NormalTok{means[}\DecValTok{2}\NormalTok{]}
+\NormalTok{  mean_ratio}
+  
+\NormalTok{  sd_ratio <-}\StringTok{ }\NormalTok{sds }\OperatorTok{/}\StringTok{ }\NormalTok{sds[}\DecValTok{2}\NormalTok{]}
+\NormalTok{  sd_ratio}
+  
+  \CommentTok{# fULL}
+\NormalTok{  df <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"Data/AWS_running_full.csv"}\NormalTok{)}
+\NormalTok{  df <-}\StringTok{ }\NormalTok{df[,}\OperatorTok{-}\DecValTok{1}\NormalTok{]}
+  
+\NormalTok{  means <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(df, }\DataTypeTok{FUN =}\NormalTok{ mean, }\DataTypeTok{MARGIN =} \DecValTok{2}\NormalTok{)}
+\NormalTok{  means}
+  
+\NormalTok{  sds <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(df, }\DataTypeTok{FUN =}\NormalTok{ sd, }\DataTypeTok{MARGIN =} \DecValTok{2}\NormalTok{)}
+\NormalTok{  sds}
+  
+\NormalTok{  mean_ratio <-}\StringTok{ }\NormalTok{means }\OperatorTok{/}\StringTok{ }\NormalTok{means[}\DecValTok{2}\NormalTok{]}
+\NormalTok{  mean_ratio}
+  
+\NormalTok{  sd_ratio <-}\StringTok{ }\NormalTok{sds }\OperatorTok{/}\StringTok{ }\NormalTok{sds[}\DecValTok{2}\NormalTok{]}
+\NormalTok{  sd_ratio}
+
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
 \backmatter
 
 \chapter*{References}\label{references}

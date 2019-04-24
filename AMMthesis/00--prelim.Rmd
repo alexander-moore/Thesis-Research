@@ -2,15 +2,12 @@
 
 ## Acknowledgements {-}
 
-I want to thank a few people.
+Thanks to my advisor Dr. Kelly McConville, and all proof readers without whom the thesis would be illegible.
 
-## Preface {-}
-
-This is an example of a thesis setup to use the reed thesis document class
-(for LaTeX) and the R bookdown package, in general.
+A thank-you to Ezra Shwartz, without whom computation time would have been prohibitive.
 
 ## Dedication {-}
 
-You can have a dedication here if you wish. 
+My family.
 
 `r if(!knitr:::is_latex_output()) '## Abstract {-}'`

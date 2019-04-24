@@ -35,7 +35,7 @@ ggplot(init, aes(Score, color = Method)) +
 
 
 #### Without the icky ones
-CE_results <- read_csv("data/LR_epo_running_1.csv")
+CE_results <- read.csv("data/LR_epo_running_1.csv")
 dat <- CE_results[,-1]
 
 true_mean <- as.numeric(dat[1,1])
@@ -70,7 +70,10 @@ ggplot(init, aes(Score, color = Method)) +
 ### MSE barchart
 
 
-CE_results <- read_csv("data/LR_epo_running_1.csv")
+CE_results <- read.csv("data/LR_epo_running_1.csv")
+
+apply(CE_results, FUN = mean, MARGIN = 2)
+
 dat <- CE_results[,-1]
 dat <- dat[,-1]
 
@@ -94,7 +97,45 @@ for (i in 1:dim(dat)[2]) {
 oracle_ratio_table
 oracle_ratio_table <- oracle_ratio_table[,-1]
 
-barplot(as.matrix(oracle_ratio_table), las=2, cex.names=.7)
+colnames(oracle_ratio_table) <- c("Naive Mean", "Median", "Linear", "Naive NN", 
+                                  "Pi NN", "Resample NN", "WMSE NN", "Derived NN")
+
+x <- c(0,0,0,1,1,1,1,1)
+cols <- c("grey", "blue")[(x > 0)+1]
+
+
+library(data.table)
+
+
+new_df <- data.frame(oracle_ratio_table[,2], oracle_ratio_table[,1], oracle_ratio_table[,3],
+                     oracle_ratio_table[,5], oracle_ratio_table[,8], oracle_ratio_table[,7], 
+                     oracle_ratio_table[,4], oracle_ratio_table[,6])
+
+new_df <- oracle_ratio_table
+
+mydat <- cbind(names(new_df), transpose(new_df[1,]))
+colnames(mydat) <- c("Method", "Naive_Ratio")
+my <- cbind(mydat, cols)
+
+mydat$Method <- as.character(mydat$Method)
+mydat$Method <- factor(mydat$Method, levels=unique(mydat$Method))
+
+my_bar <- ggplot(mydat, aes(x = Method, y = Naive_Ratio, fill = cols)) + 
+  geom_bar(stat = "identity")
+
+
+my_bar + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + theme(legend.position="none")
+
+
+df <- matrix(nrow = 8, ncol = 2)
+df[,1] <- colnames(new_df)
+df[,2] <- as.numeric(new_df[1,])
+colnames(df) <- c("Method", "Naive Ratio")
+df[,2] <-as.numeric(df[,2])
+
+ggplot(data = df, aes(x = Method, y = df[,2])) +
+  geom_bar(stat = "identity", col = "blue")
+
 
 library(grid)
 library(gridBase)

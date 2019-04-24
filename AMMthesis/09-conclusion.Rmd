@@ -1,45 +1,33 @@
-# Conclusion {-}
-
-If we don't want Conclusion to have a chapter number next to it, we can add the `{-}` attribute.
-
-## The End
-the end of the paper should summarize your main finginds, interpret what your results mean in context, discuss limitations, and point to where there is room for4 improvement or further analaysis. This is your last chance to make an impression, and say everything I want to say.
-
+# Conclusion
 ## Discussion
-1. What are the key features of your analysis and results?
-2. Do your results confirm or contradict your initial expectations or earlier work?
-3. What problems did you run into, and if still unsolved, wgat are suggestions for addressing
-4. Knowing what you know now, what reccomendations in context do you have?
-5. What should someone work on next, building off of your work?
 
+Early simulation results showed neural networks struggling to compete with the stability of weighted linear regression mean estimation. The highly nonlinear relationship of the simulation is a product of extensive neural network testing to produce a positive result indicative of potential for neural network capability. The CE results are suprising in this manner: though more variable, neural networks consistently outperform the parametric linear model for outlier prediction, contributing to accuracy and, consequentially, mean estimations.
 
+These results show clear promise to the capability of neural network imputation for systematic missingness in labels with $\pi$ correlation. The significant improvement of each neural network method from weighted linear regression is a positive finding, but one that is slightly undermined due to the total success of neural networks. When all nonlinear methods outperform the linear regression, it is clear that there is a strong nonlinearity between the features and label for the CE data given the selected features.
 
-conclsuion can talk a lot about the TONS of hyperparameters, all the caveats
-- can slap a basic version of NN on without domain knowledge, 
-but can incorporate knowledge in tons of tweaks on all the hyperparameters
+However, that does not mean these results are unimpactful. The success of the neural network methods is that they thrived in the same minimal-knowledge enviroment that linear regression does. The only change from the simulated neural networks to real-data experiments was a larger network breadth and learning rate, both hyperparameters changed for computational time, not superior accuracy. This is highly promising as the assumptions of NN success were derived from the nonparametric benefits of a more flexible model which is highly adaptable to data relationships. The hypotheses on the advantages of this properly trained family of algorithms are demonstratably upgrades for mean estimation and imputation accuracy, even when ignoring survey design.
 
+The lower scores of the $\pi$-feature and derived-parameter methods compared to naive neural network imputation is a suprising result. This outcome is at odds with the hypotheses on the feature-selection property outlined in Chapter 2. If the $\pi$ feature and its derivatives were informative to the label, the methods should have superior accuracy, and if the $\pi$ feature was uninformative, the weighted-MSE should have underperformed.
 
+These results altogether show the benefits of neural networks in minimal domain knowledge imputation: using heuristic feedforward networks and a validation set, the models unilaterally outperformed a typical weighted regression for mean imputation.
 
-## Conclusion
-A conclusion should not introduce new material. Conclusion brief, and only contain main points of paper. It will be redundant: that is the point. 
-
-If a researcher is interested in an easy to implement, computationally inexpensive heuristic algorithm to impute complex survey data for mean estimation, weighted linear regression is the most appealing method. The reality of real data is that it is more likely noisy than functional. 
-
-The performance of linear regression in noisy-feature simulation shows the robustness of the algorithm to heuristic implementation. The lack of domain knowledge necessary to select variables in order to implement an effective linear regression makes the model highly appealing for stable results regardless of feature space size.
+If a researcher is interested in an easy to implement, computationally inexpensive heuristic algorithm to impute complex survey data for mean estimation, weighted linear regression is likely the most appealing method. The reality of real data is that it is more likely noisy than functional. 
 
 Neural network methods are promising, however, because of their many degrees flexibility. The nonparametric models are adaptable to more complex intervariable relationships of the data. If a domain expert hypothesized a sophisticated function on a subset of variables which make an excellent label predictor without knowing its specific form, there is room for that structure in the neural network architecture.
 
-Likewise, the massive space of hyperparameters for even a simple feedforward neural network gives immeasurable potential to a savvy designer. Understanding of the shape of the loss function, necessary load of the model, and relationship of features are all examples of knowledge lending itself to specific selections of model load, activations, optimizers, losses, weightings, connectivity, and countless other tweaks letting a knowledgable designer maximize predictive performance.
+Likewise, the massive space of hyperparameters for even a simple feedforward neural network gives immeasurable potential to a savvy designer. Understanding of the shape of the loss function, necessary load of the model, and relationship of features are all examples of knowledge lending itself to specific selections of model load, activations, optimizers, losses, weightings, connectivity, and countless other tweaks letting a knowledgable designer maximize predictive performance. Weighted linear regression on real data has shown demonstratable inferiorty to the parametric family, and lacks this degree of tuning potential. The results of the CE experiment could diverge even further given algorithmic tweaks optimized to validaiton data.
 
-However, as mentioned in \@ref(sec:sim_results), the task is population mean estimation, not predictive accuracy. [[[[[[[Talk to kelly about this. obviously predicting values near true label is good, but that need not be the case to get extremely accurate population estimates]]]]]]]
+## Conclusion
 
+Neural networks are extremely promising in the realm of imputation. Each neural network method using only heuristic default parameters outperformed the weighted linear regression model significantly in the simulation and Consumer Expenditure mean estimation experiments.
 
+Nonparametric modelling with validation data should outperform linear models, even when survey design information is not incorporated. Weighted resample neural networks outperformed all other algorithms despite sampling and resampling variability, lending them great promise for further investigation, discussed in \@ref(sec:work) .
 
-## Future Work
+## Future Work {#work}
 
-- something better than linear regression as comparison: local polynomial, etc. some other very-stable heuristic method
+There is massive potential in exploring the applications of neural networks to complex survey imputation. A more competitive model such as local polynomial smoothing using a validation set could be a superior general model for unknown generative functions. The linear regression proved limiting and underfitting in both simulation and CE applications. Any stable heuristic method with some potential to encode survey weights is worth investigating.
 
-- re-visiting weighted resampling by trying bootstrapping methods, bigger resample. bootstrapping many datasets, training on each, and taking mean of estimates. somethign like this to stabilize predictions and sampling variability.
+Multiple imputation is a world worth exploring due to the superior predictive capability of neural networks and their intervarriable relationship preservation property. Weighted lienar regression is an excellent mean estimator due to the stability of its predictions to extrema, but lacks in predictive accuracy. Neural networks, however, could offer superior multiple imputations as relationships are nonlinearized through successive predictions.
 
-Multiple imputation: since hopefully NN preserve intervariable relationships better than linear or median etc
+Though it performed very well on real data with the algorithm outlined in Chapter 3, the weighted resample neural network method could be improved in various ways. The method struggled in low-$n$ simulations due to highly variable resampling. This would be somewhat alleviated by resampling to $N$ weighted by $\frac{1}{\pi}$, but was cut for computational concerns. In addition to $N$-observation resampling, bootstrapping methods inspired by random forests are a promising exploration. There would be many tweaks herewithin, but the simple algorithm is to create $k$ data frames using the weighted resample `sample_n(sample, weight = 1\pi)`, then train a naive neural network to each of these datasets, and take the mean or median of the resulting imputed labels from testing data as the output prediction. This would alleviate both network and resample variability of the already-dominant algorithm.
 
