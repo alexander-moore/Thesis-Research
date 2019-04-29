@@ -449,8 +449,8 @@ for (i in 1:it) {
 write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\AWS_ALEXHERE_2.csv")
 dat <- statistic_tracker
 
-#dat <- read.csv("c:/Users/Alexander/Documents/thesis stat tracker/10_full.csv")
-#dat <- dat[,-1]
+dat <- read.csv("c:/Users/Alexander/Documents/thesis stat tracker/10_full.csv")
+dat <- dat[,-1]
 
 #### COMPUTING MSE (and making table)
 # MSE against TRUE mean for each method:

@@ -1,10 +1,3 @@
-Abstract last. 100-500 words. Abstract should be able to stand alone: results and approach blatantly and simply stated. Want to sell paper at a glimpse
-
-- main objectiuve and rationale of project
-- outline of methods used
-- results of the project
-- conclusions about the implications of the project
-
 Missing data is problematic and pervasive in real surveys. Complex survey imputation aims to replace missing data with approximations. Modified neural networks (naive, weighted loss, weighted resample, $\pi$-feature, derived parameter) are compared to weighted linear regression for mean estimation in artificial and real data experiments using Monte Carlo simulation on imputation of manually-induced missing data. The methods' population mean estimates are compared to the known true mean and Horvitz-Thompson estimator in both experiments. The results show the effectiveness of the neural network family in simulation, and Bureau of Labour Statistics Consumer Expenditure Survey data. All neural network methods outperformed weighted linear regression for mean estimation on simulated and real data. Keras and TensorFlow are utilized for neural network models.
 
 Key Words: Imputation, Neural Networks, Survey Statistics

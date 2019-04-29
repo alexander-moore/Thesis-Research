@@ -1,14 +1,14 @@
 # Simulation
 
 ## Exploration of Methods Using Simulation
-Simulated data is used to evaluate the methods in order to get an understanding of their performance on a data set with known characteristics.
+Simulated data are used to evaluate the methods in order to get an understanding of their performance on a data set with known characteristics.
 
-Full insight into the feature distributions, generative function, random noise, and systematic missingness allow for controlled experimentation on when certain methods thrive. Simulation allows for parameters such as label noise and feature informativity to be changed and measure the response of the methods across any domain.
+Full insight into the feature distributions, generative function, random noise, and systematic missingness allow for controlled experimentation on when certain methods thrive. Simulation allows for parameters such as label noise and feature informativity to be changed and the responding accuracy of the methods to be measured.
 
 ## High-Dimension Simulation
-Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data, age, gender, ethnicity, and education might have a predictive relationship with household income, while a number of others such as state, reference person gender, and social security income may not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. Inspired by research in best feature selection methods, non-correlated features are used in the model evaluation step in an attempt to more realistically simulate complex data [@hastie2017extended]. The addition of these features contributes to the curse of dimensionality and variability of estimates.
+Often in real-world data, there might be a large number of features, not all of which are necessarily correlated to the response label. For example in the Consumer Expenditure data, age, ethnicity, and education might have a predictive relationship with household income, while a number of others such as state, gender, and social security income may not. The ability for a model to discern which features are relevant and which are not is a significant benefit both for inference and predictive consistency. Inspired by research in best feature selection methods, non-correlated features are used in the model evaluation step in an attempt to more realistically simulate complex data [@hastie2017extended]. The addition of these features contributes to the curse of dimensionality and variability of estimates.
  
-These additional "noisy" parameters are simulated by making the generative function of the labels $y$ not a function of some of the features. All methods used in the simulation are accompanied by their oracle counterparts, meaning the same method is run two times: one with access to all features, the oracle restricted only to the relevant features which are inputs to the generative function.
+These additional "noisy" parameters are simulated by making the generative function of the labels $y$ not a function of some of the features. All methods used in the simulation are accompanied by their oracle counterparts, meaning the same method is run two times: one with access to all features, the oracle restricted only to the relevant features which are inputs to the generative function. By comparing each method's score to its' oracle counterpart, we can measure the degree to which noisy data is problematic for a method, since each algorithm will handle this noise differently. This will lead to important implications in terms of real data usage, in which the researcher must decide whether to select some number of features they believe to be informative, or use all of the information available. The feature selection method implemented will depend on the ability of the imputation method to adapt to uninformative data.
 
 ## Monte Carlo Simulation
 Monte Carlo (MC) simulation attempts to overcome the inherent randomness of sampling and model training by repeated iterations of the sampling, training, and evaluation steps. A distribution of output estimates is made over many potential samples from the population in order to get a more complete interpretation of the results.
@@ -18,11 +18,11 @@ It should be noted that neural networks can be more optimized than in their perf
 ## Creating a Simulated Population
 The size of the population is $N=10^5$ and the sample is $n=10^3$ observations. Despite neural networks thriving in higher-dimension settings (both of features and observations), complex surveys are often implemented on real data with scarce observations, making a lower-size simulation more suitable for generalizability.
 
-The features simulated population is made as the first step of the process. Two informative features $p_1, p_2$ are drawn from random uniform distribution:
+The features simulated population is made as the first step of the process. Two informative features $p_1, p_2$ are drawn from random uniform distribution with mean $0$ and standard deviation $\sigma = \frac{60}{\sqrt{12}}$:
 $$
-f(x) = \frac{1}{30+30} \text{ for } x \in (-30, 30)
+f(x) = \frac{1}{60} \text{ for } x \in (-30, 30)
 $$
-In addition to two informative features, there are $20$ uninformative features drawn from the normal distribution. This distribution is arbitrary but can have unintended consequences due to accidental correlation, noted in {@hastie2017extended}.
+In addition to two informative features, there are $20$ uninformative features drawn from the normal distribution of mean $0$ and standard deviation $\sigma = 8$. This distribution is arbitrary but can have informative consequences due to accidental correlation, noted in @hastie2017extended. For the purpose of MC simulation, we assume the number of iterations will override accidental noisy-feature inforamtivity to the label.
 
 The population labels $y$ are a nonlinear function of the informative features:
 $$
@@ -35,34 +35,36 @@ y' = \left\{ \begin{array}{cc}
                 \bar{y} & \hspace{5mm} y \geq \bar{y} \\
                 \end{array} \right.
 $$
+Where $\bar{y}$ is the label mean before the $y'$ transformation.
 
-```{r, echo = FALSE, out.width = "70%"}
+```{r, fig.cap = "An intuition to the shape of the generative function", echo = FALSE, out.width = "70%"}
 knitr::include_graphics("figure/bowl.jpg")
 ```
 
-Random noise $\epsilon$ with $\sigma = 1$ is then added to the transformed labels:
+Random noise $\epsilon$ distributed normally with mean $0$ and standard deviation $\sigma = 1$ is then added to the transformed labels:
 $$
 y'' = y' + \epsilon_y
 $$
 
-An inclusion probability $pi$ is then assigned to each observation with a strong correlation to $y$, as well as random normal noise with $\sigma = 1$:
+An inclusion probability $\pi$ is then assigned to each observation with a strong correlation to $y$, as well as random normal noise with $\sigma = 1$:
 $$
 \pi = \sqrt{y''} + \epsilon_\pi
 $$
-These values are then rescaled to (0,1) and rescaled so $\sum_i^N \pi_i = n$.
+These values are then rescaled to (0,1) then rescaled again such that $\sum_i^N \pi_i = n$, which emulates the survey statistic axiom 2 for real survey design.
 
 Combining the information $y,\pi, p_1, p_2$ and uncorrelated features gives the population on which the simulation will be performed. The true mean of the population labels $\mu_y$ is now known and recorded.
 
-The Monte Carlo simulation is performed for 100 iterations. This is a low number of trials, but is constrained by the computation intensity of running 10 neural networks trained for hundreds of iterations each, as well as performing many weighted samples.
+The Monte Carlo simulation is performed for 120 iterations. This is a low number of trials, but is constrained by the computation intensity of running 10 neural networks trained for hundreds of iterations each, as well as performing many weighted samples.
 
 Within each iteration, a single estimation procedure is performed. First, a weighted sample from the population is taken with respect to the inclusion probabilities $\pi_i$ on each observation. From this sample of $n=10^3$ observations, an oracle data set is made by dropping the noise columns, keeping only $p_1, p_2, \pi,$ and $y$. This data set will be used as a benchmark to mirror each imputation method in order to gauge the potentially harmful effects of uninformative features common to real data.
 
-The first step is to record the oracle mean, calculated using information the other methods are not privy to:
-$$
-\hat \mu_{\text{oracle}} = \frac{1}{n} \sum_{i=1}^n y_i \frac{1}{\pi_i}
-$$
+The first step is to record the oracle mean estimator (\#eq:HTE), calculated using information the other methods are not privy to:
 
-All subsequent methods are the methods of study, to be performed where there is missingness in the data. $20\%$ of the observations manually have their labels dropped weighted by $y$, so large labels are more likely to be absent. The result is the form of data we are using to simulate method performance: a complex sample taken from a population with some kind of systematic bias in item response.
+\begin{align}
+\hat \mu_{\text{oracle}} = \frac{1}{N} \sum_{i=1}^n y_i \frac{1}{\pi_i} (\#eq:HTE)
+\end{align}
+
+All subsequent methods are the methods of study, to be performed where there is missingness in the data. Twenty percent of the observations manually have their labels dropped weighted by $y$, so large labels are more likely to be absent. The result is the form of data we are using to simulate method performance: a complex sample taken from a population with some kind of systematic bias in item response.
 
 The $\pi$-corrected mean estimate, weighted linear regression, and median imputation methods are all described fully in chapter 3, and are closed-form algorithms with no randomness in the fitting and estimation processes. The neural network models, however, have a much larger degree of flexibility and randomness involved in the implementation and execution of the estimate during simulation making monte carlo variability more pronounced.
 
@@ -70,29 +72,91 @@ Neural networks are trained using normalized data on non-convex loss curves in h
 $$
 \text{relu}(x) = \max(0,x)
 $$
-The breadth and depth used here is a heuristic size which could potentially be optimized to suit the problem. This, however, creates a conflict of interest with information leakage which the other methods are not privy to, which induces bias for the success of these algorithms. To maintain the narrative of a minimal-knowledge naive fit, these models use a reasonable exploratory capacity. The models in the fitting process are manually over-trained, then re-trained from scratch to an optimal state. This is done using a validation data set of $15\%$ of the training data. Once trained to an approximate loss minima, the models predict on holdout test data (the observations missing labels) and the population mean estimate is computed and recorded.
+The breadth and depth used here is a heuristic size which could potentially be optimized to suit the problem. This, however, creates a conflict of interest with information leakage which the other methods are not privy to, which induces bias for the success of these algorithms. To maintain the narrative of a minimal-knowledge naive fit, these models use a reasonable exploratory capacity. The models in the fitting process are manually over-trained, then re-trained from scratch to an optimal state. This is done using a validation data set of fifteen percent of the observations with labels (training data). Once trained to an approximate loss minima, the models predict on holdout test data (the observations missing labels) and the population mean estimate is computed and recorded.
 
 ## Evaluating models
 ### Oracle Mean:
-The oracle mean is the Horvitz-Thompson estimator with access to the complete sample before missingness is induced [@horvitz1952generalization]. The oracle mean will be used as a benchmark against which the other methods will be compared.
-$$
-\hat \mu_{\text{oracle}} = \frac{1}{N} \sum_{i=1}^n y_i \frac{1}{\pi_i}
-$$
-Since the oracle mean has access to information that the other methods do not, it is the ideal estimate of a population mean given a sample. The difference between the oracle and $\pi$-corrected estimates are indices $n$ and $r$ over which the sum is taken.
+The oracle mean (\#eq:HTE) is the Horvitz-Thompson estimator with access to the complete sample before missingness is induced [@horvitz1952generalization]. The oracle mean will be used as a benchmark against which the other methods will be compared using the MSE difference score to the true mean, which helps control for some sampling variability as (\#eq:HTE) will vary by sample. The square of differences in method estimates is taken in the same way a MSE loss:
+
+\begin{align}
+MSE(\text{method}) = \frac{1}{n} \sum_{i=1}^n (\hat{y}_i - \mu_y)^2 (\#eq:MSE_score)
+\end{align}
+Where $\hat{y}_i$ is the i-th mean estimate for some method in a vector of mean estimates produced via the MC simulation, and $\mu_y$ is the true population mean.
+
+The MSE to the true mean alone is fairly uninformative as it would vary by the magnitude of the label in different contexts, so the racle ratio score is used to quantify success in a scalar. The oracle ratio is the ratio of each methods' MSE against the true mean to the oracle methods' MSE against the true mean. An ideal score is 1, in which a model predicted with the same accuracy as the oracle mean.
+
+In addition, the percent relative bias score gives the bias ratio to the true mean. This standardized score gives the percentage to which a method is overestimating or underestimating the true mean. This score is useful to find bias in the methods, which is not apparent in an accuracy score such as MSE.
 
 ## Results {#sim_results}
-Not a place to list findings. Rather, convince that what I did is correct, worthy of study, and impactful. Be honest about the generalizability of the work. If the findings are negative, take care to explain why the results still matter (discussion of why linear regression is so dank at mean estimation). Cast the negative result as a useful insight, rather than a problem with the methodology.
 
-```{r sim_results_table, echo = FALSE}
-# a table of all results
-knitr::include_graphics("figure/AWS_results.png")
+```{r sim_results_table, fig.cap = "The results of simulation", echo = FALSE, message=FALSE}
+
+### DO KABLE TABLE CODE HERE
+dat <- read.csv("data/AWS_full_methods.csv")
+dat <- dat[,-1]
+
+#### COMPUTING MSE (and making table)
+# MSE against TRUE mean for each method:
+# take dif of each with true. square each. sum all. divide by iterations
+
+mse_table <- dat[1,]
+for (i in 1:dim(dat)[2]) {
+  
+  matdat <- as.matrix(dat)
+  
+  mse_table[i] <- mean( (matdat[,i] - matdat[,1])^2 )
+}
+
+#mse_table
+
+oracle_ratio_table <- dat[1,]
+
+for (i in 1:dim(dat)[2]) {
+  
+  oracle_ratio_table[i] <- mse_table[i] / mse_table[2]
+}
+
+#oracle_ratio_table
+
+prb_table <- dat[1,]
+mu_y <- mean(dat[,1])
+
+for (i in 1:dim(dat)[2]) {
+  
+  prb_table[i] <- 100 * ((mean(dat[,i]) - mu_y) / mu_y)
+}
+
+#prb_table
+
+library(kableExtra)
+library(knitr)
+library(data.table)
+
+mse_t <- transpose(mse_table)
+oracle_t <- transpose(oracle_ratio_table)
+prb_t <- transpose(prb_table)
+
+binded <- cbind(mse_t, oracle_t, prb_t)
+
+binded <- binded[-c(13:14),]
+
+colnames(binded) <- c("MSE", "Oracle Ratio", "Relative Bias")
+rownames(binded) <- c("True Pop","Horvitz-Thompson Oracle","Naïve-Pi","Median Imputation","Weighted Linear Regression","Oracle Weighted Linear Regression","NN  Naïve Imputation","NN Naïve Oracle","NN Pi-Feature Imputation","NN Pi-Feature Oracle",	"NN Resample Imputation","NN Derived-Parameter Imputation")
+
+test <- binded
+test <- signif(test, digits = 3)
+
+test %>%
+  kable() %>%
+  kable_styling()
+
 ```
 
 The weighted-MSE and derived-parameter methods were left out of the simulation results for runtime concerns and unpromising results on this generative function.
 
 The oracle counterpart for each method outperforms the noisy-parameter method, as is expected. The discrepancy in the linear regression method can be attributed to monte carlo variability, but the finding is significant that these are so similar. Whereas the neural network methods were anticipated to have consistent results despite noisy parameters while the linear regression would struggle, the opposite is true. This could be attributed to the training duration, as a higher number of epochs may have dropped the weights of the noisy parameters to be ignored.
 
-All methods underestimated the population mean, described by the relative bias column of the results. EXCEPT FOR MEDIAN? HOW IS MEDIAN IMPUTATION OVER ESTIMATING! This is reasonable on behalf of the systematic missingness of the data, but each non-naive method attempted to mitigate this amount. The results indicate that the negative bias was significantly larger for non-oracle methods, meaning noisy parameters could contribute to mean under-estimation. For this reason, a researcher with some level of domain knowledge should hand-select features known to have a relationship to the label to be used as training data, rather than including all available features.
+All methods underestimated the population mean, described by the relative bias column of the results (the median imputation highly overestimated the label because of the strange shape of the genreative function: the median label lies on the lip of the bowl. It is not reasonable to assume median imputation would over-estimate in any more typical case). This is reasonable on behalf of the systematic missingness of the data, but each non-naive method attempted to mitigate this amount. The results indicate that the negative bias was significantly larger for non-oracle methods, meaning noisy parameters could contribute to mean under-estimation. For this reason, a researcher with some level of domain knowledge should hand-select features known to have a relationship to the label to be used as training data, rather than including all available features.
 
 In the case of a nonlinear generative function with little noise, it should come as no surprise that most nonlinear neural network methods outperformed the linear.
 

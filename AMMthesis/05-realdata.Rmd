@@ -1,40 +1,45 @@
 # Consumer Expenditure Surveys
 
 ## Data
-The Consumer Expenditure (CE) Surveys ^[https://www.bls.gov/cex/pumd-getting-started-guide.htm] provide data on "expenditures, income, and demographic characteristics of consumers in the United States. The CE data are collected by the Census Bureau for the Bureau of Labor Statistics (BLS). The data are primary used to revise the relative importance of goods and services in the market basket of the Consumer Price Index". 
+The Consumer Expenditure (CE) Surveys provide data on expenditures, income, and demographic characteristics of consumers in the United States [@BLS2019]. The CE data are collected by the Census Bureau for the Bureau of Labor Statistics (BLS). The data are primary used to "revise the relative importance of goods and services in the market basket of the Consumer Price Index". 
 
-The data will be the `fmli171x` survey data, one of the quarterly surveys for 2017 which contains household information such as specific incomes, expenditures, home description, and family description. The data has a low degree of missingness as quarterly information is propagated between surveys to create complete observations.
+The data will be the `fmli171x` survey data, one of the quarterly surveys for 2017 which contains household information such as specific incomes, expenditures, home description, and family description. The data have a low degree of missingness as quarterly information is propagated between surveys to create complete observations.
 
-The mean estimation methods from chapter 3 will be used to estimate the population mean household income before tax, `FINCBTAX`. The features used to predict this label are:
+The mean estimation methods from Chapter 3 will be used to estimate the population mean household income before tax, `FINCBTAX`. The features used to predict this label are:
+
 - `pi`, the inclusion probability (1 / `FINLWT21`, the survey weight provided by BLS)
+
 - `AGE_REF`, the age of the reference person (the person who answered the survey)
+
 - `BATHRMQ`, the number of bathrooms in the home
+
 - `BEDROOMQ`, the number of bedrooms in the home
+
 - `EDUC_REF`, the education of the reference person (some highschool, etc)
+
 - `FAM_SIZE`, the number of family members in the home
+
 - `TOTEXPCQ`, the total household expenditures last quarter
 
-Like all data gathered by BLS `FINCBTAX` and some features are subject to missingness, but have been in the data sets. This means for the purpose of the experiment on method imputation quality, we must artifically impose missingness then compare the imputation results to a combination of true labels and BLS-derived labels. This is an unavoidable pitfall of working with real data, as we paradoxically require "truly missing" labels to impute, but need the true label to compare the quality of the imputation to.
+Like all data gathered by BLS, `FINCBTAX` and some features are subject to missingness, but have been in the data sets. This means for the purpose of the experiment on method imputation quality, we must artifically impose missingness then compare the imputation results to a combination of true labels and BLS-derived labels. This is an unavoidable pitfall of working with real data, as we paradoxically require "truly missing" labels to impute, but need the true label to compare the quality of the imputation to.
 
-According IRS Statistics of Income, the average household adjusted gross income (AGI) was \$67,565 in 2015. This is the last year the population mean household income is available. This numbercould be considered the true population mean $\mu_y$, but is derived differently than the BLS CE data and is slightly different than the Horvitz-Thompson estimator for the sample on `FINCBTAX`.
+According to the IRS Statistics of Income, the average household adjusted gross income (AGI) was \$67,565 in 2015 [@IRS2015]. This is the last year the population mean household income is available. This number could be considered the true population mean $\mu_y$, but is derived differently than the BLS CE data and is slightly different than the Horvitz-Thompson estimator for the sample on `FINCBTAX`, \$62720.
 
 ## Procedure
 The CE data method performance comparison will be performed in much the same way as the simulated data method comparison.
 
-The `fmli171x` survey data is first pre-processed to remove features with large swathes of missingness. For this study, features with more than 33% missing values are dropped from the data set. Features with missingness less than 33% are then median-imputed, where missing values are replaced with the median value of the feature. The median in this case is used for reasons: it returns only reasonable values, is uninformative, and does not rely on multiple imputation.
+The `fmli171x` survey data is first pre-processed to remove features with large swathes of missingness. For this study, features with more than 33% missing values are dropped from the data set and not considered as potential options for the experiment. Features with missingness less than thiry-three percent are then median-imputed, where missing values are replaced with the median value of the feature. The median in this case is used for reasons: it returns only reasonable values, is uninformative, and does not rely on multiple imputation. The label to be used is `FINCBTAX`, the financial income of the response household before taxes. This label has no missingness as it is BLS-derived (already imputed).
 
-The label to be used is `FINCBTAX`, the financial income of the response household before taxes. This label has no missingness as it is BLS-derived (already imputed).
-
-This process returns a complete-case data set of 6208 family samples across 607 variables. There are 127 million households in the US, whcih can be used as an approximate population size $N$.
+This process returns a complete-case data set of 6208 family samples across the 8 variables and features selected above. There are 127 million households in the US, which can be used as an approximate population size $N$. From this collection, the variables `AGE_REF, BATHRMQ, BEDRMQ, EDUC_REF, FAM_SIZE, TOTEXPCQ` were kept for their potential informativity without being a direct function of `FINCBTAX`. All 6208 family samples are used as the sample, on which missingness is induced.
 
 The problem of assessing model performance in real-world data is the paradox of missing labels: ideally, we would impute a missing label, then learn the true value, and score the model accordingly. For this data, we will again rely on Monte Carlo simulation to create a distribution of population mean estimates (U.S. mean household income) by inducing missingness in the known labels, imputing, and comparing results via MSE to the true mean.
 
 The following process is repeated a number of times to create a distribution of mean estimates for each method:
 
 1. Record the true (sample) mean and Horvitz-Thompson mean estimate
-2. Induce missingness on 20% of the labels, weighted to larger labels
+2. Induce missingness on twenty percent of the labels, weighted to larger labels
 3. Perform and record each model's mean estimate. For this experiment, a more accurate neural network training method is adopted in which each network undergoes two trainings: the first finds the ideal train duration by overtraining on the training data, the second re-trains the model to the validation minimum of the first model. This is the correct training method which was eschewed from Chapter 4 due to the computational intensity of double-training. 
-4. The results are compared using mean squared error to $'mu_y$, oracle ratio, and percent relative bias. 
+4. The results are compared using mean squared error to $\mu_y$, the oracle ratio, and percent relative bias. 
 
 The dimension of the neural networks has changed somewhat to account for the new data. Since the number of informative parameters has increased along with the complexity of the generative function transforming them to the label, the size of the model has increased. The standard real-data neural network uses the same two hidden layers activated by `relu` and a linear output layer, but now has 64 hidden units per layer. This describes a significantly higher dimension model as the input vector $\boldsymbol{x}$ undergoes multiple high dimension linear transformations wrapped in the `relu` activation:
 $$
@@ -44,15 +49,106 @@ $$
 $$
 Parameterized by matrices of dimension $6 \times 64$, $64 \times 64$, $64 \times 1$, instead of $6 \times 32$, $32 \times 32$, $32 \times 1$ as in the 32 hidden unit simulation.
 
-To accomidate the significantly higher number of trainable features in this network the hyperparameter $\omega$, the learning rate, must be initialized higher in the `adam` optimization algorithm. This can expedite the number of epochs (training data exposures) needed for the algorithm to converge, but can sacrifice predictive fidelty, a constraint imposed by computational demand. This tradeoff is made in the name of a more statistically informative monte carlo simulation.
+To accommodate the significantly higher number of trainable features in this network the hyperparameter $\omega$, the learning rate, must be initialized higher in the `adam` optimization algorithm. This can expedite the number of epochs (training data exposures) needed for the algorithm to converge, but can sacrifice predictive accuracy, a constraint imposed by computational demand. The gradient descent algorithm has the potential to skip over a desireable minima in the early training if the initial learning rate is too large. This tradeoff is made in the name of a more statistically informative monte carlo simulation through more iterations than possible with a slower, more accurate learning rate.
 
 ## Results
 
-```{r ce_results_hist, echo = FALSE, out.width="80%"}
-knitr::include_graphics("figure/vline_fig.png")
+```{r, fig.cap = "Distribution of population mean estimates by method", echo = FALSE, warning=FALSE, message=FALSE}
+CE_results <- read.csv("data/LR_epo_running_1.csv")
+dat <- CE_results[,-1]
+
+true_mean <- as.numeric(dat[1,1])
+
+dat <- select(dat, -c(true_mean, oracle_mean))
+
+init <- data.frame(matrix(ncol = 2, nrow = (nrow(dat)*ncol(dat))))
+
+init[,1] <- c(dat$pi_naive_mean, dat$median_imp_mean, 
+              dat$lin_imp_mean, dat$nn_imp_mean, dat$nn_pi_imp_mean, dat$nn_resamp_imp_mean,
+              dat$nn_wmse_imp_mean, dat$nn_deriv_imp_mean)
+
+# Now 2nd column is method name
+for (i in 1:ncol(dat)) {
+  df_names <- c("True Pop","Horvitz-Thompson Oracle","Naïve-Pi","Median Imputation","Weighted Linear Regression","NN  Naïve Imputation","NN Pi-Feature Imputation","NN Resample Imputation", "NN Weighted MSE Imputation","NN Derived-Parameter Imputation")
+  
+  for (j in 1:80) {
+    index <- 80 * (i - 1) + j
+    
+    init[index,2] <- df_names[i]
+  }
+  
+}
+
+colnames(init) <- c("Score", "Method")
+
+ggplot(init, aes(Score, color = Method)) +
+  geom_freqpoly() +
+  geom_vline(xintercept = true_mean)
 ```
 
-```{r CE_results, echo = FALSE, out.width="80%"}
-knitr::include_graphics("figure/clean_results_histogram")
+```{r, fig.cap = "Method MSE relative to the naive mean", echo = FALSE, warning=FALSE}
+### MSE barchart
+
+
+CE_results <- read.csv("data/LR_epo_running_1.csv")
+
+#apply(CE_results, FUN = mean, MARGIN = 2)
+
+dat <- CE_results[,-1]
+dat <- dat[,-1]
+
+mse_table <- dat[1,]
+for (i in 1:dim(dat)[2]) {
+  
+  matdat <- as.matrix(dat)
+  
+  mse_table[i] <- mean( (matdat[,i] - matdat[,1])^2 )
+}
+
+#mse_table
+
+oracle_ratio_table <- dat[1,]
+
+for (i in 1:dim(dat)[2]) {
+  
+  oracle_ratio_table[i] <- mse_table[i] / mse_table[2]
+}
+
+#oracle_ratio_table
+oracle_ratio_table <- oracle_ratio_table[,-1]
+
+colnames(oracle_ratio_table) <- c("Naive Mean", "Median", "Linear", "Naive NN", 
+                                  "Pi NN", "Resample NN", "WMSE NN", "Derived NN")
+
+x <- c(0,0,0,1,1,1,1,1)
+cols <- c("grey", "blue")[(x > 0)+1]
+
+
+library(data.table)
+
+
+new_df <- data.frame(oracle_ratio_table[,2], oracle_ratio_table[,1], oracle_ratio_table[,3],
+                     oracle_ratio_table[,5], oracle_ratio_table[,8], oracle_ratio_table[,7], 
+                     oracle_ratio_table[,4], oracle_ratio_table[,6])
+
+new_df <- oracle_ratio_table
+
+mydat <- cbind(names(new_df), transpose(new_df[1,]))
+colnames(mydat) <- c("Method", "Naive_Ratio")
+my <- cbind(mydat, cols)
+
+mydat$Method <- as.character(mydat$Method)
+mydat$Method <- factor(mydat$Method, levels=unique(mydat$Method))
+
+my_bar <- ggplot(mydat, aes(x = Method, y = Naive_Ratio, fill = cols)) + 
+  geom_bar(stat = "identity")
+
+my_bar + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + theme(legend.position="none")
+
 ```
 
+Neural network methods unilaterally outperform weighted linear regression in the CE data context. Without adapting the neural networks other than a heuristic load-bearing increase, even the naive neural network outperforms the typical mean estimation imputation procedure. These results are extremely promising to the capabilities of neural networks and the ability to perform accurate imputation in the face of systematic bias.
+
+The stand-out success of the weighted resample neural network is especially promising because of the low size of the resample. To mitigate the additional layer of variability invoked by the resample process, usually this method is performed with a $\hat{N}$-observation resample rather than $n$.
+
+The results of this simulation show the importance of a nonparametric predictive model: one which can navigate the complex relationship of label to feature when the model designer is unsure of the underlying properties is invaluable.

@@ -9,9 +9,7 @@ If you feel it necessary to include an appendix, it goes here.
 
 # The First Appendix
 
-This first appendix includes all of the R chunks of code that were hidden throughout the document (using the `include = FALSE` chunk tag) to help with readibility and/or setup.
-
-This appendix contains every line of code necessary to replicate the results of the two experiments detailed in this thesis. The bulk of each experiment is testing structures used to derive optimal runtime and epoch-time for each of the many methods, and evaluate their performance across a variety of standards, seen at the end of each iteration loop.
+This appendix contains all R code necessary to re-create the results of this thesis, along with supplementary data from the github. 
 
 ## Data Processing {#sec:data_process}
 
@@ -76,11 +74,9 @@ write.csv(idf, file = "Data/imputed_CE.csv")
 ## Simulated Data Experiment {sim_data_exp}
 
 ```{r simulated_data_experiment, eval = FALSE, results='hide', echo = TRUE}
-# model selection 2
-## Adding noise features, new generative function, and 
-# model selection oracle
-
-# Compare distributions of mean via different imputation methods on artifical data
+# model selection
+# Compare distributions of mean via different imputation methods on 
+#artifical data
 
 library(keras)
 library(dplyr)
@@ -123,11 +119,8 @@ p_2 <- runif(N, -30, 30)
 nulls <- matrix(rnorm(20*N, 0, 8), ncol = 20)
 
 p_y_ep <- rnorm(N, mean = 0, sd = p_y_ep_control)
-#p_y <- p_1*p_2 + p_3 + p_y_ep
 
-p_y <- p_1 + abs(p_2) + p_y_ep #added noise for reasonability
-#mpy <- mean(p_y)
-#p_y[p_y > mpy] <- p_y[p_y > mpy] + mpy
+p_y <- p_1 + abs(p_2) + p_y_ep 
 
 p_y[p_y > mean(p_y)] <- mean(p_y)
 
@@ -143,7 +136,7 @@ p_df <- cbind(p_1, p_2, p_y, p_pi, nulls)
 p_tbl <- as_tibble(p_df)
 
 # Verify sum of pi over population approx n
-sum(p_tbl$p_pi) == n#= 10000 = n
+sum(p_tbl$p_pi) == n
 
 statistic_tracker <- data.frame(true_mean = numeric(it), 
                                 oracle_mean = numeric(it),
@@ -166,23 +159,25 @@ for (i in 1:it) {
   sample_population_by_pi <- sample_n(tbl = p_tbl, size = n, replace = FALSE, 
                                       weight = p_pi)
   
-  df <- sample_population_by_pi %>% rename(x_1 = p_1, #Since we are not dealing with population p_ anymore
+  df <- sample_population_by_pi %>% rename(x_1 = p_1, #Since we are not dealing 
+                                           #with population p_ anymore
                                            x_2 = p_2,
                                            pi = p_pi,
                                            y = p_y)
   
   #########
   # Oracle mean
-  # this is a standard estimator which is done on the full (nonmissing) data to compare
+  # this is a baseline estimator which is done on the full (nonmissing) data
   hat_N_sample <- sum(1 / df$pi)
-  statistic_tracker$oracle_mean[i] <- (1 / hat_N_sample) * sum((1 / df$pi) * df$y)
+  statistic_tracker$oracle_mean[i] <- (1 / hat_N_sample) * sum((1 / df$pi) 
+                                                               * df$y)
   
   #########
   # Drop some labels - weighted to high y
   
-  indices <- sample(1:nrow(df), .2*nrow(df), prob = df$y) #weights are stdized to 1 by sample()
+  indices <- sample(1:nrow(df), .2*nrow(df), prob = df$y)
   dropped_obs <- df[indices,]
-  reduced_df <- df[-indices,] # These have a large differnce: 296 for dropped and 276 for reduced df
+  reduced_df <- df[-indices,] 
   
   # Make oracle df without noisy parameters
   odf <- df[,1:4]
@@ -191,11 +186,9 @@ for (i in 1:it) {
   
   #########
   # pi-corrected naive mean
-  # should be unbiased but very large variance. should come forward when gen func change
-  ## NOTE DIFFERENCE OF HAT N RESPOND AND HAT N SAMPLE
-  hat_N_respondent <- sum(1 / (reduced_df$pi)) # largely underestimates the true N
-  statistic_tracker$pi_naive_mean[i] <- (1 / hat_N_respondent)*sum((1 / reduced_df$pi) * 
-                                                                     reduced_df$y)
+  hat_N_respondent <- sum(1 / (reduced_df$pi)) 
+  statistic_tracker$pi_naive_mean[i] <- (1 / hat_N_respondent)*
+    sum((1 / reduced_df$pi) * reduced_df$y)
   
   #########
   # Median imputation: fill missing values with median
@@ -206,8 +199,8 @@ for (i in 1:it) {
   
   imputed_list <- c(labels,median_list)
   
-  statistic_tracker$median_imp_mean[i] <- (1 / hat_N_sample) * sum((1 / df$pi) * 
-                                                                     imputed_list)
+  statistic_tracker$median_imp_mean[i] <- 
+    (1 / hat_N_sample) * sum((1 / df$pi) * imputed_list)
   
   #########
   # mean according to imputed data via linear regression (1/pi-weighted)
@@ -219,8 +212,9 @@ for (i in 1:it) {
   
   lm_y_hat <- predict(linear_model, lin_dropped)
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$lin_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                                           + sum(lm_y_hat / dropped_obs$pi))
+  statistic_tracker$lin_imp_mean[i] <- 
+    (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
+                        + sum(lm_y_hat / dropped_obs$pi))
   
   # Linear Regression Oracle Method
   red_weight <- 1 / o_reduced_df$pi
@@ -231,8 +225,9 @@ for (i in 1:it) {
   
   lm_y_hat <- predict(linear_model, lin_dropped)
   hat_N_sample <- sum(1/odf$pi)
-  statistic_tracker$lin_oracle[i] <- (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) 
-                                                         + sum(lm_y_hat / o_dropped_obs$pi))
+  statistic_tracker$lin_oracle[i] <- 
+    (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) + 
+                          sum(lm_y_hat / o_dropped_obs$pi))
   
   
   # nn oracle
@@ -275,8 +270,8 @@ for (i in 1:it) {
   nn_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_oracle[i] <- (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) 
-                                                        + sum(nn_y_hat / o_dropped_obs$pi))
+  statistic_tracker$nn_oracle[i] <- (1 / hat_N_sample)*
+    (sum(o_reduced_df$y / o_reduced_df$pi) + sum(nn_y_hat / o_dropped_obs$pi))
   
   
   #oracle nn pi feature
@@ -322,8 +317,9 @@ for (i in 1:it) {
   nn_pi_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_pi_oracle[i] <- (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) 
-                                                           + sum(nn_pi_y_hat / o_dropped_obs$pi))
+  statistic_tracker$nn_pi_oracle[i] <- 
+    (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) + 
+                          sum(nn_pi_y_hat / o_dropped_obs$pi))
   
   # oracle resample
   dropped_obs_NA_lab <- o_dropped_obs
@@ -335,8 +331,9 @@ for (i in 1:it) {
   
   orig_tbl <- as_tibble(orig_df)
   
-  # RESAMPLE ON DF NOT REDUCED_DF
-  resamp_df <- sample_n(tbl = orig_tbl, size = nrow(orig_tbl), replace = TRUE, weight = weight_vec)
+  # resamples on df not reduced_df
+  resamp_df <- sample_n(tbl = orig_tbl, size = nrow(orig_tbl),
+                        replace = TRUE, weight = weight_vec)
   
   # re-partition into complete cases, and cases to be imputed
   resamp_reduced_df <- resamp_df[-which(is.na(resamp_df$y)),]
@@ -381,8 +378,9 @@ for (i in 1:it) {
   nn_resamp_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_resamp_oracle[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                                                 + sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
+  statistic_tracker$nn_resamp_oracle[i] <- 
+    (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) + 
+                          sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
   
   # WSME NN 
   #######
@@ -414,8 +412,6 @@ for (i in 1:it) {
   
   
   # Extract partial pi from full train x
-  #range01 <- function(x){(x-min(x))/(max(x)-min(x))}
-  
   pi_prime <- pi_vec[-val_indices]
   obs_weights <- 1 / pi_prime
   
@@ -463,8 +459,9 @@ for (i in 1:it) {
   nn_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_wmse_oracle[i] <- (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) 
-                                                             + sum(nn_y_hat / o_dropped_obs$pi))
+  statistic_tracker$nn_wmse_oracle[i] <- 
+    (1 / hat_N_sample)*(sum(o_reduced_df$y / o_reduced_df$pi) 
+                        + sum(nn_y_hat / o_dropped_obs$pi))
   
   
   # Oracle derived params
@@ -506,9 +503,9 @@ for (i in 1:it) {
   history <- model %>% fit(
     partial_x_train,
     partial_y_train,
-    epochs = 300, #high variance; study further
+    epochs = 300, 
     verbose = 0,
-    batch_size = 32,  #what should this be
+    batch_size = 32, 
     validation_data = list(x_val, y_val)  
   )
   
@@ -516,8 +513,9 @@ for (i in 1:it) {
   nn_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_deriv_oracle[i] <- (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi) 
-                                                                + sum(nn_y_hat / dropped_obs$pi))
+  statistic_tracker$nn_deriv_oracle[i] <- 
+    (1 / hat_N_sample)*(sum(reduced_df$y / reduced_df$pi)
+                        + sum(nn_y_hat / dropped_obs$pi))
   
   
   print(i)
@@ -639,8 +637,8 @@ normalize_data <- function(train_data, test_data) {
 # custom `adam` optimizer, learning rate up for grabs
 # .001 default, .005 testing (methods were using 600 epo)
 adam_lr <- optimizer_adam(lr = 0.1, beta_1 = 0.9, beta_2 = 0.999,
-                          epsilon = NULL, decay = 0, amsgrad = FALSE, clipnorm = NULL,
-                          clipvalue = NULL)
+                          epsilon = NULL, decay = 0, amsgrad = FALSE, 
+                          clipnorm = NULL, clipvalue = NULL)
 
 dat <- read_csv("Data/imputed_CE.csv")
 
@@ -659,8 +657,8 @@ statistic_tracker <- data.frame(true_mean = numeric(it),
                                 nn_deriv_imp_mean = numeric(it))
 
 # Prep label
-df <- select(dat, c(FINCBTAX, pi, AGE_REF, BATHRMQ, BEDROOMQ, EDUC_REF, FAM_SIZE,
-                    TOTEXPCQ))
+df <- select(dat, c(FINCBTAX, pi, AGE_REF, BATHRMQ, BEDROOMQ, EDUC_REF, 
+                    FAM_SIZE, TOTEXPCQ))
 
 #df <- df[1:1000,]
 
@@ -675,8 +673,8 @@ testing <- TRUE
 
 for (i in 1:it) {
   
-  # Split the CE data into training and testing. Might want some kind of scheme to 
-  # get the right amount of high-pi and low-pi observations in each
+  # Split the CE data into training and testing. Might want some kind of scheme 
+  # to get the right amount of high-pi and low-pi observations in each
   # (testing is unlabelled, but we know the right answer)
   
   #########
@@ -685,9 +683,10 @@ for (i in 1:it) {
   
   #########
   # Oracle mean
-  # this is a standard estimator which is done on the full (nonmissing) data to compare
+  # this is a baseline estimator which is done on the full (nonmissing) data
   hat_N_sample <- sum(1 / df$pi)
-  statistic_tracker$oracle_mean[i] <- (1 / hat_N_sample) * sum((1 / df$pi) * df$FINCBTAX)
+  statistic_tracker$oracle_mean[i] <- 
+    (1 / hat_N_sample) * sum((1 / df$pi) * df$FINCBTAX)
   
   #########
   # Drop some labels - weighted to high y
@@ -704,8 +703,8 @@ for (i in 1:it) {
   # pi-weighted naive mean
   # non-imputation of estimate which accounts for complex design but ignores systematic
   hat_N_respondent <- sum(1 / (reduced_df$pi))
-  statistic_tracker$pi_naive_mean[i] <- (1 / hat_N_respondent)*sum((1 / reduced_df$pi) * 
-                                                                     reduced_df$FINCBTAX)
+  statistic_tracker$pi_naive_mean[i] <- 
+    (1 / hat_N_respondent)*sum((1 / reduced_df$pi) *  reduced_df$FINCBTAX)
   
   # Compute median imputation mean estimate
   
@@ -718,8 +717,8 @@ for (i in 1:it) {
   
   imputed_list <- c(labels,median_list)
   
-  statistic_tracker$median_imp_mean[i] <- (1 / hat_N_sample) * sum((1 / df$pi) * 
-                                                                     imputed_list)
+  statistic_tracker$median_imp_mean[i] <- 
+    (1 / hat_N_sample) * sum((1 / df$pi) *  imputed_list)
   
   #########
   # Linear regression imputation: MSE 1/pi weighted
@@ -731,8 +730,9 @@ for (i in 1:it) {
   
   lm_y_hat <- predict(linear_model, lin_dropped) # THROWS WARN
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$lin_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
-                                                           + sum(lm_y_hat / dropped_obs$pi))
+  statistic_tracker$lin_imp_mean[i] <- 
+    (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) + 
+                          sum(lm_y_hat / dropped_obs$pi))
   
   #########
   # Mean accoridng to imputed data via naive neural network (ignore complex design)
@@ -752,7 +752,7 @@ for (i in 1:it) {
   create_validation_split(x_train, y_train)
   
   if(testing){
-    # Intentionally over-train on the training data to find the validation minimum
+    # Intentionally over-train on the training data to find the validation min
     model <- keras_model_sequential() %>%
       layer_dense(units = 64, activation = "relu", 
                   input_shape = dim(x_train)[[2]]) %>%
@@ -831,8 +831,9 @@ for (i in 1:it) {
   nn_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
-                                                          + sum(nn_y_hat / dropped_obs$pi))
+  statistic_tracker$nn_imp_mean[i] <- 
+    (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) + 
+                          sum(nn_y_hat / dropped_obs$pi))
   
   print("Finished nn imp mean")
   
@@ -932,8 +933,9 @@ for (i in 1:it) {
   nn_pi_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_pi_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
-                                                             + sum(nn_pi_y_hat / dropped_obs$pi))
+  statistic_tracker$nn_pi_imp_mean[i] <- 
+    (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) + 
+                          sum(nn_pi_y_hat / dropped_obs$pi))
   
   print("Finished nn pi imp mean")
   
@@ -968,8 +970,6 @@ for (i in 1:it) {
   
   
   # Extract partial pi from full train x
-  #range01 <- function(x){(x-min(x))/(max(x)-min(x))}
-  
   pi_prime <- pi_vec[-val_indices]
   obs_weights <- 1 / pi_prime
 
@@ -1070,8 +1070,9 @@ for (i in 1:it) {
   nn_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_wmse_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
-                                                               + sum(nn_y_hat / dropped_obs$pi))
+  statistic_tracker$nn_wmse_imp_mean[i] <- 
+    (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) + 
+                          sum(nn_y_hat / dropped_obs$pi))
   
   print("Finished nn wmse mean")
   
@@ -1092,7 +1093,8 @@ for (i in 1:it) {
   orig_tbl <- as_tibble(orig_df)
   
   # RESAMPLE ON DF NOT REDUCED_DF
-  resamp_df <- sample_n(tbl = orig_tbl, size = nrow(orig_tbl), replace = TRUE, weight = weight_vec)
+  resamp_df <- sample_n(tbl = orig_tbl, size = nrow(orig_tbl),
+                        replace = TRUE, weight = weight_vec)
   
   # re-partition into complete cases, and cases to be imputed
   resamp_reduced_df <- resamp_df[-which(is.na(resamp_df$FINCBTAX)),]
@@ -1190,8 +1192,9 @@ for (i in 1:it) {
   nn_resamp_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_resamp_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
-                                                                 + sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
+  statistic_tracker$nn_resamp_imp_mean[i] <- 
+    (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) + 
+                          sum(nn_resamp_y_hat / resamp_dropped_obs$pi))
   
   print("Finished resamp imp mean")
   
@@ -1301,14 +1304,17 @@ for (i in 1:it) {
   nn_y_hat <- predict(model, x_test)
   
   hat_N_sample <- sum(1/df$pi)
-  statistic_tracker$nn_deriv_imp_mean[i] <- (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) 
-                                                                + sum(nn_y_hat / dropped_obs$pi))
+  statistic_tracker$nn_deriv_imp_mean[i] <- 
+    (1 / hat_N_sample)*(sum(reduced_df$FINCBTAX / reduced_df$pi) + 
+                          sum(nn_y_hat / dropped_obs$pi))
   print("Finished derived param imp mean")
   
   print(i)
 }
 
-write.csv(statistic_tracker, file = "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\LRepo_8.csv")
+statistic_tracker %>% write.csv(file = 
+            "C:\\Users\\Alexander\\Documents\\thesis stat tracker\\LRepo_8.csv")
+
 
 
 ################################################

@@ -158,47 +158,33 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 \Acknowledgements{
-I want to thank a few people.
+Thanks to my advisor Dr.~Kelly McConville, and all proof readers. A
+thank-you to Ezra Shwartz, without whom computation time would have been
+prohibitive.
 }
 
 \Dedication{
-You can have a dedication here if you wish.
+My family.
 }
 
 \Preface{
-This is an example of a thesis setup to use the reed thesis document
-class (for LaTeX) and the R bookdown package, in general.
+
 }
 
 \Abstract{
-Abstract last. 100-500 words. Abstract should be able to stand alone:
-results and approach blatantly and simply stated. Want to sell paper at
-a glimpse
-\begin{itemize}
-\tightlist
-\item
-  main objectiuve and rationale of project
-\item
-  outline of methods used
-\item
-  results of the project
-\item
-  conclusions about the implications of the project
-\end{itemize}
 Missing data is problematic and pervasive in real surveys. Complex
 survey imputation aims to replace missing data with approximations.
 Modified neural networks (naive, weighted loss, weighted resample,
 \(\pi\)-feature, derived parameter) are compared to weighted linear
-regression for mean estimation in artificial and real data experiements
+regression for mean estimation in artificial and real data experiments
 using Monte Carlo simulation on imputation of manually-induced missing
 data. The methods' population mean estimates are compared to the known
 true mean and Horvitz-Thompson estimator in both experiments. The
-results show the effectiveness of the neural network family in low-noise
-nonlinear generative functions, and superior outlier prediction in
-Bureau of Labour Statistics Consumer Expenditure Survey data. All neural
-network methods outperformed weighted linear regression for mean
-estimation on real data. Keras and TensorFlow are utilized for neural
-network models.
+results show the effectiveness of the neural network family in
+simulation, and Bureau of Labour Statistics Consumer Expenditure Survey
+data. All neural network methods outperformed weighted linear regression
+for mean estimation on simulated and real data. Keras and TensorFlow are
+utilized for neural network models.
 
 Key Words: Imputation, Neural Networks, Survey Statistics
 }
@@ -216,12 +202,11 @@ Key Words: Imputation, Neural Networks, Survey Statistics
 \frontmatter % this stuff will be roman-numbered
 \pagestyle{empty} % this removes page numbers from the frontmatter
   \begin{acknowledgements}
-    I want to thank a few people.
+    Thanks to my advisor Dr.~Kelly McConville, and all proof readers. A
+    thank-you to Ezra Shwartz, without whom computation time would have been
+    prohibitive.
   \end{acknowledgements}
-  \begin{preface}
-    This is an example of a thesis setup to use the reed thesis document
-    class (for LaTeX) and the R bookdown package, in general.
-  \end{preface}
+
   \hypersetup{linkcolor=black}
   \setcounter{tocdepth}{2}
   \tableofcontents
@@ -230,39 +215,24 @@ Key Words: Imputation, Neural Networks, Survey Statistics
 
   \listoffigures
   \begin{abstract}
-    Abstract last. 100-500 words. Abstract should be able to stand alone:
-    results and approach blatantly and simply stated. Want to sell paper at
-    a glimpse
-    \begin{itemize}
-    \tightlist
-    \item
-      main objectiuve and rationale of project
-    \item
-      outline of methods used
-    \item
-      results of the project
-    \item
-      conclusions about the implications of the project
-    \end{itemize}
     Missing data is problematic and pervasive in real surveys. Complex
     survey imputation aims to replace missing data with approximations.
     Modified neural networks (naive, weighted loss, weighted resample,
     \(\pi\)-feature, derived parameter) are compared to weighted linear
-    regression for mean estimation in artificial and real data experiements
+    regression for mean estimation in artificial and real data experiments
     using Monte Carlo simulation on imputation of manually-induced missing
     data. The methods' population mean estimates are compared to the known
     true mean and Horvitz-Thompson estimator in both experiments. The
-    results show the effectiveness of the neural network family in low-noise
-    nonlinear generative functions, and superior outlier prediction in
-    Bureau of Labour Statistics Consumer Expenditure Survey data. All neural
-    network methods outperformed weighted linear regression for mean
-    estimation on real data. Keras and TensorFlow are utilized for neural
-    network models.
+    results show the effectiveness of the neural network family in
+    simulation, and Bureau of Labour Statistics Consumer Expenditure Survey
+    data. All neural network methods outperformed weighted linear regression
+    for mean estimation on simulated and real data. Keras and TensorFlow are
+    utilized for neural network models.
     
     Key Words: Imputation, Neural Networks, Survey Statistics
   \end{abstract}
   \begin{dedication}
-    You can have a dedication here if you wish.
+    My family.
   \end{dedication}
 \mainmatter % here the regular arabic numbering starts
 \pagestyle{fancyplain} % turns page numbering back on
@@ -277,7 +247,8 @@ of analyses that they traditionally conduct with more straightforward
 data. - Lumley 1969
 \end{quote}
 The implicit pervasiveness of survey statistics in all data motivates
-our exploration into its significance in imputation.
+our exploration into its significance in imputation. Imputation is the
+act of replacing missing data with estimated values.
 
 Survey statistics differ from statistics modelling in the specification
 of the random process that generates the data. In model-based
@@ -310,15 +281,16 @@ Numbers is invoked to assume the distribution of sampled observations
 represents the population from which they are drawn according to any
 features of interest to the researcher, such as height, weight, or age.
 
-This type of surveying can be complicated by adding unequal inclusion
-probability to the features to oversample from minority groups. The data
-created by such a design would likely not be representative of the
-population, since people with higher inclusion probabilities would be
-more likely to be sampled. However, since the probability of each person
-in the sample being randomly selected is known (since the population
-total is known), this is still a probability sample. The key point of
-this process is that a probability sample is the procedure for taking
-samples from a population, not a data set (Lumley, 2011).
+This type of surveying can be further complicated by adding unequal
+inclusion probability to the features to oversample from minority
+groups. The data created by such a design would likely not be
+representative of the population, since people with higher inclusion
+probabilities would be more likely to be sampled. However, since the
+probability of each person in the sample being randomly selected is
+known (since the population total is known), this is still a probability
+sample. The key point of this process is that a probability sample is
+the procedure for taking samples from a population, not a data set
+(Lumley, 2011).
 
 There are four requirements for a data set to be a probability sample:
 \begin{enumerate}
@@ -327,8 +299,8 @@ There are four requirements for a data set to be a probability sample:
   Every individual in the population must have a non-zero probability of
   ending up in the sample.
 \item
-  The probability of inclusion must be known for every individual who
-  does end up in the sample.
+  The probability of inclusion \(\pi_i\) must be known for every
+  individual who does end up in the sample.
 \item
   Every pair of individuals in the sample must have a non-zero
   probability of both ending up in the sample.
@@ -342,7 +314,8 @@ individuals were sampled independently of each other the first two
 properties would guarantee the last two (Lumley, 2011). Though 3 and 4
 are requirements of a probability sample, they are often not included in
 datasets as they require an \(n \times n\) matrix of probabilities,
-where \(n\) is the number of observations in the data set.
+where \(n\) is the number of observations in the data set. This
+information is not incorporated into the methods of this thesis.
 
 The fundamental statistical idea behind all of design-based inference is
 that an individual sampled with a sampling probability \(\pi_i\)
@@ -362,7 +335,7 @@ design in neural network imputation.
 \section{Imputation}\label{imputation}
 
 Often in real-world data, there is some degree of missingness. This can
-be for any number of reasons, illustrated below:
+be for any number of reasons, illustrated in \ref{fig:missingness}.
 \begin{table}[t]
 
 \caption{\label{tab:missingness}Types of missingess}
@@ -387,14 +360,10 @@ handling item nonresponse is imputation, which fills in missing values
 with usable information (Brick \& Kalton, 1996). Common algorithms such
 as Principal Component Analysis and regression require no missingness in
 the data set, so replacing NA values with useable information is vital
-for analysis.
-
-In many statistical analyses, observations with any degree of
-missingness cannot be included. For example, how would one perform a
-linear regression with observations that have features but no label?
-Dropping these terms would remove potentially huge swathes of the data
-set, particularly in multivariate data sets, and would potentially
-create systematic bias.
+for analysis. Linear regression for example cannot incorporate
+observations lacking a label. Simply dropping these observations would
+remove potentially huge swathes of the data set, particularly in
+multivariate data sets, and would potentially create systematic bias.
 
 Suppose for example a data set with information on roses had a feature
 with stem length and a label on flower size measured by a researcher.
@@ -434,10 +403,11 @@ was generally favorable when computation was less efficient. Hot Deck
 Imputation requires extensive knowledge of the survey variables in order
 to optimize performance since explicit model-based imputation needs a
 valid model for every survey variable (Maiti, Miller, \& Mukhopadhyay,
-2008). This thesis proposes naive artificial neural networks as a
-solution which requires minimal domain knowledge and resists the curse
-of dimensionality which other nonparametric methods are susceptible to,
-such as local polynomial regression (Maiti et al., 2008).
+2008). This thesis proposes artificial neural networks with heuristic
+hyperparameters as a solution which requires minimal domain knowledge
+and resists the curse of dimensionality which other nonparametric
+methods are susceptible to, such as local polynomial regression (Maiti
+et al., 2008).
 
 Due to the difficulties imposed by working with high-dimensional,
 complex survey data with varying degrees of domain knowledge, we turn to
@@ -516,7 +486,7 @@ the green model}
 \ref{fig:overfit} is an illustration of this pervasive principle in a
 regression example. An overfit (too flexible) model simply memorizes the
 training observation's labels, rather than the underlying distribution,
-in this case a second-degree polynomial.
+which in this case is a second-degree polynomial.
 
 The overfit red model does not accurately reflect the underlying
 distribution from which both datasets are drawn. Rather, it captures
@@ -527,19 +497,19 @@ because the training error of such a function is low.
 The overfit red model has extremely low error on the realization of the
 data on which it was trained, but fails to learn the underlying
 generative function, and instead learns the random noise of the training
-observations ( \ref{fig:overfit} ). Thus this model is a poor descriptor
+observations (\ref{fig:overfit}). Thus this model is a poor descriptor
 of a new data realization from the same generative function, seen in
 \ref{fig:second}.
 
-The green line in \ref{fig:overfit} and \ref{fig:second} shows a
-well-trained model which straddles these extrema and captures the
-apparent underlying distribution of the data in a general sense by
-approximating the generative function from which they are drawn, and
+The same green regression seen in \ref{fig:overfit} and \ref{fig:second}
+shows a well-trained model which straddles these extrema and captures
+the apparent underlying distribution of the data in a general sense by
+approximating the generative function from which they are drawn and
 remains fairly constant under different draws from the same
-distribution. The aptly-flexible model has consistent performance on new
-realizations of the data. The ability for a model to perform well on
-data it was not trained on is called generalizability, and is the goal
-of predictive models.
+distribution. The aptly-flexible green model has consistent performance
+on new realizations of the data. The ability for a model to perform well
+on data it was not trained on is called generalizability, and is the
+goal of predictive models.
 \begin{figure}
 \centering
 \includegraphics{thesis_files/figure-latex/underfit-1.pdf}
@@ -560,21 +530,22 @@ described by the bias-variance tradeoff phenomena.
 Figure \ref{fig:biasvar}\footnote{Fortmann, Scott. ``Bias and
   Variance.'' Understanding the Bias-Variance Tradeoff, June 2012,
   scott.fortmann-roe.com/docs/BiasVariance.html.} demonstrates the
-involvement of model complexity (or flexibility) in terms of training
-error. Model complexity refers to the ability of the model to
-approximate complex generative functions. We see that as the flexibility
-of the model increases, the bias on the training set always decreases,
-representing the model's performance on observations with labels.
-However, complexity beyond the models optimal value implies
-over-flexibility, in which the model is able to memorize random noise
-rather than stopping at the trend of the data. This increases the total
-error of the model when exposed to data that comes from the same
-generative function that the model has not been exposed to, such as a
-testing data set or another observation from outside the training set.
-Higher flexibility models create more variable models, which though
-trained on data from the same generative function differ greatly in
-appearance due to the random sample of training data. These models are
-unstable for inference and generalize poorly.
+relationship of model complexity (or flexibility) to variability in
+terms of total error. Model complexity refers to the ability of the
+model to approximate complex generative functions. We see that as the
+flexibility of the model increases, the bias on the training set always
+decreases, representing the model's improving performance on
+observations with labels with increasing load capability. However,
+complexity beyond the models optimal value implies over-flexibility, in
+which the model is able to memorize random noise rather than stopping at
+the trend of the data. This increases the total error of the model when
+exposed to data that comes from the same generative function that the
+model has not been exposed to, such as a testing data set or another
+observation from outside the training set. Higher flexibility models are
+more variable models, which though trained on data from the same
+generative function differ greatly in appearance due to the random
+sample of training data. These models are unstable for inference and
+generalize poorly.
 
 \section{Neural Networks}\label{neural-networks}
 
@@ -628,17 +599,17 @@ f^i = \max ( 0 , {\boldsymbol{W}_i}^T \boldsymbol{x} + c_i)
 linear function for \(\boldsymbol{W}_i^T \in \mathbb{R}^n\),
 \(c_i \in \mathbb{R}\).
 
-The activation function shown above is the rectified linear unit, or
+The activation function shown above is the rectified linear unit (relu),
 \(\max(0,a)\). Activation functions are significant as they introduce
 nonlinearity into what would otherwise be a linear function (a
-composition of linear functions). \({W_i}^T\) and \(c\) in \(f_i\)
-dictate a linear transformation on the input to the layer. An ordered
-list of all elements of \(W_i\) and \(c_i\) for all \(i \in n\) would
-give the full description of the network, called \(\theta\). So the
-output of a 1-layer network can be expressed as
+composition of linear functions). \({\boldsymbol{W}_i}^T\) and \(c\) in
+\(f_i\) dictate a linear transformation on the input to the layer. An
+ordered list of all elements of \(\boldsymbol{W}_i\) and \(c_i\) for all
+\(i \in n\) would give the full description of the network, called
+\(\theta\). So the output of a 1-layer network can be expressed as
 
 \[
-f(x; W, c, w, b) = w^T \max( 0 , \boldsymbol{W}^T \boldsymbol{x} +c ) +b
+f(\boldsymbol{x}; \boldsymbol{W}, c, w, b) = w^T \max( 0 , \boldsymbol{W}^T \boldsymbol{x} +c ) +b
 \]
 
 The final activation function is another structural parameter left to
@@ -646,9 +617,7 @@ the designer of the network, but differs from interior activation
 functions as the output of the network is restricted to the codomain of
 the function, limiting the number of reasonable choices. The typical
 output layer for scalar regression is a linear unit, on behalf of the
-codomain \((-\infty,\infty)\) of the activation: \[
-f^n(\boldsymbol{x}) = 1*(\boldsymbol{W}_n^T \boldsymbol{x} + c_n)
-\]
+codomain \((-\infty, \infty)\) of the activation.
 
 The learning rate \(\omega\) and a loss function are meta-parameters,
 given by the user creating the neural network. These two parameters are
@@ -669,13 +638,11 @@ bias into otherwise unbiased algorithms, but reduce the variability of
 the model across different draws of data from the same distribution,
 aiming to reduce the real test loss and improve the model. The cross
 entropy between the data distribution and the model distribution is the
-typical choice (Goodfellow et al., 2016).
+typical choice for modern neural network optimizers (Goodfellow et al.,
+2016).
 
-Cross Entropy: \[
-\int_\chi P(x) \log Q (x) dr(x) = E_p [- \log Q]
-\]
-
-Take for example the Mean Squared Error cost function: \[
+Take as an example loss function the Mean Squared Error (MSE) function:
+\[
 MSE = \frac{1}{n} \sum_{k=1}^n  (y - \hat y)
 \]
 
@@ -692,19 +659,20 @@ We can see that the loss of a linear regression is a function of \(m\)
 and \(c\) given some data which is minimized at \(m = 0\) and \(c = 0\).
 The learning rate is the amount that the functions' coefficients are
 updated as the loss function is optimized from some initial coordinates
-in search of the minimum loss.
+in search of the minimum loss. Here, a global minima is the unique
+minimum, making optimization very simple.
 
 Much like training a linear regression, the training of the neural
 network aims to drive the approximating function to the underlying
 function. The important difference induced by nonparametric models,
 however, is the nonconvexity of the loss. The large amount of
 coefficients which define even a relatively small network complicate the
-optimization problem and make local minima a demanding distraction.
-Optimization is typically done with gradient learning using a loss
-function, or maximum likelihood estimation. Most modern neural networks
-are trained using maximum likelihood, in which the cost function is the
-negative log-likelihood between the training data and model distribution
-(Goodfellow et al., 2016).
+optimization problem and make local minima a problematic distraction to
+model learning. Optimization is typically done with gradient learning
+using a loss function, or maximum likelihood estimation. Most modern
+neural networks are trained using maximum likelihood, in which the cost
+function is the negative log-likelihood between the training data and
+model distribution (Goodfellow et al., 2016).
 
 \subsection{Representation Learning}\label{representation-learning}
 
@@ -1112,38 +1080,45 @@ significant amount of domain knowledge.
 \section{Exploration of Methods Using
 Simulation}\label{exploration-of-methods-using-simulation}
 
-Simulated data is used to evaluate the methods in order to get an
+Simulated data are used to evaluate the methods in order to get an
 understanding of their performance on a data set with known
 characteristics.
 
 Full insight into the feature distributions, generative function, random
 noise, and systematic missingness allow for controlled experimentation
 on when certain methods thrive. Simulation allows for parameters such as
-label noise and feature informativity to be changed and measure the
-response of the methods across any domain.
+label noise and feature informativity to be changed and the responding
+accuracy of the methods to be measured.
 
 \section{High-Dimension Simulation}\label{high-dimension-simulation}
 
 Often in real-world data, there might be a large number of features, not
 all of which are necessarily correlated to the response label. For
-example in the Consumer Expenditure data, age, gender, ethnicity, and
-education might have a predictive relationship with household income,
-while a number of others such as state, reference person gender, and
-social security income may not. The ability for a model to discern which
-features are relevant and which are not is a significant benefit both
-for inference and predictive consistency. Inspired by research in best
-feature selection methods, non-correlated features are used in the model
-evaluation step in an attempt to more realistically simulate complex
-data (Hastie, Tibshirani, \& Tibshirani, 2017). The addition of these
-features contributes to the curse of dimensionality and variability of
-estimates.
+example in the Consumer Expenditure data, age, ethnicity, and education
+might have a predictive relationship with household income, while a
+number of others such as state, gender, and social security income may
+not. The ability for a model to discern which features are relevant and
+which are not is a significant benefit both for inference and predictive
+consistency. Inspired by research in best feature selection methods,
+non-correlated features are used in the model evaluation step in an
+attempt to more realistically simulate complex data (Hastie, Tibshirani,
+\& Tibshirani, 2017). The addition of these features contributes to the
+curse of dimensionality and variability of estimates.
 
 These additional ``noisy'' parameters are simulated by making the
 generative function of the labels \(y\) not a function of some of the
 features. All methods used in the simulation are accompanied by their
 oracle counterparts, meaning the same method is run two times: one with
 access to all features, the oracle restricted only to the relevant
-features which are inputs to the generative function.
+features which are inputs to the generative function. By comparing each
+method's score to its' oracle counterpart, we can measure the degree to
+which noisy data is problematic for a method, since each algorithm will
+handle this noise differently. This will lead to important implications
+in terms of real data usage, in which the researcher must decide whether
+to select some number of features they believe to be informative, or use
+all of the information available. The feature selection method
+implemented will depend on the ability of the imputation method to adapt
+to uninformative data.
 
 \section{Monte Carlo Simulation}\label{monte-carlo-simulation}
 
@@ -1177,12 +1152,16 @@ simulation more suitable for generalizability.
 
 The features simulated population is made as the first step of the
 process. Two informative features \(p_1, p_2\) are drawn from random
-uniform distribution: \[
-f(x) = \frac{1}{30+30} \text{ for } x \in (-30, 30)
+uniform distribution with mean \(0\) and standard deviation
+\(\sigma = \frac{60}{\sqrt{12}}\): \[
+f(x) = \frac{1}{60} \text{ for } x \in (-30, 30)
 \] In addition to two informative features, there are \(20\)
-uninformative features drawn from the normal distribution. This
-distribution is arbitrary but can have unintended consequences due to
-accidental correlation, noted in \{Hastie et al. (2017)\}.
+uninformative features drawn from the normal distribution of mean \(0\)
+and standard deviation \(\sigma = 8\). This distribution is arbitrary
+but can have informative consequences due to accidental correlation,
+noted in Hastie et al. (2017). For the purpose of MC simulation, we
+assume the number of iterations will override accidental noisy-feature
+inforamtivity to the label.
 
 The population labels \(y\) are a nonlinear function of the informative
 features: \[
@@ -1193,27 +1172,29 @@ y' = \left\{ \begin{array}{cc}
                 y & \hspace{5mm} y<\bar{y} \\
                 \bar{y} & \hspace{5mm} y \geq \bar{y} \\
                 \end{array} \right.
-\]
-
-\includegraphics[width=0.7\linewidth]{figure/bowl}
-
-Random noise \(\epsilon\) with \(\sigma = 1\) is then added to the
-transformed labels: \[
+\] Where \(\bar{y}\) is the label mean before the \(y'\) transformation.
+\begin{figure}
+\includegraphics[width=0.7\linewidth]{figure/bowl} \caption{An intuition to the shape of the generative function}\label{fig:unnamed-chunk-2}
+\end{figure}
+Random noise \(\epsilon\) distributed normally with mean \(0\) and
+standard deviation \(\sigma = 1\) is then added to the transformed
+labels: \[
 y'' = y' + \epsilon_y
 \]
 
-An inclusion probability \(pi\) is then assigned to each observation
+An inclusion probability \(\pi\) is then assigned to each observation
 with a strong correlation to \(y\), as well as random normal noise with
 \(\sigma = 1\): \[
 \pi = \sqrt{y''} + \epsilon_\pi
-\] These values are then rescaled to (0,1) and rescaled so
-\(\sum_i^N \pi_i = n\).
+\] These values are then rescaled to (0,1) then rescaled again such that
+\(\sum_i^N \pi_i = n\), which emulates the survey statistic axiom 2 for
+real survey design.
 
 Combining the information \(y,\pi, p_1, p_2\) and uncorrelated features
 gives the population on which the simulation will be performed. The true
 mean of the population labels \(\mu_y\) is now known and recorded.
 
-The Monte Carlo simulation is performed for 100 iterations. This is a
+The Monte Carlo simulation is performed for 120 iterations. This is a
 low number of trials, but is constrained by the computation intensity of
 running 10 neural networks trained for hundreds of iterations each, as
 well as performing many weighted samples.
@@ -1227,17 +1208,17 @@ This data set will be used as a benchmark to mirror each imputation
 method in order to gauge the potentially harmful effects of
 uninformative features common to real data.
 
-The first step is to record the oracle mean, calculated using
-information the other methods are not privy to: \[
-\hat \mu_{\text{oracle}} = \frac{1}{n} \sum_{i=1}^n y_i \frac{1}{\pi_i}
-\]
-
+The first step is to record the oracle mean estimator \label{eq:HTE},
+calculated using information the other methods are not privy to:
+\begin{align}
+\hat \mu_{\text{oracle}} = \frac{1}{N} \sum_{i=1}^n y_i \frac{1}{\pi_i} \label{eq:HTE}
+\end{align}
 All subsequent methods are the methods of study, to be performed where
-there is missingness in the data. \(20\%\) of the observations manually
-have their labels dropped weighted by \(y\), so large labels are more
-likely to be absent. The result is the form of data we are using to
-simulate method performance: a complex sample taken from a population
-with some kind of systematic bias in item response.
+there is missingness in the data. Twenty percent of the observations
+manually have their labels dropped weighted by \(y\), so large labels
+are more likely to be absent. The result is the form of data we are
+using to simulate method performance: a complex sample taken from a
+population with some kind of systematic bias in item response.
 
 The \(\pi\)-corrected mean estimate, weighted linear regression, and
 median imputation methods are all described fully in chapter 3, and are
@@ -1261,37 +1242,76 @@ are not privy to, which induces bias for the success of these
 algorithms. To maintain the narrative of a minimal-knowledge naive fit,
 these models use a reasonable exploratory capacity. The models in the
 fitting process are manually over-trained, then re-trained from scratch
-to an optimal state. This is done using a validation data set of
-\(15\%\) of the training data. Once trained to an approximate loss
-minima, the models predict on holdout test data (the observations
-missing labels) and the population mean estimate is computed and
-recorded.
+to an optimal state. This is done using a validation data set of fifteen
+percent of the observations with labels (training data). Once trained to
+an approximate loss minima, the models predict on holdout test data (the
+observations missing labels) and the population mean estimate is
+computed and recorded.
 
 \section{Evaluating models}\label{evaluating-models}
 
 \subsection{Oracle Mean:}\label{oracle-mean}
 
-The oracle mean is the Horvitz-Thompson estimator with access to the
-complete sample before missingness is induced (Horvitz \& Thompson,
-1952). The oracle mean will be used as a benchmark against which the
-other methods will be compared. \[
-\hat \mu_{\text{oracle}} = \frac{1}{N} \sum_{i=1}^n y_i \frac{1}{\pi_i}
-\] Since the oracle mean has access to information that the other
-methods do not, it is the ideal estimate of a population mean given a
-sample. The difference between the oracle and \(\pi\)-corrected
-estimates are indices \(n\) and \(r\) over which the sum is taken.
+The oracle mean \label{eq:HTE} is the Horvitz-Thompson estimator with access
+to the complete sample before missingness is induced (Horvitz \&
+Thompson, 1952). The oracle mean will be used as a benchmark against
+which the other methods will be compared using the MSE difference score
+to the true mean, which helps control for some sampling variability as
+\label{eq:HTE} will vary by sample. The square of differences in method
+estimates is taken in the same way a MSE loss:
+\begin{align}
+MSE(\text{method}) = \frac{1}{n} \sum_{i=1}^n (\hat{y}_i - \mu_y)^2 (\#eq:MSE_score)
+\end{align}
+Where \(\hat{y}_i\) is the i-th mean estimate for some method in a
+vector of mean estimates produced via the MC simulation, and \(\mu_y\)
+is the true population mean.
+
+The MSE to the true mean alone is fairly uninformative as it would vary
+by the magnitude of the label in different contexts, so the racle ratio
+score is used to quantify success in a scalar. The oracle ratio is the
+ratio of each methods' MSE against the true mean to the oracle methods'
+MSE against the true mean. An ideal score is 1, in which a model
+predicted with the same accuracy as the oracle mean.
+
+In addition, the percent relative bias score gives the bias ratio to the
+true mean. This standardized score gives the percentage to which a
+method is overestimating or underestimating the true mean. This score is
+useful to find bias in the methods, which is not apparent in an accuracy
+score such as MSE.
 
 \section{Results}\label{sim_results}
-
-Not a place to list findings. Rather, convince that what I did is
-correct, worthy of study, and impactful. Be honest about the
-generalizability of the work. If the findings are negative, take care to
-explain why the results still matter (discussion of why linear
-regression is so dank at mean estimation). Cast the negative result as a
-useful insight, rather than a problem with the methodology.
-
-\includegraphics{figure/AWS_results.png}
-
+\begin{table}[H]
+\centering
+\begin{tabular}{l|r|r|r}
+\hline
+  & MSE & Oracle Ratio & Relative Bias\\
+\hline
+True Pop & 0.0000 & 0.00 & 0.0000\\
+\hline
+Horvitz-Thompson Oracle & 0.0339 & 1.00 & -0.0618\\
+\hline
+Naïve-Pi & 0.3370 & 9.93 & -4.4900\\
+\hline
+Median Imputation & 0.5510 & 16.20 & 6.0400\\
+\hline
+Weighted Linear Regression & 0.2310 & 6.82 & -3.6100\\
+\hline
+Oracle Weighted Linear Regression & 0.2360 & 6.97 & -3.6600\\
+\hline
+NN  Naïve Imputation & 0.1010 & 2.97 & -1.9000\\
+\hline
+NN Naïve Oracle & 0.0381 & 1.12 & -0.4160\\
+\hline
+NN Pi-Feature Imputation & 0.0696 & 2.05 & -1.3700\\
+\hline
+NN Pi-Feature Oracle & 0.0376 & 1.11 & -0.4080\\
+\hline
+NN Resample Imputation & 0.1730 & 5.11 & -2.6500\\
+\hline
+NN Derived-Parameter Imputation & 1.1200 & 33.10 & -1.8700\\
+\hline
+\end{tabular}
+\end{table}
 The weighted-MSE and derived-parameter methods were left out of the
 simulation results for runtime concerns and unpromising results on this
 generative function.
@@ -1307,10 +1327,13 @@ number of epochs may have dropped the weights of the noisy parameters to
 be ignored.
 
 All methods underestimated the population mean, described by the
-relative bias column of the results. EXCEPT FOR MEDIAN? HOW IS MEDIAN
-IMPUTATION OVER ESTIMATING! This is reasonable on behalf of the
-systematic missingness of the data, but each non-naive method attempted
-to mitigate this amount. The results indicate that the negative bias was
+relative bias column of the results (the median imputation highly
+overestimated the label because of the strange shape of the genreative
+function: the median label lies on the lip of the bowl. It is not
+reasonable to assume median imputation would over-estimate in any more
+typical case). This is reasonable on behalf of the systematic
+missingness of the data, but each non-naive method attempted to mitigate
+this amount. The results indicate that the negative bias was
 significantly larger for non-oracle methods, meaning noisy parameters
 could contribute to mean under-estimation. For this reason, a researcher
 with some level of domain knowledge should hand-select features known to
@@ -1353,32 +1376,42 @@ Surveys}\label{consumer-expenditure-surveys}
 
 \section{Data}\label{data}
 
-The Consumer Expenditure (CE) Surveys\footnote{\url{https://www.bls.gov/cex/pumd-getting-started-guide.htm}}
-provide data on ``expenditures, income, and demographic characteristics
-of consumers in the United States. The CE data are collected by the
-Census Bureau for the Bureau of Labor Statistics (BLS). The data are
-primary used to revise the relative importance of goods and services in
-the market basket of the Consumer Price Index''.
+The Consumer Expenditure (CE) Surveys provide data on expenditures,
+income, and demographic characteristics of consumers in the United
+States (``BLS consumer expenditure surveys,'' 2019). The CE data are
+collected by the Census Bureau for the Bureau of Labor Statistics (BLS).
+The data are primary used to ``revise the relative importance of goods
+and services in the market basket of the Consumer Price Index''.
 
 The data will be the \texttt{fmli171x} survey data, one of the quarterly
 surveys for 2017 which contains household information such as specific
 incomes, expenditures, home description, and family description. The
-data has a low degree of missingness as quarterly information is
+data have a low degree of missingness as quarterly information is
 propagated between surveys to create complete observations.
 
-The mean estimation methods from chapter 3 will be used to estimate the
+The mean estimation methods from Chapter 3 will be used to estimate the
 population mean household income before tax, \texttt{FINCBTAX}. The
-features used to predict this label are: - \texttt{pi}, the inclusion
-probability (1 / \texttt{FINLWT21}, the survey weight provided by BLS) -
-\texttt{AGE\_REF}, the age of the reference person (the person who
-answered the survey) - \texttt{BATHRMQ}, the number of bathrooms in the
-home - \texttt{BEDROOMQ}, the number of bedrooms in the home -
-\texttt{EDUC\_REF}, the education of the reference person (some
-highschool, etc) - \texttt{FAM\_SIZE}, the number of family members in
-the home - \texttt{TOTEXPCQ}, the total household expenditures last
-quarter
-
-Like all data gathered by BLS \texttt{FINCBTAX} and some features are
+features used to predict this label are:
+\begin{itemize}
+\item
+  \texttt{pi}, the inclusion probability (1 / \texttt{FINLWT21}, the
+  survey weight provided by BLS)
+\item
+  \texttt{AGE\_REF}, the age of the reference person (the person who
+  answered the survey)
+\item
+  \texttt{BATHRMQ}, the number of bathrooms in the home
+\item
+  \texttt{BEDROOMQ}, the number of bedrooms in the home
+\item
+  \texttt{EDUC\_REF}, the education of the reference person (some
+  highschool, etc)
+\item
+  \texttt{FAM\_SIZE}, the number of family members in the home
+\item
+  \texttt{TOTEXPCQ}, the total household expenditures last quarter
+\end{itemize}
+Like all data gathered by BLS, \texttt{FINCBTAX} and some features are
 subject to missingness, but have been in the data sets. This means for
 the purpose of the experiment on method imputation quality, we must
 artifically impose missingness then compare the imputation results to a
@@ -1387,12 +1420,13 @@ unavoidable pitfall of working with real data, as we paradoxically
 require ``truly missing'' labels to impute, but need the true label to
 compare the quality of the imputation to.
 
-According IRS Statistics of Income, the average household adjusted gross
-income (AGI) was \$67,565 in 2015. This is the last year the population
-mean household income is available. This numbercould be considered the
-true population mean \(\mu_y\), but is derived differently than the BLS
-CE data and is slightly different than the Horvitz-Thompson estimator
-for the sample on \texttt{FINCBTAX}.
+According to the IRS Statistics of Income, the average household
+adjusted gross income (AGI) was \$67,565 in 2015 (``Internal revenue
+service statistics,'' n.d.). This is the last year the population mean
+household income is available. This number could be considered the true
+population mean \(\mu_y\), but is derived differently than the BLS CE
+data and is slightly different than the Horvitz-Thompson estimator for
+the sample on \texttt{FINCBTAX}, \$62720.
 
 \section{Procedure}\label{procedure}
 
@@ -1401,19 +1435,24 @@ same way as the simulated data method comparison.
 
 The \texttt{fmli171x} survey data is first pre-processed to remove
 features with large swathes of missingness. For this study, features
-with more than 33\% missing values are dropped from the data set.
-Features with missingness less than 33\% are then median-imputed, where
+with more than 33\% missing values are dropped from the data set and not
+considered as potential options for the experiment. Features with
+missingness less than thiry-three percent are then median-imputed, where
 missing values are replaced with the median value of the feature. The
 median in this case is used for reasons: it returns only reasonable
-values, is uninformative, and does not rely on multiple imputation.
-
-The label to be used is \texttt{FINCBTAX}, the financial income of the
+values, is uninformative, and does not rely on multiple imputation. The
+label to be used is \texttt{FINCBTAX}, the financial income of the
 response household before taxes. This label has no missingness as it is
 BLS-derived (already imputed).
 
 This process returns a complete-case data set of 6208 family samples
-across 607 variables. There are 127 million households in the US, whcih
-can be used as an approximate population size \(N\).
+across the 8 variables and features selected above. There are 127
+million households in the US, which can be used as an approximate
+population size \(N\). From this collection, the variables
+\texttt{AGE\_REF,\ BATHRMQ,\ BEDRMQ,\ EDUC\_REF,\ FAM\_SIZE,\ TOTEXPCQ}
+were kept for their potential informativity without being a direct
+function of \texttt{FINCBTAX}. All 6208 family samples are used as the
+sample, on which missingness is induced.
 
 The problem of assessing model performance in real-world data is the
 paradox of missing labels: ideally, we would impute a missing label,
@@ -1431,7 +1470,8 @@ distribution of mean estimates for each method:
 \item
   Record the true (sample) mean and Horvitz-Thompson mean estimate
 \item
-  Induce missingness on 20\% of the labels, weighted to larger labels
+  Induce missingness on twenty percent of the labels, weighted to larger
+  labels
 \item
   Perform and record each model's mean estimate. For this experiment, a
   more accurate neural network training method is adopted in which each
@@ -1441,8 +1481,8 @@ distribution of mean estimates for each method:
   correct training method which was eschewed from Chapter 4 due to the
   computational intensity of double-training.
 \item
-  The results are compared using mean squared error to \('mu_y\), oracle
-  ratio, and percent relative bias.
+  The results are compared using mean squared error to \(\mu_y\), the
+  oracle ratio, and percent relative bias.
 \end{enumerate}
 The dimension of the neural networks has changed somewhat to account for
 the new data. Since the number of informative parameters has increased
@@ -1460,19 +1500,48 @@ transformations wrapped in the \texttt{relu} activation: \[
 \(64 \times 64\), \(64 \times 1\), instead of \(6 \times 32\),
 \(32 \times 32\), \(32 \times 1\) as in the 32 hidden unit simulation.
 
-To accomidate the significantly higher number of trainable features in
+To accommodate the significantly higher number of trainable features in
 this network the hyperparameter \(\omega\), the learning rate, must be
 initialized higher in the \texttt{adam} optimization algorithm. This can
 expedite the number of epochs (training data exposures) needed for the
-algorithm to converge, but can sacrifice predictive fidelty, a
-constraint imposed by computational demand. This tradeoff is made in the
-name of a more statistically informative monte carlo simulation.
+algorithm to converge, but can sacrifice predictive accuracy, a
+constraint imposed by computational demand. The gradient descent
+algorithm has the potential to skip over a desireable minima in the
+early training if the initial learning rate is too large. This tradeoff
+is made in the name of a more statistically informative monte carlo
+simulation through more iterations than possible with a slower, more
+accurate learning rate.
 
 \section{Results}\label{results}
+\begin{figure}
+\centering
+\includegraphics{thesis_files/figure-latex/unnamed-chunk-3-1.pdf}
+\caption{\label{fig:unnamed-chunk-3}Distribution of population mean
+estimates by method}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics{thesis_files/figure-latex/unnamed-chunk-4-1.pdf}
+\caption{\label{fig:unnamed-chunk-4}Method MSE relative to the naive mean}
+\end{figure}
+Neural network methods unilaterally outperform weighted linear
+regression in the CE data context. Without adapting the neural networks
+other than a heuristic load-bearing increase, even the naive neural
+network outperforms the typical mean estimation imputation procedure.
+These results are extremely promising to the capabilities of neural
+networks and the ability to perform accurate imputation in the face of
+systematic bias.
 
-\includegraphics[width=0.8\linewidth]{figure/vline_fig}
+The stand-out success of the weighted resample neural network is
+especially promising because of the low size of the resample. To
+mitigate the additional layer of variability invoked by the resample
+process, usually this method is performed with a \(\hat{N}\)-observation
+resample rather than \(n\).
 
-\includegraphics[width=0.8\linewidth]{figure/clean_results_histogram}
+The results of this simulation show the importance of a nonparametric
+predictive model: one which can navigate the complex relationship of
+label to feature when the model designer is unsure of the underlying
+properties is invaluable.
 
 \chapter{Conclusion}\label{conclusion}
 
@@ -1505,8 +1574,8 @@ for computational time, not superior accuracy. This is highly promising
 as the assumptions of NN success were derived from the nonparametric
 benefits of a more flexible model which is highly adaptable to data
 relationships. The hypotheses on the advantages of this properly trained
-family of algorithms are demonstratably upgrades for mean estimation and
-imputation accuracy, even when ignoring survey design.
+family of algorithms are upgrades for mean estimation and imputation
+accuracy, even when ignoring survey design.
 
 The lower scores of the \(\pi\)-feature and derived-parameter methods
 compared to naive neural network imputation is a suprising result. This
@@ -1514,7 +1583,17 @@ outcome is at odds with the hypotheses on the feature-selection property
 outlined in Chapter 2. If the \(\pi\) feature and its derivatives were
 informative to the label, the methods should have superior accuracy, and
 if the \(\pi\) feature was uninformative, the weighted-MSE should have
-underperformed.
+underperformed. The ``forced inclusion methods'' of weighted MSE and
+resample would be worth exploring further in expirements where \(y\) and
+\(\pi\) are known to be uncorrelated. In this situation, it would be
+reassuring to see the optional-feature methods succeed in refusing to
+incorporate information from an uninformative \(\pi\), while the forced
+methods struggled to overcome the disadvantage of additional noise. As
+in the case of weighted linear regression, the forced methods thrive
+when the regression is warped to the extrema by outlying \(\pi\). In
+these cases, the algorithm tweaks give extra weight making the
+often-missing observations make up for their peer's missingness. This
+counteracts the induced missingness weighted to large labels well.
 
 These results altogether show the benefits of neural networks in minimal
 domain knowledge imputation: using heuristic feedforward networks and a
@@ -1558,7 +1637,7 @@ Nonparametric modelling with validation data should outperform linear
 models, even when survey design information is not incorporated.
 Weighted resample neural networks outperformed all other algorithms
 despite sampling and resampling variability, lending them great promise
-for further investigation, discussed in \ref{sec:work} .
+for further investigation and against more potenet competition.
 
 \section{Future Work}\label{work}
 
@@ -1571,8 +1650,8 @@ Any stable heuristic method with some potential to encode survey weights
 is worth investigating.
 
 Multiple imputation is a world worth exploring due to the superior
-predictive capability of neural networks and their intervarriable
-relationship preservation property. Weighted lienar regression is an
+predictive capability of neural networks and their intervariable
+relationship preservation property. Weighted linear regression is an
 excellent mean estimator due to the stability of its predictions to
 extrema, but lacks in predictive accuracy. Neural networks, however,
 could offer superior multiple imputations as relationships are
@@ -1597,38 +1676,18 @@ of the already-dominant algorithm.
 
 \chapter{The First Appendix}\label{the-first-appendix}
 
-This first appendix includes all of the R chunks of code that were
-hidden throughout the document (using the \texttt{include\ =\ FALSE}
-chunk tag) to help with readibility and/or setup.
-
-This appendix contains every line of code necessary to replicate the
-results of the two experiments detailed in this thesis. The bulk of each
-experiment is testing structures used to derive optimal runtime and
-epoch-time for each of the many methods, and evaluate their performance
-across a variety of standards, seen at the end of each iteration loop.
+This appendix contains all R code necessary to re-create the results of
+this thesis, along with supplementary data from the github.
 
 \section{Data Processing}\label{sec:data_process}
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# This chunk ensures that the thesisdown package is}
-\CommentTok{# installed and loaded. This thesisdown package includes}
-\CommentTok{# the template files for the thesis.}
-\ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{require}\NormalTok{(devtools))}
-  \KeywordTok{install.packages}\NormalTok{(}\StringTok{"devtools"}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.rstudio.com"}\NormalTok{)}
-\ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{require}\NormalTok{(thesisdown))}
-\NormalTok{  devtools}\OperatorTok{::}\KeywordTok{install_github}\NormalTok{(}\StringTok{"ismayc/thesisdown"}\NormalTok{)}
-\KeywordTok{library}\NormalTok{(thesisdown)}
-\end{Highlighting}
-\end{Shaded}
+
 \section{Simulated Data Experiment
 \{sim\_data\_exp\}}\label{simulated-data-experiment-sim_data_exp}
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# model selection 2}
-\NormalTok{## Adding noise features, new generative function, and }
-\CommentTok{# model selection oracle}
-
-\CommentTok{# Compare distributions of mean via different imputation methods on artifical data}
+\CommentTok{# model selection}
+\CommentTok{# Compare distributions of mean via different imputation methods on }
+\CommentTok{#artifical data}
 
 \KeywordTok{library}\NormalTok{(keras)}
 \KeywordTok{library}\NormalTok{(dplyr)}
@@ -1671,11 +1730,8 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{nulls <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{rnorm}\NormalTok{(}\DecValTok{20}\OperatorTok{*}\NormalTok{N, }\DecValTok{0}\NormalTok{, }\DecValTok{8}\NormalTok{), }\DataTypeTok{ncol =} \DecValTok{20}\NormalTok{)}
 
 \NormalTok{p_y_ep <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(N, }\DataTypeTok{mean =} \DecValTok{0}\NormalTok{, }\DataTypeTok{sd =}\NormalTok{ p_y_ep_control)}
-\CommentTok{#p_y <- p_1*p_2 + p_3 + p_y_ep}
 
-\NormalTok{p_y <-}\StringTok{ }\NormalTok{p_}\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{abs}\NormalTok{(p_}\DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{p_y_ep }\CommentTok{#added noise for reasonability}
-\CommentTok{#mpy <- mean(p_y)}
-\CommentTok{#p_y[p_y > mpy] <- p_y[p_y > mpy] + mpy}
+\NormalTok{p_y <-}\StringTok{ }\NormalTok{p_}\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{abs}\NormalTok{(p_}\DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{p_y_ep }
 
 \NormalTok{p_y[p_y }\OperatorTok{>}\StringTok{ }\KeywordTok{mean}\NormalTok{(p_y)] <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(p_y)}
 
@@ -1691,7 +1747,7 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{p_tbl <-}\StringTok{ }\KeywordTok{as_tibble}\NormalTok{(p_df)}
 
 \CommentTok{# Verify sum of pi over population approx n}
-\KeywordTok{sum}\NormalTok{(p_tbl}\OperatorTok{$}\NormalTok{p_pi) }\OperatorTok{==}\StringTok{ }\NormalTok{n}\CommentTok{#= 10000 = n}
+\KeywordTok{sum}\NormalTok{(p_tbl}\OperatorTok{$}\NormalTok{p_pi) }\OperatorTok{==}\StringTok{ }\NormalTok{n}
 
 \NormalTok{statistic_tracker <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{true_mean =} \KeywordTok{numeric}\NormalTok{(it), }
                                 \DataTypeTok{oracle_mean =} \KeywordTok{numeric}\NormalTok{(it),}
@@ -1714,23 +1770,25 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  sample_population_by_pi <-}\StringTok{ }\KeywordTok{sample_n}\NormalTok{(}\DataTypeTok{tbl =}\NormalTok{ p_tbl, }\DataTypeTok{size =}\NormalTok{ n, }\DataTypeTok{replace =} \OtherTok{FALSE}\NormalTok{, }
                                       \DataTypeTok{weight =}\NormalTok{ p_pi)}
   
-\NormalTok{  df <-}\StringTok{ }\NormalTok{sample_population_by_pi }\OperatorTok{%>%}\StringTok{ }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{x_1 =}\NormalTok{ p_}\DecValTok{1}\NormalTok{, }\CommentTok{#Since we are not dealing with population p_ anymore}
+\NormalTok{  df <-}\StringTok{ }\NormalTok{sample_population_by_pi }\OperatorTok{%>%}\StringTok{ }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{x_1 =}\NormalTok{ p_}\DecValTok{1}\NormalTok{, }\CommentTok{#Since we are not dealing }
+                                           \CommentTok{#with population p_ anymore}
                                            \DataTypeTok{x_2 =}\NormalTok{ p_}\DecValTok{2}\NormalTok{,}
                                            \DataTypeTok{pi =}\NormalTok{ p_pi,}
                                            \DataTypeTok{y =}\NormalTok{ p_y)}
   
 \NormalTok{  #########}
   \CommentTok{# Oracle mean}
-  \CommentTok{# this is a standard estimator which is done on the full (nonmissing) data to compare}
+  \CommentTok{# this is a baseline estimator which is done on the full (nonmissing) data}
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{oracle_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{y)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{oracle_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }
+                                                               \OperatorTok{*}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{y)}
   
 \NormalTok{  #########}
   \CommentTok{# Drop some labels - weighted to high y}
   
-\NormalTok{  indices <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(df), .}\DecValTok{2}\OperatorTok{*}\KeywordTok{nrow}\NormalTok{(df), }\DataTypeTok{prob =}\NormalTok{ df}\OperatorTok{$}\NormalTok{y) }\CommentTok{#weights are stdized to 1 by sample()}
+\NormalTok{  indices <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(df), .}\DecValTok{2}\OperatorTok{*}\KeywordTok{nrow}\NormalTok{(df), }\DataTypeTok{prob =}\NormalTok{ df}\OperatorTok{$}\NormalTok{y)}
 \NormalTok{  dropped_obs <-}\StringTok{ }\NormalTok{df[indices,]}
-\NormalTok{  reduced_df <-}\StringTok{ }\NormalTok{df[}\OperatorTok{-}\NormalTok{indices,] }\CommentTok{# These have a large differnce: 296 for dropped and 276 for reduced df}
+\NormalTok{  reduced_df <-}\StringTok{ }\NormalTok{df[}\OperatorTok{-}\NormalTok{indices,] }
   
   \CommentTok{# Make oracle df without noisy parameters}
 \NormalTok{  odf <-}\StringTok{ }\NormalTok{df[,}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{]}
@@ -1739,11 +1797,9 @@ across a variety of standards, seen at the end of each iteration loop.
   
 \NormalTok{  #########}
   \CommentTok{# pi-corrected naive mean}
-  \CommentTok{# should be unbiased but very large variance. should come forward when gen func change}
-\NormalTok{  ## }\AlertTok{NOTE}\NormalTok{ DIFFERENCE OF HAT N RESPOND AND HAT N SAMPLE}
-\NormalTok{  hat_N_respondent <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{pi)) }\CommentTok{# largely underestimates the true N}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{pi_naive_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_respondent)}\OperatorTok{*}\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }
-\StringTok{                                                                     }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{y)}
+\NormalTok{  hat_N_respondent <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{pi)) }
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{pi_naive_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_respondent)}\OperatorTok{*}
+\StringTok{    }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{y)}
   
 \NormalTok{  #########}
   \CommentTok{# Median imputation: fill missing values with median}
@@ -1754,8 +1810,8 @@ across a variety of standards, seen at the end of each iteration loop.
   
 \NormalTok{  imputed_list <-}\StringTok{ }\KeywordTok{c}\NormalTok{(labels,median_list)}
   
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{median_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }
-\StringTok{                                                                     }\NormalTok{imputed_list)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{median_imp_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }\NormalTok{imputed_list)}
   
 \NormalTok{  #########}
   \CommentTok{# mean according to imputed data via linear regression (1/pi-weighted)}
@@ -1767,8 +1823,9 @@ across a variety of standards, seen at the end of each iteration loop.
   
 \NormalTok{  lm_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(linear_model, lin_dropped)}
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{lin_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                           \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(lm_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{lin_imp_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                        \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(lm_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   \CommentTok{# Linear Regression Oracle Method}
 \NormalTok{  red_weight <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi}
@@ -1779,8 +1836,9 @@ across a variety of standards, seen at the end of each iteration loop.
   
 \NormalTok{  lm_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(linear_model, lin_dropped)}
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{odf}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{lin_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                         \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(lm_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{lin_oracle[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{+}\StringTok{ }
+\StringTok{                          }\KeywordTok{sum}\NormalTok{(lm_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   
   \CommentTok{# nn oracle}
@@ -1823,8 +1881,8 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
   
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                        \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}
+\StringTok{    }\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   
   \CommentTok{#oracle nn pi feature}
@@ -1870,8 +1928,9 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  nn_pi_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
   
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_pi_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                           \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_pi_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_pi_oracle[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{+}\StringTok{ }
+\StringTok{                          }\KeywordTok{sum}\NormalTok{(nn_pi_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   \CommentTok{# oracle resample}
 \NormalTok{  dropped_obs_NA_lab <-}\StringTok{ }\NormalTok{o_dropped_obs}
@@ -1883,8 +1942,9 @@ across a variety of standards, seen at the end of each iteration loop.
   
 \NormalTok{  orig_tbl <-}\StringTok{ }\KeywordTok{as_tibble}\NormalTok{(orig_df)}
   
-  \CommentTok{# RESAMPLE ON DF NOT REDUCED_DF}
-\NormalTok{  resamp_df <-}\StringTok{ }\KeywordTok{sample_n}\NormalTok{(}\DataTypeTok{tbl =}\NormalTok{ orig_tbl, }\DataTypeTok{size =} \KeywordTok{nrow}\NormalTok{(orig_tbl), }\DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{weight =}\NormalTok{ weight_vec)}
+  \CommentTok{# resamples on df not reduced_df}
+\NormalTok{  resamp_df <-}\StringTok{ }\KeywordTok{sample_n}\NormalTok{(}\DataTypeTok{tbl =}\NormalTok{ orig_tbl, }\DataTypeTok{size =} \KeywordTok{nrow}\NormalTok{(orig_tbl),}
+                        \DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{weight =}\NormalTok{ weight_vec)}
   
   \CommentTok{# re-partition into complete cases, and cases to be imputed}
 \NormalTok{  resamp_reduced_df <-}\StringTok{ }\NormalTok{resamp_df[}\OperatorTok{-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(resamp_df}\OperatorTok{$}\NormalTok{y)),]}
@@ -1929,8 +1989,9 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  nn_resamp_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
   
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_resamp_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                                 \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_resamp_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{resamp_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_resamp_oracle[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{+}\StringTok{ }
+\StringTok{                          }\KeywordTok{sum}\NormalTok{(nn_resamp_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{resamp_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   \CommentTok{# WSME NN }
 \NormalTok{  #######}
@@ -1962,8 +2023,6 @@ across a variety of standards, seen at the end of each iteration loop.
   
   
   \CommentTok{# Extract partial pi from full train x}
-  \CommentTok{#range01 <- function(x)\{(x-min(x))/(max(x)-min(x))\}}
-  
 \NormalTok{  pi_prime <-}\StringTok{ }\NormalTok{pi_vec[}\OperatorTok{-}\NormalTok{val_indices]}
 \NormalTok{  obs_weights <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{pi_prime}
   
@@ -2011,8 +2070,9 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
   
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_wmse_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                             \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_wmse_oracle[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(o_reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{o_reduced_df}\OperatorTok{$}\NormalTok{pi) }
+                        \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{o_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   
   \CommentTok{# Oracle derived params}
@@ -2054,9 +2114,9 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  history <-}\StringTok{ }\NormalTok{model }\OperatorTok{%>%}\StringTok{ }\KeywordTok{fit}\NormalTok{(}
 \NormalTok{    partial_x_train,}
 \NormalTok{    partial_y_train,}
-    \DataTypeTok{epochs =} \DecValTok{300}\NormalTok{, }\CommentTok{#high variance; study further}
+    \DataTypeTok{epochs =} \DecValTok{300}\NormalTok{, }
     \DataTypeTok{verbose =} \DecValTok{0}\NormalTok{,}
-    \DataTypeTok{batch_size =} \DecValTok{32}\NormalTok{,  }\CommentTok{#what should this be}
+    \DataTypeTok{batch_size =} \DecValTok{32}\NormalTok{, }
     \DataTypeTok{validation_data =} \KeywordTok{list}\NormalTok{(x_val, y_val)  }
 \NormalTok{  )}
   
@@ -2064,8 +2124,9 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
   
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_deriv_oracle[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                                \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_deriv_oracle[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{y }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi)}
+                        \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   
   \KeywordTok{print}\NormalTok{(i)}
@@ -2188,8 +2249,8 @@ across a variety of standards, seen at the end of each iteration loop.
 \CommentTok{# custom `adam` optimizer, learning rate up for grabs}
 \CommentTok{# .001 default, .005 testing (methods were using 600 epo)}
 \NormalTok{adam_lr <-}\StringTok{ }\KeywordTok{optimizer_adam}\NormalTok{(}\DataTypeTok{lr =} \FloatTok{0.1}\NormalTok{, }\DataTypeTok{beta_1 =} \FloatTok{0.9}\NormalTok{, }\DataTypeTok{beta_2 =} \FloatTok{0.999}\NormalTok{,}
-                          \DataTypeTok{epsilon =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{decay =} \DecValTok{0}\NormalTok{, }\DataTypeTok{amsgrad =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{clipnorm =} \OtherTok{NULL}\NormalTok{,}
-                          \DataTypeTok{clipvalue =} \OtherTok{NULL}\NormalTok{)}
+                          \DataTypeTok{epsilon =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{decay =} \DecValTok{0}\NormalTok{, }\DataTypeTok{amsgrad =} \OtherTok{FALSE}\NormalTok{, }
+                          \DataTypeTok{clipnorm =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{clipvalue =} \OtherTok{NULL}\NormalTok{)}
 
 \NormalTok{dat <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\StringTok{"Data/imputed_CE.csv"}\NormalTok{)}
 
@@ -2208,8 +2269,8 @@ across a variety of standards, seen at the end of each iteration loop.
                                 \DataTypeTok{nn_deriv_imp_mean =} \KeywordTok{numeric}\NormalTok{(it))}
 
 \CommentTok{# Prep label}
-\NormalTok{df <-}\StringTok{ }\KeywordTok{select}\NormalTok{(dat, }\KeywordTok{c}\NormalTok{(FINCBTAX, pi, AGE_REF, BATHRMQ, BEDROOMQ, EDUC_REF, FAM_SIZE,}
-\NormalTok{                    TOTEXPCQ))}
+\NormalTok{df <-}\StringTok{ }\KeywordTok{select}\NormalTok{(dat, }\KeywordTok{c}\NormalTok{(FINCBTAX, pi, AGE_REF, BATHRMQ, BEDROOMQ, EDUC_REF, }
+\NormalTok{                    FAM_SIZE, TOTEXPCQ))}
 
 \CommentTok{#df <- df[1:1000,]}
 
@@ -2224,8 +2285,8 @@ across a variety of standards, seen at the end of each iteration loop.
 
 \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{it) \{}
   
-  \CommentTok{# Split the CE data into training and testing. Might want some kind of scheme to }
-  \CommentTok{# get the right amount of high-pi and low-pi observations in each}
+  \CommentTok{# Split the CE data into training and testing. Might want some kind of scheme }
+  \CommentTok{# to get the right amount of high-pi and low-pi observations in each}
   \CommentTok{# (testing is unlabelled, but we know the right answer)}
   
 \NormalTok{  #########}
@@ -2234,9 +2295,10 @@ across a variety of standards, seen at the end of each iteration loop.
   
 \NormalTok{  #########}
   \CommentTok{# Oracle mean}
-  \CommentTok{# this is a standard estimator which is done on the full (nonmissing) data to compare}
+  \CommentTok{# this is a baseline estimator which is done on the full (nonmissing) data}
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{oracle_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{FINCBTAX)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{oracle_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{FINCBTAX)}
   
 \NormalTok{  #########}
   \CommentTok{# Drop some labels - weighted to high y}
@@ -2253,8 +2315,8 @@ across a variety of standards, seen at the end of each iteration loop.
   \CommentTok{# pi-weighted naive mean}
   \CommentTok{# non-imputation of estimate which accounts for complex design but ignores systematic}
 \NormalTok{  hat_N_respondent <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{pi))}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{pi_naive_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_respondent)}\OperatorTok{*}\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }
-\StringTok{                                                                     }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{pi_naive_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_respondent)}\OperatorTok{*}\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{  }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX)}
   
   \CommentTok{# Compute median imputation mean estimate}
   
@@ -2267,8 +2329,8 @@ across a variety of standards, seen at the end of each iteration loop.
   
 \NormalTok{  imputed_list <-}\StringTok{ }\KeywordTok{c}\NormalTok{(labels,median_list)}
   
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{median_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{ }
-\StringTok{                                                                     }\NormalTok{imputed_list)}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{median_imp_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample) }\OperatorTok{*}\StringTok{ }\KeywordTok{sum}\NormalTok{((}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{*}\StringTok{  }\NormalTok{imputed_list)}
   
 \NormalTok{  #########}
   \CommentTok{# Linear regression imputation: MSE 1/pi weighted}
@@ -2280,8 +2342,9 @@ across a variety of standards, seen at the end of each iteration loop.
   
 \NormalTok{  lm_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(linear_model, lin_dropped) }\CommentTok{# THROWS WARN}
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{lin_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                           \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(lm_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{lin_imp_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{+}\StringTok{ }
+\StringTok{                          }\KeywordTok{sum}\NormalTok{(lm_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
 \NormalTok{  #########}
   \CommentTok{# Mean accoridng to imputed data via naive neural network (ignore complex design)}
@@ -2301,7 +2364,7 @@ across a variety of standards, seen at the end of each iteration loop.
   \KeywordTok{create_validation_split}\NormalTok{(x_train, y_train)}
   
   \ControlFlowTok{if}\NormalTok{(testing)\{}
-    \CommentTok{# Intentionally over-train on the training data to find the validation minimum}
+    \CommentTok{# Intentionally over-train on the training data to find the validation min}
 \NormalTok{    model <-}\StringTok{ }\KeywordTok{keras_model_sequential}\NormalTok{() }\OperatorTok{%>%}
 \StringTok{      }\KeywordTok{layer_dense}\NormalTok{(}\DataTypeTok{units =} \DecValTok{64}\NormalTok{, }\DataTypeTok{activation =} \StringTok{"relu"}\NormalTok{, }
                   \DataTypeTok{input_shape =} \KeywordTok{dim}\NormalTok{(x_train)[[}\DecValTok{2}\NormalTok{]]) }\OperatorTok{%>%}
@@ -2380,8 +2443,9 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
   
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                          \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_imp_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{+}\StringTok{ }
+\StringTok{                          }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   \KeywordTok{print}\NormalTok{(}\StringTok{"Finished nn imp mean"}\NormalTok{)}
   
@@ -2481,8 +2545,9 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  nn_pi_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
   
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_pi_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                             \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_pi_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_pi_imp_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{+}\StringTok{ }
+\StringTok{                          }\KeywordTok{sum}\NormalTok{(nn_pi_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   \KeywordTok{print}\NormalTok{(}\StringTok{"Finished nn pi imp mean"}\NormalTok{)}
   
@@ -2517,8 +2582,6 @@ across a variety of standards, seen at the end of each iteration loop.
   
   
   \CommentTok{# Extract partial pi from full train x}
-  \CommentTok{#range01 <- function(x)\{(x-min(x))/(max(x)-min(x))\}}
-  
 \NormalTok{  pi_prime <-}\StringTok{ }\NormalTok{pi_vec[}\OperatorTok{-}\NormalTok{val_indices]}
 \NormalTok{  obs_weights <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{pi_prime}
 
@@ -2619,8 +2682,9 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
   
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_wmse_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                               \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_wmse_imp_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{+}\StringTok{ }
+\StringTok{                          }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   \KeywordTok{print}\NormalTok{(}\StringTok{"Finished nn wmse mean"}\NormalTok{)}
   
@@ -2641,7 +2705,8 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  orig_tbl <-}\StringTok{ }\KeywordTok{as_tibble}\NormalTok{(orig_df)}
   
   \CommentTok{# RESAMPLE ON DF NOT REDUCED_DF}
-\NormalTok{  resamp_df <-}\StringTok{ }\KeywordTok{sample_n}\NormalTok{(}\DataTypeTok{tbl =}\NormalTok{ orig_tbl, }\DataTypeTok{size =} \KeywordTok{nrow}\NormalTok{(orig_tbl), }\DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{weight =}\NormalTok{ weight_vec)}
+\NormalTok{  resamp_df <-}\StringTok{ }\KeywordTok{sample_n}\NormalTok{(}\DataTypeTok{tbl =}\NormalTok{ orig_tbl, }\DataTypeTok{size =} \KeywordTok{nrow}\NormalTok{(orig_tbl),}
+                        \DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{weight =}\NormalTok{ weight_vec)}
   
   \CommentTok{# re-partition into complete cases, and cases to be imputed}
 \NormalTok{  resamp_reduced_df <-}\StringTok{ }\NormalTok{resamp_df[}\OperatorTok{-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(resamp_df}\OperatorTok{$}\NormalTok{FINCBTAX)),]}
@@ -2739,8 +2804,9 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  nn_resamp_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
   
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_resamp_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                                 \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_resamp_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{resamp_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_resamp_imp_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{+}\StringTok{ }
+\StringTok{                          }\KeywordTok{sum}\NormalTok{(nn_resamp_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{resamp_dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   
   \KeywordTok{print}\NormalTok{(}\StringTok{"Finished resamp imp mean"}\NormalTok{)}
   
@@ -2850,14 +2916,17 @@ across a variety of standards, seen at the end of each iteration loop.
 \NormalTok{  nn_y_hat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model, x_test)}
   
 \NormalTok{  hat_N_sample <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{df}\OperatorTok{$}\NormalTok{pi)}
-\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_deriv_imp_mean[i] <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }
-                                                                \OperatorTok{+}\StringTok{ }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
+\NormalTok{  statistic_tracker}\OperatorTok{$}\NormalTok{nn_deriv_imp_mean[i] <-}\StringTok{ }
+\StringTok{    }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{hat_N_sample)}\OperatorTok{*}\NormalTok{(}\KeywordTok{sum}\NormalTok{(reduced_df}\OperatorTok{$}\NormalTok{FINCBTAX }\OperatorTok{/}\StringTok{ }\NormalTok{reduced_df}\OperatorTok{$}\NormalTok{pi) }\OperatorTok{+}\StringTok{ }
+\StringTok{                          }\KeywordTok{sum}\NormalTok{(nn_y_hat }\OperatorTok{/}\StringTok{ }\NormalTok{dropped_obs}\OperatorTok{$}\NormalTok{pi))}
   \KeywordTok{print}\NormalTok{(}\StringTok{"Finished derived param imp mean"}\NormalTok{)}
   
   \KeywordTok{print}\NormalTok{(i)}
 \NormalTok{\}}
 
-\KeywordTok{write.csv}\NormalTok{(statistic_tracker, }\DataTypeTok{file =} \StringTok{"C:}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Users}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Alexander}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Documents}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{thesis stat tracker}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{LRepo_8.csv"}\NormalTok{)}
+\NormalTok{statistic_tracker }\OperatorTok{%>%}\StringTok{ }\KeywordTok{write.csv}\NormalTok{(}\DataTypeTok{file =} 
+            \StringTok{"C:}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Users}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Alexander}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Documents}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{thesis stat tracker}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{LRepo_8.csv"}\NormalTok{)}
+
 
 
 \NormalTok{################################################}
@@ -2973,17 +3042,10 @@ across a variety of standards, seen at the end of each iteration loop.
 \setlength{\parskip}{8pt}
 
 \hypertarget{refs}{}
-\hypertarget{ref-angel2000}{}
-Angel, E. (2000). \emph{Interactive computer graphics : A top-down
-approach with opengl}. Boston, MA: Addison Wesley Longman.
-
-\hypertarget{ref-angel2001}{}
-Angel, E. (2001a). \emph{Batch-file computer graphics : A bottom-up
-approach with quicktime}. Boston, MA: Wesley Addison Longman.
-
-\hypertarget{ref-angel2002a}{}
-Angel, E. (2001b). \emph{Test second book by angel}. Boston, MA: Wesley
-Addison Longman.
+\hypertarget{ref-BLS2019}{}
+BLS consumer expenditure surveys. (2019, March). U.S. Bureau of Labor
+Statistics. Retrieved from
+\url{https://www.bls.gov/cex/pumd_doc.htm\#2017}
 
 \hypertarget{ref-brick1996handling}{}
 Brick, J. M., \& Kalton, G. (1996). Handling missing data in survey
@@ -3007,6 +3069,11 @@ the lasso. \emph{arXiv Preprint arXiv:1707.08692}.
 Horvitz, D. G., \& Thompson, D. J. (1952). A generalization of sampling
 without replacement from a finite universe. \emph{Journal of the
 American Statistical Association}, \emph{47}(260), 663--685.
+
+\hypertarget{ref-IRS2015}{}
+Internal revenue service statistics. (n.d.). \emph{Statistics \textbar{}
+Internal Revenue Service}. Retrieved from
+\url{https://www.irs.gov/statistics}
 
 \hypertarget{ref-lumley2011complex}{}
 Lumley, T. (2011). \emph{Complex surveys: A guide to analysis using r}

@@ -2,7 +2,7 @@
 
 ## Acknowledgements {-}
 
-Thanks to my advisor Dr. Kelly McConville, and all proof readers without whom the thesis would be illegible.
+Thanks to my advisor Dr. Kelly McConville, and all proof readers.
 
 A thank-you to Ezra Shwartz, without whom computation time would have been prohibitive.
 

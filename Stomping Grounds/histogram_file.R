@@ -126,7 +126,7 @@ my_bar <- ggplot(mydat, aes(x = Method, y = Naive_Ratio, fill = cols)) +
 
 my_bar + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + theme(legend.position="none")
 
-
+######## BAD??
 df <- matrix(nrow = 8, ncol = 2)
 df[,1] <- colnames(new_df)
 df[,2] <- as.numeric(new_df[1,])
