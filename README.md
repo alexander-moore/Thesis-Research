@@ -46,7 +46,7 @@ p_df <- cbind(p_1, p_2, p_3, p_y, p_pi)
 
 **Chapter 4: Simulation**: Simulation study emulating minimal domain knowledge modeling. Monte Carlo strategy used to compare MSE of imputation methods to the oracle for population mean estimation. Oracle methods and noisy features are used to simulate real data with uncorrelated features.
 
-**Chapter 5: Explorations in Real Data**: April 2019.
+**Chapter 5: Bureau of Labor Statistics**: April 2019.
 
 **Chapter 6: Conclusion**: Findings, future work, and improvements. Discussion of applicability of neural networks to imputation and potential improvements for generalizable models in minimal-domain knowledge areas.
 
