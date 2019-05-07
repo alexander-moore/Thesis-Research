@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.4.4)  26 APR 2019 23:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.4.4)  7 MAY 2019 16:42
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -822,10 +822,6 @@ l.283
 
 ]
 
-LaTeX Warning: Reference `fig:missingness' on page 2 undefined on input line 33
-8.
-
-
 Package Fancyhdr Warning: \headheight is too small (12.0pt): 
 Make it at least 14.49998pt.
 We now make it that large for the rest of the document.
@@ -835,13 +831,13 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.367 
+l.370 
        [2]
-<thesis_files/figure-latex/systematic-1.pdf, id=341, 469.755pt x 325.215pt>
+<thesis_files/figure-latex/systematic-1.pdf, id=333, 469.755pt x 325.215pt>
 File: thesis_files/figure-latex/systematic-1.pdf Graphic file (type pdf)
 <use thesis_files/figure-latex/systematic-1.pdf>
 Package pdftex.def Info: thesis_files/figure-latex/systematic-1.pdf  used on in
-put line 378.
+put line 381.
 (pdftex.def)             Requested size: 390.25534pt x 270.1765pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
@@ -850,26 +846,26 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.3}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.392 
-       [3 <./thesis_files/figure-latex/systematic-1.pdf>]pdfTeX warning (ext4):
- destination with the same identifier (name{page.4}) has been already used, dup
-licate ignored
+l.383 I
+       mputation attempts to address this common dilemma in real-world data. [3
+]pdfTeX warning (ext4): destination with the same identifier (name{page.4}) has
+ been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.417 \chapter
-              {Neural Networks}\label{math-sci} [4]
-Chapter 2.
-[5
+l.416 
+       [4 <./thesis_files/figure-latex/systematic-1.pdf>] [5] [6
 
 ]
+Chapter 2.
+[7]
 <thesis_files/figure-latex/overfit-1.pdf, id=359, 469.755pt x 325.215pt>
 File: thesis_files/figure-latex/overfit-1.pdf Graphic file (type pdf)
 <use thesis_files/figure-latex/overfit-1.pdf>
 Package pdftex.def Info: thesis_files/figure-latex/overfit-1.pdf  used on input
- line 477.
+ line 482.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Overfull \hbox (36.13387pt too wide) in paragraph at lines 477--479
+Overfull \hbox (36.13387pt too wide) in paragraph at lines 482--484
  [][] 
  []
 
@@ -877,420 +873,402 @@ Overfull \hbox (36.13387pt too wide) in paragraph at lines 477--479
 File: thesis_files/figure-latex/second-1.pdf Graphic file (type pdf)
 <use thesis_files/figure-latex/second-1.pdf>
 Package pdftex.def Info: thesis_files/figure-latex/second-1.pdf  used on input 
-line 483.
+line 488.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Overfull \hbox (36.13387pt too wide) in paragraph at lines 483--484
+Overfull \hbox (36.13387pt too wide) in paragraph at lines 488--489
  [][] 
  []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[6 <./thesis_files/figure-latex/overfit-1.pdf>]
+[8 <./thesis_files/figure-latex/overfit-1.pdf>]
 <thesis_files/figure-latex/underfit-1.pdf, id=375, 469.755pt x 325.215pt>
 File: thesis_files/figure-latex/underfit-1.pdf Graphic file (type pdf)
 <use thesis_files/figure-latex/underfit-1.pdf>
 Package pdftex.def Info: thesis_files/figure-latex/underfit-1.pdf  used on inpu
-t line 515.
+t line 520.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Overfull \hbox (36.13387pt too wide) in paragraph at lines 515--516
+Overfull \hbox (36.13387pt too wide) in paragraph at lines 520--521
  [][] 
  []
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 2197) has occurred while \output is active []
 
-[7 <./thesis_files/figure-latex/second-1.pdf>]
-<figure/biasvariance.png, id=386, 507.95486pt x 319.02043pt>
+[9 <./thesis_files/figure-latex/second-1.pdf>]
+<figure/biasvariance.png, id=387, 507.95486pt x 319.02043pt>
 File: figure/biasvariance.png Graphic file (type png)
 <use figure/biasvariance.png>
-Package pdftex.def Info: figure/biasvariance.png  used on input line 527.
+Package pdftex.def Info: figure/biasvariance.png  used on input line 532.
 (pdftex.def)             Requested size: 507.95363pt x 319.01964pt.
 
-Overfull \hbox (74.33363pt too wide) in paragraph at lines 527--528
+Overfull \hbox (74.33363pt too wide) in paragraph at lines 532--533
  [][] 
  []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[8 <./thesis_files/figure-latex/underfit-1.pdf>]
+[10 <./thesis_files/figure-latex/underfit-1.pdf>]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 532.
+(Font)              <10> on input line 537.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 532.
+(Font)              <7> on input line 537.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 532.
+(Font)              <5> on input line 537.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[9 <./figure/biasvariance.png>]
+[11 <./figure/biasvariance.png>]
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <8> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 589.
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 594.
 LaTeX Font Info:    Font shape `U/lasy/b/n' in size <6> not available
-(Font)              Font shape `U/lasy/m/n' tried instead on input line 589.
-[10]
+(Font)              Font shape `U/lasy/m/n' tried instead on input line 594.
+[12]
 <figure/optimize.png, id=416, 1606.0pt x 1118.1775pt>
 File: figure/optimize.png Graphic file (type png)
 <use figure/optimize.png>
-Package pdftex.def Info: figure/optimize.png  used on input line 653.
+Package pdftex.def Info: figure/optimize.png  used on input line 658.
 (pdftex.def)             Requested size: 411.93767pt x 286.81209pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[11]
-LaTeX Font Info:    Try loading font information for T1+lmtt on input line 657.
+[13]
+LaTeX Font Info:    Try loading font information for T1+lmtt on input line 662.
 
 (c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [12 <./figure/optimize.png (PNG copy)>]
+) [14 <./figure/optimize.png (PNG copy)>]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[13] [14] [15] [16
+[15] [16] [17] [18
 
 ]
 Chapter 3.
-[17]
+[19]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <14.4> on input line 890.
-[18] [19]
-<figure/network.png, id=469, 903.375pt x 564.60938pt>
+(Font)              <14.4> on input line 896.
+[20] [21]
+<figure/network.png, id=470, 903.375pt x 564.60938pt>
 File: figure/network.png Graphic file (type png)
 <use figure/network.png>
-Package pdftex.def Info: figure/network.png  used on input line 1041.
+Package pdftex.def Info: figure/network.png  used on input line 1050.
 (pdftex.def)             Requested size: 346.89731pt x 216.81097pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-[20] [21 <./figure/network.png>] [22
+[22] [23 <./figure/network.png>] [24]
+Chapter 4.
+[25
 
 ]
-Chapter 4.
-[23] [24]
-<figure/bowl.jpg, id=493, 607.26875pt x 607.26875pt>
+<figure/bowl.jpg, id=489, 607.26875pt x 607.26875pt>
 File: figure/bowl.jpg Graphic file (type jpg)
 <use figure/bowl.jpg>
-Package pdftex.def Info: figure/bowl.jpg  used on input line 1177.
+Package pdftex.def Info: figure/bowl.jpg  used on input line 1188.
 (pdftex.def)             Requested size: 303.53267pt x 303.54097pt.
-[25 <./figure/bowl.jpg>]
+[26] [27 <./figure/bowl.jpg>]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[26] [27] [28]
+[28] [29] [30]
 Chapter 5.
-LaTeX Font Info:    Try loading font information for TS1+lmr on input line 1397
+LaTeX Font Info:    Try loading font information for TS1+lmr on input line 1409
 .
 (c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [29
+) [31
 
-] [30]
+] [32]
 <thesis_files/figure-latex/unnamed-chunk-3-1.pdf, id=526, 469.755pt x 325.215pt
 >
 File: thesis_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file (type pdf)
 <use thesis_files/figure-latex/unnamed-chunk-3-1.pdf>
 Package pdftex.def Info: thesis_files/figure-latex/unnamed-chunk-3-1.pdf  used 
-on input line 1518.
+on input line 1548.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Overfull \hbox (36.13387pt too wide) in paragraph at lines 1518--1520
- [][] 
- []
-
-<thesis_files/figure-latex/unnamed-chunk-4-1.pdf, id=527, 469.755pt x 325.215pt
->
-File: thesis_files/figure-latex/unnamed-chunk-4-1.pdf Graphic file (type pdf)
-<use thesis_files/figure-latex/unnamed-chunk-4-1.pdf>
-Package pdftex.def Info: thesis_files/figure-latex/unnamed-chunk-4-1.pdf  used 
-on input line 1524.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-
-Overfull \hbox (36.13387pt too wide) in paragraph at lines 1524--1525
+Overfull \hbox (36.13387pt too wide) in paragraph at lines 1548--1550
  [][] 
  []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[31]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-[32 <./thesis_files/figure-latex/unnamed-chunk-3-1.pdf>] [33 <./thesis_files/fi
-gure-latex/unnamed-chunk-4-1.pdf>] [34
-
-]
+[33] [34 <./thesis_files/figure-latex/unnamed-chunk-3-1.pdf>]
 Chapter 6.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[35]
-Underfull \vbox (badness 3861) has occurred while \output is active []
-
-[36] [37] [38
+[35
 
 ]
-Appendix A.
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[36]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 1692.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 1694.
 LaTeX Font Info:    Try loading font information for TS1+lmtt on input line 201
-5.
+7.
 (c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmtt.fd
 File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [39]
-Underfull \vbox (badness 10000) detected at line 2201
+) [37]
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 
-Overfull \vbox (2.23666pt too high) detected at line 2201
+Overfull \vbox (2.23666pt too high) detected at line 2203
+ []
+
+[38]
+Underfull \vbox (badness 10000) detected at line 2203
+ []
+
+
+Overfull \vbox (2.23666pt too high) detected at line 2203
+ []
+
+[39]
+Underfull \vbox (badness 10000) detected at line 2203
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 [40]
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2201
+Overfull \vbox (0.56999pt too high) detected at line 2203
  []
 
 [41]
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2201
+Overfull \vbox (1.97pt too high) detected at line 2203
  []
 
 [42]
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 [43]
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 [44]
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 [45]
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 [46]
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 
-Overfull \vbox (1.97pt too high) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 [47]
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 2203
  []
 
-[48]
-Underfull \vbox (badness 10000) detected at line 2201
- []
-
-
-Underfull \vbox (badness 10000) detected at line 2201
- []
-
-[49]
-Underfull \vbox (badness 10000) detected at line 2201
+[48] [49]
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Overfull \vbox (0.54199pt too high) detected at line 2201
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
-[50] [51]
-Underfull \vbox (badness 10000) detected at line 3031
+[50]
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
+ []
+
+[51]
+Underfull \vbox (badness 10000) detected at line 3033
+ []
+
+
+Overfull \vbox (2.23666pt too high) detected at line 3033
  []
 
 [52]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [53]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [54]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [55]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [56]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [57]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [58]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [59]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [60]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Overfull \vbox (2.1686pt too high) detected at line 3033
  []
 
 [61]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [62]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [63]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [64]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Overfull \vbox (2.23666pt too high) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [65]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 [66]
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
 
-Underfull \vbox (badness 10000) detected at line 3031
+Underfull \vbox (badness 10000) detected at line 3033
  []
 
-[67]
-Underfull \vbox (badness 10000) detected at line 3031
- []
+[67] [68]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 3098.
+[69
 
-
-Underfull \vbox (badness 10000) detected at line 3031
- []
-
-[68] [69] [70
 
 ]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 3096.
-[71
-
-]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 3096.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 3098.
 (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 3096.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 3096.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 3098.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 3098.
 
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: 6BDD244423C5B235DFACC10D19940AB8;3166.
-
-LaTeX Warning: There were undefined references.
-
+(rerunfilecheck)             Checksum: B0D24D2DF00BDECE84F9108CF641B221;3034.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 3096.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 3098.
  ) 
 Here is how much of TeX's memory you used:
- 9137 strings out of 494562
- 140175 string characters out of 6175797
- 335588 words of memory out of 5000000
- 12404 multiletter control sequences out of 15000+600000
+ 9126 strings out of 494562
+ 139858 string characters out of 6175797
+ 337502 words of memory out of 5000000
+ 12397 multiletter control sequences out of 15000+600000
  89890 words of font info for 89 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 40i,12n,57p,464b,408s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,12n,61p,464b,408s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-
 ts1.enc}{c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/
 lm/lm-ec.enc}{c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/d
@@ -1319,10 +1297,10 @@ lm/lmtk10.pfb><c:/Users/Alexander/AppData/Roaming/TinyTeX/texmf-dist/fonts/type
 onts/type1/public/lm/lmtt12.pfb><c:/Users/Alexander/AppData/Roaming/TinyTeX/tex
 mf-dist/fonts/type1/public/lm/lmtti10.pfb><c:/Users/Alexander/AppData/Roaming/T
 inyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on thesis.pdf (87 pages, 1160328 bytes).
+Output written on thesis.pdf (85 pages, 1155750 bytes).
 PDF statistics:
- 840 PDF objects out of 1000 (max. 8388607)
- 706 compressed objects within 8 object streams
- 172 named destinations out of 1000 (max. 500000)
- 411 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 818 PDF objects out of 1000 (max. 8388607)
+ 689 compressed objects within 7 object streams
+ 169 named destinations out of 1000 (max. 500000)
+ 390 words of extra memory for PDF output out of 10000 (max. 10000000)
 

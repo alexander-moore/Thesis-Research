@@ -10,11 +10,11 @@ The {#rmd-basics} text after the chapter declaration will allow us to link throu
 
 ## Survey Statistics
 
-> Researchers in the social science and health sciences are increasingly interested in using data from complex surveys to conduct the same sorts of analyses that they traditionally conduct with more straightforward data. - Lumley 1969
+> Researchers in the social science and health sciences are increasingly interested in using data from complex surveys to conduct the same sorts of analyses that they traditionally conduct with more straightforward data. - Lumley 2011
 
 The implicit pervasiveness of survey statistics in all data motivates our exploration into its significance in imputation. Imputation is the act of replacing missing data with estimated values.
 
-Survey statistics differ from statistics modelling in the specification of the random process that generates the data. In model-based statistics, some underlying generative model from which observations are drawn is assumed to exist. By understanding or approximating this model from data, one may draw conclusions on the nature of the generative function provided no meaningful changes to the data are made.
+Survey statistics differ from statistical modelling in the specification of the random process that generates the data. In model-based statistics, some underlying generative model from which observations are drawn is assumed to exist. By understanding or approximating this model from data, one may draw conclusions on the nature of the generative function provided no meaningful changes to the data are made.
 
 Contrary to model-based statistics, the analysis of complex survey samples are design based. The observations from a researcher-specified population have fixed features, and randomness is introduced when these observations are drawn from the population according to some stochastic design. This random process is under the control of the researcher, and can be known precisely. The significance of design-based methods is that the probability sample design is the procedure for taking samples from a population, not just the resulting data. This is a significant departure from the statistical analysis mindset that randomness is an element of the features and labels of a population. Using this method, the features of the population from which the observations are drawn may be estimated, but these conclusions may not generalize to other populations. With understanding of the survey sampling design from which data observations arise, the researcher may make improved estimates of the population of study compared to naive estimates [@lumley2011complex]. 
 
@@ -24,7 +24,7 @@ This type of surveying can be further complicated by adding unequal inclusion pr
 
 There are four requirements for a data set to be a probability sample:
 
-1. Every individual in the population must have a non-zero probability of ending up in the sample.
+1. Every individual in the population must have a non-zero probability of ending up in the sample, where $i$ is the index of the $i$th observation in the sample.
 
 2. The probability of inclusion $\pi_i$ must be known for every individual who does end up in the sample.
 
@@ -32,7 +32,7 @@ There are four requirements for a data set to be a probability sample:
 
 4. The probability of every pair of individuals being included in the sample must be known for every pair of individuals in the sample.
 
-1 and 2 are necessary in order to get valid population estimates, 3 and 4 are necessary to work out the accuracy of the estimates. If individuals were sampled independently of each other the first two properties would guarantee the last two [@lumley2011complex]. Though 3 and 4 are requirements of a probability sample, they are often not included in datasets as they require an $n \times n$ matrix of probabilities, where $n$ is the number of observations in the data set. This information is not incorporated into the methods of this thesis.
+Axioms 1 and 2 are necessary in order to get valid population estimates, axioms 3 and 4 are necessary to work out the accuracy of the estimates. If individuals were sampled independently of each other the first two properties would guarantee the last two [@lumley2011complex]. Though 3 and 4 are requirements of a probability sample, they are often not included in datasets as they require an $n \times n$ matrix of probabilities, where $n$ is the number of observations in the data set. Due to the high dimension and complex relationships of these probabilities, this information is not incorporated into the methods of this thesis.
 
 The fundamental statistical idea behind all of design-based inference is that an individual sampled with a sampling probability $\pi_i$ represents $\frac{1}{\pi_i}$ individuals in the population. The value $\frac{1}{\pi_i}$ is called the sampling weight [@lumley2011complex]. Since observations represent different proportions of the population, the inclusion probability must be accounted for in modeling and estimation procedures.
 
@@ -40,7 +40,7 @@ Data collected under a complex survey design have an additional layer of complex
 
 ## Imputation
 
-Often in real-world data, there is some degree of missingness. This can be for any number of reasons, illustrated in \@ref(fig:missingness).
+Often in real-world data, there is some degree of missingness. This can be for any number of reasons, illustrated in Table 1.1.
 
 ```{r, warning = FALSE, echo = FALSE, include = FALSE}
 library(gridExtra)
@@ -57,16 +57,16 @@ df<- cbind(1:3)
 colnames(df) <- c("Description")
 rownames(df) <- c("Noncoverage", "Total Nonresponse", "Item Nonresponse")
 
-df[,1] <- c("An element in the target population is not included", "A sampled element does not participate in the survey", "A responder fails gives insatisfactory responses")
+df[,1] <- c("An element in the target population is not included", "A sampled element does not participate in the survey", "A responder fails to give satisfactory responses")
 
 knitr::kable(df, caption = "Types of missingess")
 ```
-Item nonresponse is the focus of this thesis. Item nonresponse will be restricted to a response value of interest called a label and will be present in some of the observations. The other variables of the observation, called features, will be fully present. The usual form of handling item nonresponse is imputation, which fills in missing values with usable information [@brick1996handling]. Common algorithms such as Principal Component Analysis and regression require no missingness in the data set, so replacing NA values with useable information is vital for analysis. Linear regression for example cannot incorporate observations lacking a label. Simply dropping these observations would remove potentially huge swathes of the data set, particularly in multivariate data sets, and would potentially create systematic bias. 
+Item nonresponse is the focus of this thesis. Item nonresponse will be restricted to a response value of interest called a label and will be present in some of the observations. The other variables of the observation, called features, will be fully present. The usual form of handling item nonresponse is imputation, which fills in missing values with usable information [@brick1996handling]. Common statistical inference algorithms such as Principal Component Analysis and modelling such as regression require that there be no missing values in the data set, so replacing NA values with useable information is vital for analysis. Linear regression for example cannot incorporate observations lacking a label. Simply dropping these observations would remove potentially huge swathes of the data set, particularly in multivariate data sets, and would potentially create systematic bias. 
 
 Suppose for example a data set with information on roses had a feature with stem length and a label on flower size measured by a researcher. There might be missing values for flower size that are not randomly distributed: Before the researcher makes measurements, there has been systematic removal of the large-flowered roses by passersby. To ignore these observations would lead the analyst to draw false conclusions on the relationship of stem length to flower size, the distribution of flower sizes in the population, and estimations of the mean flower size in the population of all flowers, visualized in Example 1.1:
 
 
-```{r systematic, echo = FALSE, warning = FALSE, out.width = "90%"}
+```{r systematic, fig.cap="Systematic bias can lead to false conclusions about the data", echo = FALSE, warning = FALSE, out.width = "90%"}
 # Example 1: what happens when systematic bias is ignored, and missing values are dropped
 ## Should be using "gridExtra" package here
 set.seed(1)
@@ -78,7 +78,7 @@ flower_diam <- exp(stem_length)/500 + noise
 
 #plot(stem_length, flower_diam)
 comb <- as_data_frame(cbind(stem_length, flower_diam))
-a0 <- ggplot(data = comb, aes(x = stem_length, y = flower_diam)) + geom_point()
+a0 <- ggplot(data = comb, aes(x = stem_length, y = flower_diam)) + geom_point() + labs(x = "Stem Length", y = "Flower Diameter")
 
 df <- as_data_frame(cbind(stem_length, flower_diam))
 
@@ -88,19 +88,21 @@ lin <- lm(drop_flower_diam~drop_stem_length, data = df)
 
 a1 <- ggplot(data = df[1:6,], aes(x=stem_length, y=flower_diam)) + 
   geom_point(color = 'blue') + 
-  geom_abline(slope = lin$coefficients[2], intercept = lin$coefficients[1])
+  geom_abline(slope = lin$coefficients[2], intercept = lin$coefficients[1]) + 
+  labs(x = "Stem Length", y = "Flower Diameter")
 
 a2 <- ggplot(data = df, aes(x=stem_length, y=flower_diam)) + 
   geom_point(color = 'blue') + 
-  geom_abline(slope = lin$coefficients[2], intercept = lin$coefficients[1])
+  geom_abline(slope = lin$coefficients[2], intercept = lin$coefficients[1]) +
+  labs(x = "Stem Length", y = "Flower Diameter")
 
 grid.arrange(a0, a1, a2, ncol=3)
 ```
 
-Imputation attempts to address this common dilemma in real-world data. Imputation is the process of replacing missingness in data sets with some value that redeems the observation for some degree of analysis. "The aim of these methods is to compensate for the missing data in such a manner that the analysis file may be subjected to any form of analysis without the need for further consideration of the missing data" [@brick1996handling]. Imputation assigns values to missing responses, which allows records with missingness to be retained during analysis. Ideally, imputation would eliminate bias in survey estimates caused by ignoring records with missing data. The catch is that imputation can destroy intervariable relationships, as well as overestimate the precision of survey estimates on fabricated data.
+Imputation attempts to address this common dilemma in real-world data. Imputation is the process of replacing missingness in data sets with some value that maintains rare observations in the sample for analysis. "The aim of these methods is to compensate for the missing data in such a manner that the analysis file may be subjected to any form of analysis without the need for further consideration of the missing data" [@brick1996handling]. Imputation assigns values to missing responses, which allows records with missingness to be retained during analysis. Ideally, imputation would eliminate bias in survey estimates caused by ignoring records with missing data. The catch is that imputation can destroy intervariable relationships since a model imposes a new relationship from imputing that is not necessarily the true generative function, as well as overestimate the precision of survey estimates on fabricated data.
 
-There are stochastic and deterministic methods for imputation. Deterministic regression imputation is the predicted value from a regression trained on complete-case data. Stochastic imputation differs due to an additional residual added term to the predicted value, taken either from a random respondent or comparable observation, and is usually preferred due to the importance of shape parameters in many analyses [@brick1996handling].
+There are stochastic and deterministic methods for imputation. Deterministic regression imputation is the predicted value from a regression trained on complete-case data. Stochastic imputation differs due to an additional residual added term to the predicted value, taken either from a random respondent or comparable observation, and is usually preferred due to the importance of shape parameters defining the generative distribution in many analyses [@brick1996handling].
 
-One traditional method of imputation is the "Hot-Deck Method", which was generally favorable when computation was less efficient. Hot Deck Imputation  requires extensive knowledge of the survey variables in order to optimize performance since explicit model-based imputation needs a valid model for every survey variable [@maiti2008neural]. This thesis proposes artificial neural networks with heuristic hyperparameters as a solution which requires minimal domain knowledge and resists the curse of dimensionality which other nonparametric methods are susceptible to, such as local polynomial regression [@maiti2008neural].
+One traditional method of imputation is the Hot-Deck Method, which was generally favorable when computation was less efficient. Hot Deck Imputation  requires extensive knowledge of the survey variables in order to optimize performance since explicit model-based imputation needs a valid model for every survey variable [@maiti2008neural]. This thesis proposes artificial neural networks with heuristic hyperparameters as a solution which requires minimal domain knowledge and resists the curse of dimensionality which other nonparametric methods are susceptible to, such as local polynomial regression [@maiti2008neural].
 
 Due to the difficulties imposed by working with high-dimensional, complex survey data with varying degrees of domain knowledge, we turn to neural networks and their structural benefits to reliably perform these challenging imputation problems.

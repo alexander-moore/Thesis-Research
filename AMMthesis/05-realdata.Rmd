@@ -1,7 +1,7 @@
 # Consumer Expenditure Surveys
 
 ## Data
-The Consumer Expenditure (CE) Surveys provide data on expenditures, income, and demographic characteristics of consumers in the United States [@BLS2019]. The CE data are collected by the Census Bureau for the Bureau of Labor Statistics (BLS). The data are primary used to "revise the relative importance of goods and services in the market basket of the Consumer Price Index". 
+The Consumer Expenditure (CE) Surveys provide data on expenditures, income, and demographic characteristics of consumers in the United States [@BLS2019]. The CE data are collected by the Census Bureau for the Bureau of Labor Statistics (BLS). The data are primary used to "revise the relative importance of goods and services in the market basket of the Consumer Price Index" [@BLS2019]. 
 
 The data will be the `fmli171x` survey data, one of the quarterly surveys for 2017 which contains household information such as specific incomes, expenditures, home description, and family description. The data have a low degree of missingness as quarterly information is propagated between surveys to create complete observations.
 
@@ -30,7 +30,7 @@ The CE data method performance comparison will be performed in much the same way
 
 The `fmli171x` survey data is first pre-processed to remove features with large swathes of missingness. For this study, features with more than 33% missing values are dropped from the data set and not considered as potential options for the experiment. Features with missingness less than thiry-three percent are then median-imputed, where missing values are replaced with the median value of the feature. The median in this case is used for reasons: it returns only reasonable values, is uninformative, and does not rely on multiple imputation. The label to be used is `FINCBTAX`, the financial income of the response household before taxes. This label has no missingness as it is BLS-derived (already imputed).
 
-This process returns a complete-case data set of 6208 family samples across the 8 variables and features selected above. There are 127 million households in the US, which can be used as an approximate population size $N$. From this collection, the variables `AGE_REF, BATHRMQ, BEDRMQ, EDUC_REF, FAM_SIZE, TOTEXPCQ` were kept for their potential informativity without being a direct function of `FINCBTAX`. All 6208 family samples are used as the sample, on which missingness is induced.
+This process returns a complete-case data set of 6208 family samples across the 8 variables and features selected above. From the population of US households, the features `AGE_REF, BATHRMQ, BEDRMQ, EDUC_REF, FAM_SIZE, TOTEXPCQ` were kept for their potential informativity without being a direct function of `FINCBTAX`. All 6208 family samples are used as the sample, on which missingness is induced.
 
 The problem of assessing model performance in real-world data is the paradox of missing labels: ideally, we would impute a missing label, then learn the true value, and score the model accordingly. For this data, we will again rely on Monte Carlo simulation to create a distribution of population mean estimates (U.S. mean household income) by inducing missingness in the known labels, imputing, and comparing results via MSE to the true mean.
 
@@ -52,6 +52,12 @@ Parameterized by matrices of dimension $6 \times 64$, $64 \times 64$, $64 \times
 To accommodate the significantly higher number of trainable features in this network the hyperparameter $\omega$, the learning rate, must be initialized higher in the `adam` optimization algorithm. This can expedite the number of epochs (training data exposures) needed for the algorithm to converge, but can sacrifice predictive accuracy, a constraint imposed by computational demand. The gradient descent algorithm has the potential to skip over a desireable minima in the early training if the initial learning rate is too large. This tradeoff is made in the name of a more statistically informative monte carlo simulation through more iterations than possible with a slower, more accurate learning rate.
 
 ## Results
+
+Neural network methods unilaterally outperform weighted linear regression in the CE data context. Without adapting the neural networks other than a heuristic load-bearing increase, even the naive neural network outperforms the typical mean estimation imputation procedure. These results are extremely promising to the capabilities of neural networks and the ability to perform accurate imputation in the face of systematic bias.
+
+The stand-out success of the weighted resample neural network is especially promising because of the low size of the resample. To mitigate the additional layer of variability invoked by the resample process, usually this method is performed with a $\hat{N}$-observation resample rather than $n$.
+
+The results of this simulation show the importance of a nonparametric predictive model: one which can navigate the complex relationship of label to feature when the model designer is unsure of the underlying properties is invaluable.
 
 ```{r, fig.cap = "Distribution of population mean estimates by method", echo = FALSE, warning=FALSE, message=FALSE}
 CE_results <- read.csv("data/LR_epo_running_1.csv")
@@ -141,14 +147,9 @@ mydat$Method <- as.character(mydat$Method)
 mydat$Method <- factor(mydat$Method, levels=unique(mydat$Method))
 
 my_bar <- ggplot(mydat, aes(x = Method, y = Naive_Ratio, fill = cols)) + 
-  geom_bar(stat = "identity")
-
-my_bar + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + theme(legend.position="none")
-
+  geom_bar(stat = "identity") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(legend.position="none") +
+  labs(x = "Method", y = "Relative Performance")
 ```
 
-Neural network methods unilaterally outperform weighted linear regression in the CE data context. Without adapting the neural networks other than a heuristic load-bearing increase, even the naive neural network outperforms the typical mean estimation imputation procedure. These results are extremely promising to the capabilities of neural networks and the ability to perform accurate imputation in the face of systematic bias.
-
-The stand-out success of the weighted resample neural network is especially promising because of the low size of the resample. To mitigate the additional layer of variability invoked by the resample process, usually this method is performed with a $\hat{N}$-observation resample rather than $n$.
-
-The results of this simulation show the importance of a nonparametric predictive model: one which can navigate the complex relationship of label to feature when the model designer is unsure of the underlying properties is invaluable.
