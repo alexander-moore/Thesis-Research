@@ -9,9 +9,8 @@ The impacts of complex survey design in the training of machine learning algorit
 - **Pi Feature**: Make available the inclusion probability of the observation as a feature in the training and testing of the network. 
 
 ------------------
-![](images/both.png)
-![](images/badfit.png)
-![](images/stayGood.png)
+![](images/CE_results_hist.png)
+![](images/clean_results_histogram.png)
 ------------------
 
 Results for monte carlo mean statistic distribution data gathered under the following generative function for population label `p_y`:
